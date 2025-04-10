@@ -26,8 +26,7 @@ object CycleHandler {
                 val value = NumberDetector.detectNumberAt(bitmap)
                 Log.d("CycleHandler", "인식된 값 (${coord.x}, ${coord.y}) = $value")
 
-                // 조건 만족 시 콜백
-                if (ConditionChecker.shouldTriggerAction(value.toFloat(), threshold)) {
+                if (value != null && ConditionChecker.shouldTriggerAction(value, threshold.toDouble())) {
                     onDetected()
                     break
                 }

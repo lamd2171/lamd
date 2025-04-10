@@ -5,7 +5,7 @@ import android.os.Handler
 import android.os.Looper
 import android.widget.Toast
 import com.example.bitconintauto.service.AutoClicker
-import com.example.bitconintauto.service.OcrProcessor
+import com.example.bitconintauto.service.OCRProcessor
 
 class ExecutorManager(private val context: Context) {
 
