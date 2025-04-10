@@ -21,7 +21,8 @@ object ExecutorManager {
         if (isRunning) return
         isRunning = true
 
-        val service = PreferenceHelper.accessibilityService ?: run {
+        val service = PreferenceHelper.accessibilityService
+        if (service == null) {
             Log.e("ExecutorManager", "AccessibilityService not available")
             return
         }
