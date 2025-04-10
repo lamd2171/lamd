@@ -1,16 +1,13 @@
-package com.example.bitconintauto.core
+package com.example.bitconintauto.util
 
 object ConditionChecker {
-    fun isValueValid(value: String?): Boolean {
-        if (value.isNullOrEmpty()) return false
-        return try {
-            value.toFloat() > 1
-        } catch (e: NumberFormatException) {
-            false
-        }
+
+    fun shouldTriggerAction(value: Double, threshold: Double = 1.0): Boolean {
+        return value >= threshold
     }
 
-    fun isValueChanged(old: String?, new: String?): Boolean {
-        return old != new && !new.isNullOrEmpty()
+    fun getUserOffset(): Double {
+        // 기본 offset 값 (예: 0.001), 추후 사용자 입력 연동 가능
+        return 0.001
     }
 }
