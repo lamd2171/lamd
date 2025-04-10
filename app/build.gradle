@@ -37,7 +37,7 @@ android {
     }
 
     kotlinOptions {
-        jvmTarget = '17'
+        jvmTarget = "1.8" // ✅ 수정: Kotlin도 JVM 1.8로 맞춤
     }
 
     sourceSets {
