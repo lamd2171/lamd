@@ -48,7 +48,7 @@ android {
 }
 
 dependencies {
-    implementation 'com.github.adaptech-cz:Tesseract4Android:v5.0.2'
+    implementation 'com.github.renard314:android-ocr:1.0.0-beta3'
 
     implementation "androidx.core:core-ktx:1.9.0"
     implementation "androidx.appcompat:appcompat:1.6.1"
