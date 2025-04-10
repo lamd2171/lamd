@@ -4,6 +4,9 @@ import android.accessibilityservice.AccessibilityService
 import android.graphics.Bitmap
 import android.util.Log
 import com.example.bitconintauto.model.Coordinate
+import com.example.bitconintauto.util.NumberDetector
+import com.example.bitconintauto.util.ConditionChecker
+import com.example.bitconintauto.util.OCRCaptureUtils
 
 object CycleHandler {
 
@@ -15,12 +18,13 @@ object CycleHandler {
     ) {
         for (coord in coordinates) {
             try {
-                // 특정 위치 캡처 (별도 캡처 유틸 필요 시 교체 가능)
-                val bitmap = ScreenCaptureUtils.capture(service, coord) ?: continue
+                // 현재 좌표 기준 화면 영역 캡처
+                val bitmap: Bitmap = OCRCaptureUtils.capture(service, coord)
+                    ?: continue
 
-                // OCR 숫자 인식
+                // OCR 인식
                 val value = NumberDetector.detectNumberAt(bitmap)
-                Log.d("CycleHandler", "좌표(${coord.x}, ${coord.y}) 인식값: $value")
+                Log.d("CycleHandler", "인식된 값 (${coord.x}, ${coord.y}) = $value")
 
                 // 조건 만족 시 콜백
                 if (ConditionChecker.shouldTriggerAction(value.toFloat(), threshold)) {
@@ -29,7 +33,7 @@ object CycleHandler {
                 }
 
             } catch (e: Exception) {
-                Log.e("CycleHandler", "좌표 처리 중 오류: ${e.message}")
+                Log.e("CycleHandler", "OCR 수행 중 오류: ${e.message}")
             }
         }
     }
