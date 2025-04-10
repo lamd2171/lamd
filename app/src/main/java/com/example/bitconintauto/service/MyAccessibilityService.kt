@@ -15,7 +15,6 @@ import com.example.bitconintauto.util.CoordinateManager
 import com.example.bitconintauto.util.NumberDetector
 import com.example.bitconintauto.util.OCRCaptureUtils
 import com.example.bitconintauto.util.PreferenceHelper
-import com.example.bitconintauto.util.ValueChangeDetector
 
 class MyAccessibilityService : AccessibilityService() {
 
