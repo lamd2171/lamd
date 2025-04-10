@@ -1,34 +1,36 @@
 package com.example.bitconintauto.logic
 
-import android.accessibilityservice.AccessibilityService
 import android.os.Handler
 import android.os.Looper
-import com.example.bitconintauto.service.AutoClicker
 
-class ExecutorManager(private val service: AccessibilityService) {
+class ExecutorManager {
 
     private val handler = Handler(Looper.getMainLooper())
     private var isRunning = false
+    private var intervalMillis: Long = 3000L
 
-    fun startExecution(x: Int, y: Int, text: String, targetNode: android.view.accessibility.AccessibilityNodeInfo?) {
-        if (isRunning) return
-        isRunning = true
-        runCycle(x, y, text, targetNode)
+    fun setInterval(seconds: Int) {
+        intervalMillis = (if (seconds < 1) 1 else seconds) * 1000L
     }
 
-    fun stopExecution() {
+    fun startCycle(onExecute: () -> Unit) {
+        if (isRunning) return
+        isRunning = true
+        runLoop(onExecute)
+    }
+
+    fun stopCycle() {
         isRunning = false
         handler.removeCallbacksAndMessages(null)
     }
 
-    private fun runCycle(x: Int, y: Int, text: String, targetNode: android.view.accessibility.AccessibilityNodeInfo?) {
+    private fun runLoop(onExecute: () -> Unit) {
         if (!isRunning) return
 
-        val autoClicker = AutoClicker(service)
-        autoClicker.executeCycle(x, y, text, targetNode)
+        onExecute()
 
         handler.postDelayed({
-            runCycle(x, y, text, targetNode)
-        }, 3000L)
+            runLoop(onExecute)
+        }, intervalMillis)
     }
 }

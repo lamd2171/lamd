@@ -9,7 +9,7 @@ import java.io.FileOutputStream
 
 class OCRProcessor {
 
-    private val tessBaseApi: TessBaseAPI = TessBaseAPI()
+    private val tessBaseApi = TessBaseAPI()
 
     fun init(context: Context) {
         val tessDir = File(context.filesDir, "tesseract/tessdata")
@@ -35,10 +35,9 @@ class OCRProcessor {
         }
 
         val dataPath = File(context.filesDir, "tesseract").absolutePath
-        val initSuccess = tessBaseApi.init(dataPath, "eng")
-
-        if (!initSuccess) {
-            Log.e("OCRProcessor", "TessBaseAPI 초기화 실패!")
+        val success = tessBaseApi.init(dataPath, "eng")
+        if (!success) {
+            Log.e("OCRProcessor", "TessBaseAPI 초기화 실패")
         }
     }
 
@@ -47,7 +46,7 @@ class OCRProcessor {
             tessBaseApi.setImage(bitmap)
             tessBaseApi.utF8Text ?: ""
         } catch (e: Exception) {
-            Log.e("OCRProcessor", "OCR 처리 중 오류: ${e.message}")
+            Log.e("OCRProcessor", "OCR 처리 실패: ${e.message}")
             ""
         }
     }

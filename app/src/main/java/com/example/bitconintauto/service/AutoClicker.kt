@@ -2,9 +2,9 @@ package com.example.bitconintauto.service
 
 import android.accessibilityservice.AccessibilityService
 import android.graphics.Path
+import android.os.Build
 import android.view.accessibility.AccessibilityNodeInfo
 import android.accessibilityservice.GestureDescription
-import android.os.Build
 import androidx.annotation.RequiresApi
 
 class AutoClicker(private val service: AccessibilityService) {
@@ -22,11 +22,12 @@ class AutoClicker(private val service: AccessibilityService) {
 
     fun performTextPaste(node: AccessibilityNodeInfo?, text: String) {
         node?.performAction(AccessibilityNodeInfo.ACTION_FOCUS)
-        val arguments = android.os.Bundle()
-        arguments.putCharSequence(
-            AccessibilityNodeInfo.ACTION_ARGUMENT_SET_TEXT_CHARSEQUENCE, text
+        val args = android.os.Bundle()
+        args.putCharSequence(
+            AccessibilityNodeInfo.ACTION_ARGUMENT_SET_TEXT_CHARSEQUENCE,
+            text
         )
-        node?.performAction(AccessibilityNodeInfo.ACTION_SET_TEXT, arguments)
+        node?.performAction(AccessibilityNodeInfo.ACTION_SET_TEXT, args)
     }
 
     @RequiresApi(Build.VERSION_CODES.N)
