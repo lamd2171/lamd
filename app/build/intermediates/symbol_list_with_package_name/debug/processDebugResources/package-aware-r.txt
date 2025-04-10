@@ -2909,8 +2909,8 @@ id bounce
 id bounceBoth
 id bounceEnd
 id bounceStart
-id btnInputValue
-id btnRegister
+id btnAddCoord
+id btnPermission
 id btnReset
 id btnStart
 id btnStop
@@ -3025,7 +3025,6 @@ id grouping
 id groups
 id header_title
 id hideable
-id highlightView
 id home
 id homeAsUp
 id honorRequest
@@ -3040,8 +3039,6 @@ id immediateStop
 id included
 id indeterminate
 id info
-id intervalSeekBar
-id intervalText
 id invisible
 id inward
 id italic
@@ -3143,6 +3140,7 @@ id onDateChanged
 id onInterceptTouchReturnSwipe
 id outline
 id outward
+id overlayRoot
 id overshoot
 id packed
 id parallax
@@ -3169,7 +3167,6 @@ id right
 id rightToLeft
 id right_icon
 id right_side
-id rootLayout
 id rounded
 id row_index_key
 id save_non_transition_alpha
@@ -3206,6 +3203,8 @@ id search_view_status_bar_spacer
 id search_view_toolbar
 id search_view_toolbar_container
 id search_voice_btn
+id seekBar
+id seekValueText
 id select_dialog_listview
 id selected
 id selection_type
@@ -3508,6 +3507,9 @@ mipmap ic_launcher
 mipmap ic_launcher_round
 plurals mtrl_badge_content_description
 raw beep
+raw error_sound
+raw notify_sound
+raw success_sound
 string abc_action_bar_home_description
 string abc_action_bar_up_description
 string abc_action_menu_overflow_description

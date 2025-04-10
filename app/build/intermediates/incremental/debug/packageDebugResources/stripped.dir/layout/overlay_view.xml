@@ -1,18 +1,28 @@
 <?xml version="1.0" encoding="utf-8"?>
-                                                                   
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/overlayRoot"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="10dp"
+    android:background="#AA000000">
 
-            
-
-    <FrameLayout
+    <Button
+        android:id="@+id/btnStart"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" android:tag="layout/overlay_view_0" xmlns:android="http://schemas.android.com/apk/res/android">
+        android:layout_height="wrap_content"
+        android:text="시작" />
 
-        <View
-            android:id="@+id/highlightView"
-            android:layout_width="30dp"
-            android:layout_height="30dp"
-            android:background="#66FF0000"
-            android:visibility="invisible" />
+    <Button
+        android:id="@+id/btnReset"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="초기화" />
 
-    </FrameLayout>
-         
+    <Button
+        android:id="@+id/btnAddCoord"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="좌표 추가" />
+
+</LinearLayout>

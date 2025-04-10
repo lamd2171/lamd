@@ -40,12 +40,13 @@ class MainActivity : AppCompatActivity() {
         // SeekBar 동작
         seekBar.max = 10
         seekBar.progress = interval
-        seekValueText.text = "$interval초"
+        seekValueText.text = "${interval}초"
+
 
         seekBar.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
             override fun onProgressChanged(sb: SeekBar?, value: Int, fromUser: Boolean) {
                 interval = if (value == 0) 1 else value
-                seekValueText.text = "$interval초"
+                seekValueText.text = "${interval}초"
                 PreferenceHelper.saveString(this@MainActivity, "cycle_interval", interval.toString())
             }
 

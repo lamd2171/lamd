@@ -1,4 +1,5 @@
 C:\Users\abc\AndroidStudioProjects\bitconintauto\app\src\main\java\com\example\bitconintauto\MyApplication.kt
+C:\Users\abc\AndroidStudioProjects\bitconintauto\app\src\main\java\com\example\bitconintauto\util\NumberDetector.kt
 C:\Users\abc\AndroidStudioProjects\bitconintauto\app\src\main\java\com\example\bitconintauto\automation\ExecutorManager.kt
 C:\Users\abc\AndroidStudioProjects\bitconintauto\app\src\main\java\com\example\bitconintauto\service\CycleHandler.kt
 C:\Users\abc\AndroidStudioProjects\bitconintauto\app\src\main\java\com\example\bitconintauto\OverlayView.kt
@@ -7,11 +8,16 @@ C:\Users\abc\AndroidStudioProjects\bitconintauto\app\src\main\java\com\example\b
 C:\Users\abc\AndroidStudioProjects\bitconintauto\app\src\main\java\com\example\bitconintauto\service\OCRProcessor.kt
 C:\Users\abc\AndroidStudioProjects\bitconintauto\app\src\main\java\com\example\bitconintauto\MainActivity.kt
 C:\Users\abc\AndroidStudioProjects\bitconintauto\app\src\main\java\com\example\bitconintauto\ocr\OCRProcessor.kt
+C:\Users\abc\AndroidStudioProjects\bitconintauto\app\src\main\java\com\example\bitconintauto\service\GestureBuilder.kt
+C:\Users\abc\AndroidStudioProjects\bitconintauto\app\src\main\java\com\example\bitconintauto\service\GesturePerformer.kt
 C:\Users\abc\AndroidStudioProjects\bitconintauto\app\src\main\java\com\example\bitconintauto\util\CoordinateManager.kt
 C:\Users\abc\AndroidStudioProjects\bitconintauto\app\src\main\java\com\example\bitconintauto\logic\ExecutorManager.kt
 C:\Users\abc\AndroidStudioProjects\bitconintauto\app\src\main\java\com\example\bitconintauto\util\AutoClicker.kt
+C:\Users\abc\AndroidStudioProjects\bitconintauto\app\src\main\java\com\example\bitconintauto\util\AutomationUtils.kt
+C:\Users\abc\AndroidStudioProjects\bitconintauto\app\src\main\java\com\example\bitconintauto\util\OCRCaptureUtils.kt
 C:\Users\abc\AndroidStudioProjects\bitconintauto\app\src\main\java\com\example\bitconintauto\util\OcrProcessor.kt
 C:\Users\abc\AndroidStudioProjects\bitconintauto\app\src\main\java\com\example\bitconintauto\automation\RoutineController.kt
+C:\Users\abc\AndroidStudioProjects\bitconintauto\app\src\main\java\com\example\bitconintauto\util\ValueChangeDetector.kt
 C:\Users\abc\AndroidStudioProjects\bitconintauto\app\src\main\java\com\example\bitconintauto\Utils.kt
 C:\Users\abc\AndroidStudioProjects\bitconintauto\app\src\main\java\com\example\bitconintauto\service\MyAccessibilityService.kt
 C:\Users\abc\AndroidStudioProjects\bitconintauto\app\src\main\java\com\example\bitconintauto\ui\OverlayView.kt

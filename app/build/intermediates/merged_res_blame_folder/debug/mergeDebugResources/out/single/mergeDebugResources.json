@@ -1,74 +1,94 @@
 [
     {
-        "merged": "com.example.bitconintauto.app-debug-38:/drawable_ic_notification.xml.flat",
-        "source": "com.example.bitconintauto.app-main-40:/drawable/ic_notification.xml"
+        "merged": "C:\\Users\\abc\\.gradle\\daemon\\8.11.1\\com.example.bitconintauto.app-debug-38:\\layout_dialog_input_value.xml.flat",
+        "source": "C:\\Users\\abc\\.gradle\\daemon\\8.11.1\\com.example.bitconintauto.app-main-40:\\layout\\dialog_input_value.xml"
     },
     {
-        "merged": "com.example.bitconintauto.app-debug-38:/mipmap-xhdpi_ic_launcher_round.webp.flat",
-        "source": "com.example.bitconintauto.app-main-40:/mipmap-xhdpi/ic_launcher_round.webp"
+        "merged": "C:\\Users\\abc\\.gradle\\daemon\\8.11.1\\com.example.bitconintauto.app-debug-38:\\raw_beep.mp3.flat",
+        "source": "C:\\Users\\abc\\.gradle\\daemon\\8.11.1\\com.example.bitconintauto.app-main-40:\\raw\\beep.mp3"
     },
     {
-        "merged": "com.example.bitconintauto.app-debug-38:/drawable_ic_launcher_background.xml.flat",
-        "source": "com.example.bitconintauto.app-main-40:/drawable/ic_launcher_background.xml"
+        "merged": "C:\\Users\\abc\\.gradle\\daemon\\8.11.1\\com.example.bitconintauto.app-debug-38:\\xml_accessibility_service_config.xml.flat",
+        "source": "C:\\Users\\abc\\.gradle\\daemon\\8.11.1\\com.example.bitconintauto.app-main-40:\\xml\\accessibility_service_config.xml"
     },
     {
-        "merged": "com.example.bitconintauto.app-debug-38:/layout_dialog_input_value.xml.flat",
-        "source": "com.example.bitconintauto.app-main-40:/layout/dialog_input_value.xml"
+        "merged": "C:\\Users\\abc\\.gradle\\daemon\\8.11.1\\com.example.bitconintauto.app-debug-38:\\drawable_ic_launcher_foreground.xml.flat",
+        "source": "C:\\Users\\abc\\.gradle\\daemon\\8.11.1\\com.example.bitconintauto.app-main-40:\\drawable\\ic_launcher_foreground.xml"
     },
     {
-        "merged": "com.example.bitconintauto.app-debug-38:/mipmap-hdpi_ic_launcher_round.webp.flat",
-        "source": "com.example.bitconintauto.app-main-40:/mipmap-hdpi/ic_launcher_round.webp"
+        "merged": "C:\\Users\\abc\\.gradle\\daemon\\8.11.1\\com.example.bitconintauto.app-debug-38:\\mipmap-xxhdpi_ic_launcher_round.webp.flat",
+        "source": "C:\\Users\\abc\\.gradle\\daemon\\8.11.1\\com.example.bitconintauto.app-main-40:\\mipmap-xxhdpi\\ic_launcher_round.webp"
     },
     {
-        "merged": "com.example.bitconintauto.app-debug-38:/mipmap-hdpi_ic_launcher.webp.flat",
-        "source": "com.example.bitconintauto.app-main-40:/mipmap-hdpi/ic_launcher.webp"
+        "merged": "C:\\Users\\abc\\.gradle\\daemon\\8.11.1\\com.example.bitconintauto.app-debug-38:\\layout_overlay_view.xml.flat",
+        "source": "C:\\Users\\abc\\.gradle\\daemon\\8.11.1\\com.example.bitconintauto.app-main-40:\\layout\\overlay_view.xml"
     },
     {
-        "merged": "com.example.bitconintauto.app-debug-38:/mipmap-xxhdpi_ic_launcher.webp.flat",
-        "source": "com.example.bitconintauto.app-main-40:/mipmap-xxhdpi/ic_launcher.webp"
+        "merged": "C:\\Users\\abc\\.gradle\\daemon\\8.11.1\\com.example.bitconintauto.app-debug-38:\\mipmap-hdpi_ic_launcher_round.webp.flat",
+        "source": "C:\\Users\\abc\\.gradle\\daemon\\8.11.1\\com.example.bitconintauto.app-main-40:\\mipmap-hdpi\\ic_launcher_round.webp"
     },
     {
-        "merged": "com.example.bitconintauto.app-debug-38:/mipmap-xxhdpi_ic_launcher_round.webp.flat",
-        "source": "com.example.bitconintauto.app-main-40:/mipmap-xxhdpi/ic_launcher_round.webp"
+        "merged": "C:\\Users\\abc\\.gradle\\daemon\\8.11.1\\com.example.bitconintauto.app-debug-38:\\mipmap-xhdpi_ic_launcher_round.webp.flat",
+        "source": "C:\\Users\\abc\\.gradle\\daemon\\8.11.1\\com.example.bitconintauto.app-main-40:\\mipmap-xhdpi\\ic_launcher_round.webp"
     },
     {
-        "merged": "com.example.bitconintauto.app-debug-38:/mipmap-anydpi-v26_ic_launcher.xml.flat",
-        "source": "com.example.bitconintauto.app-main-40:/mipmap-anydpi-v26/ic_launcher.xml"
+        "merged": "C:\\Users\\abc\\.gradle\\daemon\\8.11.1\\com.example.bitconintauto.app-debug-38:\\layout_activity_main.xml.flat",
+        "source": "C:\\Users\\abc\\.gradle\\daemon\\8.11.1\\com.example.bitconintauto.app-main-40:\\layout\\activity_main.xml"
     },
     {
-        "merged": "com.example.bitconintauto.app-debug-38:/mipmap-anydpi-v26_ic_launcher_round.xml.flat",
-        "source": "com.example.bitconintauto.app-main-40:/mipmap-anydpi-v26/ic_launcher_round.xml"
+        "merged": "C:\\Users\\abc\\.gradle\\daemon\\8.11.1\\com.example.bitconintauto.app-debug-38:\\mipmap-xhdpi_ic_launcher.webp.flat",
+        "source": "C:\\Users\\abc\\.gradle\\daemon\\8.11.1\\com.example.bitconintauto.app-main-40:\\mipmap-xhdpi\\ic_launcher.webp"
+    },
+    {
+        "merged": "com.example.bitconintauto.app-debug-38:/raw_notify_sound.mp3.flat",
+        "source": "com.example.bitconintauto.app-main-40:/raw/notify_sound.mp3"
     },
     {
         "merged": "com.example.bitconintauto.app-debug-38:/layout_overlay_view.xml.flat",
         "source": "com.example.bitconintauto.app-main-40:/layout/overlay_view.xml"
     },
     {
-        "merged": "com.example.bitconintauto.app-debug-38:/drawable_ic_launcher_foreground.xml.flat",
-        "source": "com.example.bitconintauto.app-main-40:/drawable/ic_launcher_foreground.xml"
+        "merged": "C:\\Users\\abc\\.gradle\\daemon\\8.11.1\\com.example.bitconintauto.app-debug-38:\\mipmap-xxxhdpi_ic_launcher_round.webp.flat",
+        "source": "C:\\Users\\abc\\.gradle\\daemon\\8.11.1\\com.example.bitconintauto.app-main-40:\\mipmap-xxxhdpi\\ic_launcher_round.webp"
     },
     {
-        "merged": "com.example.bitconintauto.app-debug-38:/mipmap-xxxhdpi_ic_launcher.webp.flat",
-        "source": "com.example.bitconintauto.app-main-40:/mipmap-xxxhdpi/ic_launcher.webp"
+        "merged": "C:\\Users\\abc\\.gradle\\daemon\\8.11.1\\com.example.bitconintauto.app-debug-38:\\mipmap-xxxhdpi_ic_launcher.webp.flat",
+        "source": "C:\\Users\\abc\\.gradle\\daemon\\8.11.1\\com.example.bitconintauto.app-main-40:\\mipmap-xxxhdpi\\ic_launcher.webp"
     },
     {
-        "merged": "com.example.bitconintauto.app-debug-38:/raw_beep.mp3.flat",
-        "source": "com.example.bitconintauto.app-main-40:/raw/beep.mp3"
+        "merged": "C:\\Users\\abc\\.gradle\\daemon\\8.11.1\\com.example.bitconintauto.app-debug-38:\\drawable_ic_notification.xml.flat",
+        "source": "C:\\Users\\abc\\.gradle\\daemon\\8.11.1\\com.example.bitconintauto.app-main-40:\\drawable\\ic_notification.xml"
+    },
+    {
+        "merged": "C:\\Users\\abc\\.gradle\\daemon\\8.11.1\\com.example.bitconintauto.app-debug-38:\\drawable_ic_launcher_background.xml.flat",
+        "source": "C:\\Users\\abc\\.gradle\\daemon\\8.11.1\\com.example.bitconintauto.app-main-40:\\drawable\\ic_launcher_background.xml"
+    },
+    {
+        "merged": "C:\\Users\\abc\\.gradle\\daemon\\8.11.1\\com.example.bitconintauto.app-debug-38:\\mipmap-anydpi-v26_ic_launcher_round.xml.flat",
+        "source": "C:\\Users\\abc\\.gradle\\daemon\\8.11.1\\com.example.bitconintauto.app-main-40:\\mipmap-anydpi-v26\\ic_launcher_round.xml"
+    },
+    {
+        "merged": "C:\\Users\\abc\\.gradle\\daemon\\8.11.1\\com.example.bitconintauto.app-debug-38:\\mipmap-xxhdpi_ic_launcher.webp.flat",
+        "source": "C:\\Users\\abc\\.gradle\\daemon\\8.11.1\\com.example.bitconintauto.app-main-40:\\mipmap-xxhdpi\\ic_launcher.webp"
+    },
+    {
+        "merged": "C:\\Users\\abc\\.gradle\\daemon\\8.11.1\\com.example.bitconintauto.app-debug-38:\\mipmap-hdpi_ic_launcher.webp.flat",
+        "source": "C:\\Users\\abc\\.gradle\\daemon\\8.11.1\\com.example.bitconintauto.app-main-40:\\mipmap-hdpi\\ic_launcher.webp"
+    },
+    {
+        "merged": "C:\\Users\\abc\\.gradle\\daemon\\8.11.1\\com.example.bitconintauto.app-debug-38:\\mipmap-anydpi-v26_ic_launcher.xml.flat",
+        "source": "C:\\Users\\abc\\.gradle\\daemon\\8.11.1\\com.example.bitconintauto.app-main-40:\\mipmap-anydpi-v26\\ic_launcher.xml"
+    },
+    {
+        "merged": "com.example.bitconintauto.app-debug-38:/raw_success_sound.mp3.flat",
+        "source": "com.example.bitconintauto.app-main-40:/raw/success_sound.mp3"
     },
     {
         "merged": "com.example.bitconintauto.app-debug-38:/layout_activity_main.xml.flat",
         "source": "com.example.bitconintauto.app-main-40:/layout/activity_main.xml"
     },
     {
-        "merged": "com.example.bitconintauto.app-debug-38:/xml_accessibility_service_config.xml.flat",
-        "source": "com.example.bitconintauto.app-main-40:/xml/accessibility_service_config.xml"
-    },
-    {
-        "merged": "com.example.bitconintauto.app-debug-38:/mipmap-xxxhdpi_ic_launcher_round.webp.flat",
-        "source": "com.example.bitconintauto.app-main-40:/mipmap-xxxhdpi/ic_launcher_round.webp"
-    },
-    {
-        "merged": "com.example.bitconintauto.app-debug-38:/mipmap-xhdpi_ic_launcher.webp.flat",
-        "source": "com.example.bitconintauto.app-main-40:/mipmap-xhdpi/ic_launcher.webp"
+        "merged": "com.example.bitconintauto.app-debug-38:/raw_error_sound.mp3.flat",
+        "source": "com.example.bitconintauto.app-main-40:/raw/error_sound.mp3"
     }
 ]
