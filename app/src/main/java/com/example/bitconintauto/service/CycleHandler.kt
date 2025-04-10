@@ -14,7 +14,11 @@ class CycleHandler(
         override fun run() {
             if (isRunning) {
                 onLog("자동 실행 중...")
-                ExecutorManager.start()  // ExecutorManager 싱글톤 사용
+                try {
+                    ExecutorManager.start()
+                } catch (e: Exception) {
+                    onLog("오류 발생: ${e.message}")
+                }
                 handler.postDelayed(this, intervalMillis)
             }
         }
