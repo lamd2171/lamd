@@ -4,7 +4,7 @@
             "outputFile": "com.example.bitconintauto.app-mergeDebugResources-36:/values-v23/values-v23.xml",
             "map": [
                 {
-                    "source": "C:\\Users\\abc\\.gradle\\caches\\8.11.1\\transforms\\81fd1454491449319319ae730c4d3034\\transformed\\cardview-1.0.0\\res\\values-v23\\values-v23.xml",
+                    "source": "C:\\Users\\abc\\.gradle\\caches\\8.11.1\\transforms\\b87c9e776ecb4bef96cf072786a56060\\transformed\\cardview-1.0.0\\res\\values-v23\\values-v23.xml",
                     "from": {
                         "startLines": "2",
                         "startColumns": "4",
@@ -23,7 +23,7 @@
                     }
                 },
                 {
-                    "source": "C:\\Users\\abc\\.gradle\\caches\\8.11.1\\transforms\\83b8f22a5415c74c87924dd0de456169\\transformed\\material-1.8.0\\res\\values-v23\\values-v23.xml",
+                    "source": "C:\\Users\\abc\\.gradle\\caches\\8.11.1\\transforms\\147b4d7679b3e26758c647fa319f996c\\transformed\\material-1.8.0\\res\\values-v23\\values-v23.xml",
                     "from": {
                         "startLines": "2,5,8,13,17,20,23,26,31,34,38",
                         "startColumns": "4,4,4,4,4,4,4,4,4,4,4",
@@ -42,7 +42,7 @@
                     }
                 },
                 {
-                    "source": "C:\\Users\\abc\\.gradle\\caches\\8.11.1\\transforms\\cc169a4ca9a21fa743adeee1de38eb4a\\transformed\\appcompat-1.6.1\\res\\values-v23\\values-v23.xml",
+                    "source": "C:\\Users\\abc\\.gradle\\caches\\8.11.1\\transforms\\322170f274441f083f49e3b638141f7c\\transformed\\appcompat-1.6.1\\res\\values-v23\\values-v23.xml",
                     "from": {
                         "startLines": "2,3,4,5,6,20,34,35,36,39,43,44,45,46",
                         "startColumns": "4,4,4,4,4,4,4,4,4,4,4,4,4,4",

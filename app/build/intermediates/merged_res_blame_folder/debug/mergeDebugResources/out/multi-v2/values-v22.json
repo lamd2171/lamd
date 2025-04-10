@@ -4,7 +4,7 @@
             "outputFile": "com.example.bitconintauto.app-mergeDebugResources-36:/values-v22/values-v22.xml",
             "map": [
                 {
-                    "source": "C:\\Users\\abc\\.gradle\\caches\\8.11.1\\transforms\\cc169a4ca9a21fa743adeee1de38eb4a\\transformed\\appcompat-1.6.1\\res\\values-v22\\values-v22.xml",
+                    "source": "C:\\Users\\abc\\.gradle\\caches\\8.11.1\\transforms\\322170f274441f083f49e3b638141f7c\\transformed\\appcompat-1.6.1\\res\\values-v22\\values-v22.xml",
                     "from": {
                         "startLines": "2,3,4,9",
                         "startColumns": "4,4,4,4",
