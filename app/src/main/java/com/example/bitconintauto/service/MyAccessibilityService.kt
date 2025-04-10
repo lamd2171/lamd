@@ -9,7 +9,6 @@ import android.os.Build
 import android.view.accessibility.AccessibilityNodeInfo
 import androidx.annotation.RequiresApi
 import com.example.bitconintauto.databinding.OverlayViewBinding
-import com.example.bitconintauto.logic.ExecutorManager
 import com.example.bitconintauto.model.Coordinate
 import com.example.bitconintauto.ocr.OCRProcessor
 import com.example.bitconintauto.util.CoordinateManager

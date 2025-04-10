@@ -5,7 +5,6 @@ import android.os.Looper
 
 class CycleHandler(
     private val intervalMillis: Long,
-    private val executor: ExecutorManager,
     private val onLog: (String) -> Unit
 ) {
     private val handler = Handler(Looper.getMainLooper())
@@ -15,7 +14,7 @@ class CycleHandler(
         override fun run() {
             if (isRunning) {
                 onLog("자동 실행 중...")
-                executor.executeCycle()
+                ExecutorManager.start()  // ExecutorManager 싱글톤 사용
                 handler.postDelayed(this, intervalMillis)
             }
         }
