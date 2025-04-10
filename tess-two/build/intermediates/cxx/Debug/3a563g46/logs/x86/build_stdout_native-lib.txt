@@ -1,0 +1,2 @@
+ninja: Entering directory `C:\Users\abc\AndroidStudioProjects\bitconintauto\tess-two\.cxx\Debug\3a563g46\x86'
+ninja: no work to do.

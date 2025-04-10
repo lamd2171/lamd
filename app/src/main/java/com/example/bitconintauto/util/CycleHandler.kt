@@ -1,24 +1,31 @@
-package com.example.bitconintauto.util
+package com.example.bitconintauto.automation
 
-import android.os.Handler
-import android.os.Looper
+import com.example.bitconintauto.logic.ConditionChecker
+import com.example.bitconintauto.logic.CoordinateManager
+import com.example.bitconintauto.service.MyAccessibilityService
+import com.example.bitconintauto.ocr.NumberDetector
 
-class CycleHandler(private val intervalMillis: Long, private val task: () -> Unit) {
+class CycleHandler(
+    private val service: MyAccessibilityService,
+    private val coordinateManager: CoordinateManager,
+    private val numberDetector: NumberDetector
+) {
+    private val conditionChecker = ConditionChecker()
 
-    private val handler = Handler(Looper.getMainLooper())
-    private val runnable = object : Runnable {
-        override fun run() {
-            task.invoke()
-            handler.postDelayed(this, intervalMillis)
+    fun executeStep() {
+        val targetCoord = coordinateManager.getPrimaryCoordinate() ?: return
+        val value = numberDetector.detectNumberAt(service, targetCoord)
+        if (conditionChecker.shouldTrigger(value)) {
+            performAutomationSequence()
         }
     }
 
-    fun start() {
-        stop()
-        handler.post(runnable)
-    }
-
-    fun stop() {
-        handler.removeCallbacks(runnable)
+    private fun performAutomationSequence() {
+        service.performAutoClick(coordinateManager.getClickPathSequence())
+        val copiedValue = service.readValueAt(coordinateManager.getCopyTarget())
+        val userOffset = coordinateManager.getUserOffset() ?: 0.001
+        val finalValue = copiedValue + userOffset
+        service.pasteValueAt(coordinateManager.getPasteTarget(), finalValue)
+        service.performFinalActions()
     }
 }

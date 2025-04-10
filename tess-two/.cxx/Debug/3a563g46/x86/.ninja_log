@@ -1,2 +1,4 @@
 # ninja log v5
 1	8	0	clean	1a8ac09c2d1c5967
+1	426	7659643456079211	CMakeFiles/native-lib.dir/native-lib.cpp.o	55320af383af41f1
+429	483	7659643456658592	C:/Users/abc/AndroidStudioProjects/bitconintauto/tess-two/build/intermediates/cxx/Debug/3a563g46/obj/x86/libnative-lib.so	83881ef230ef12ce

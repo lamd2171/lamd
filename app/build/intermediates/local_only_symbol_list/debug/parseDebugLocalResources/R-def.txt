@@ -33,6 +33,7 @@ layout dialog_input_value
 layout overlay_view
 mipmap ic_launcher
 mipmap ic_launcher_round
+raw beep
 string accessibility_description
 string app_name
 string app_running

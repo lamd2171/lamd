@@ -9,6 +9,7 @@ import java.io.File
 object CoordinateManager {
 
     private const val FILENAME = "coordinates.json"
+    private var cachedCoordinates: MutableList<Coordinate> = mutableListOf()
 
     fun saveCoordinates(context: Context, coordinates: List<Coordinate>) {
         val jsonArray = JSONArray()
@@ -17,12 +18,12 @@ object CoordinateManager {
             jsonArray.put(jsonObj)
         }
         File(context.filesDir, FILENAME).writeText(jsonArray.toString())
+        cachedCoordinates = coordinates.toMutableList()
     }
 
     fun loadCoordinates(context: Context): List<Coordinate> {
         val file = File(context.filesDir, FILENAME)
         if (!file.exists()) return emptyList()
-
         val text = file.readText()
         val jsonArray = JSONArray(text)
         val list = mutableListOf<Coordinate>()
@@ -30,12 +31,19 @@ object CoordinateManager {
             val obj = jsonArray.getJSONObject(i)
             list.add(Coordinate.fromJson(obj))
         }
+        cachedCoordinates = list
         return list
     }
 
     fun clearCoordinates(context: Context) {
         File(context.filesDir, FILENAME).delete()
+        cachedCoordinates.clear()
     }
+
+    fun getPrimaryCoordinate(): Coordinate? = cachedCoordinates.getOrNull(0)
+    fun getCopyTarget(): Coordinate? = cachedCoordinates.getOrNull(1)
+    fun getPasteTarget(): Coordinate? = cachedCoordinates.getOrNull(2)
+    fun getFinalActionCoordinate(): Coordinate? = cachedCoordinates.getOrNull(3)
 
     fun getResolution(context: Context): Point {
         val displayMetrics = context.resources.displayMetrics
