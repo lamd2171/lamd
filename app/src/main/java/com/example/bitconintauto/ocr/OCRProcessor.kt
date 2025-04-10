@@ -6,7 +6,6 @@ import android.util.Log
 import com.googlecode.tesseract.android.TessBaseAPI
 import java.io.File
 import java.io.FileOutputStream
-import java.io.InputStream
 
 class OCRProcessor {
 
@@ -21,25 +20,25 @@ class OCRProcessor {
         val trainedDataFile = File(tessDir, "eng.traineddata")
         if (!trainedDataFile.exists()) {
             try {
-                context.assets.open("tessdata/eng.traineddata").use { inputStream ->
-                    FileOutputStream(trainedDataFile).use { outputStream ->
+                context.assets.open("tessdata/eng.traineddata").use { input ->
+                    FileOutputStream(trainedDataFile).use { output ->
                         val buffer = ByteArray(1024)
                         var read: Int
-                        while (inputStream.read(buffer).also { read = it } != -1) {
-                            outputStream.write(buffer, 0, read)
+                        while (input.read(buffer).also { read = it } != -1) {
+                            output.write(buffer, 0, read)
                         }
-                        outputStream.flush()
                     }
                 }
             } catch (e: Exception) {
-                Log.e("OCRProcessor", "Failed to copy traineddata: ${e.message}")
+                Log.e("OCRProcessor", "traineddata 복사 실패: ${e.message}")
             }
         }
 
         val dataPath = File(context.filesDir, "tesseract").absolutePath
         val initSuccess = tessBaseApi.init(dataPath, "eng")
+
         if (!initSuccess) {
-            Log.e("OCRProcessor", "TessBaseAPI initialization failed!")
+            Log.e("OCRProcessor", "TessBaseAPI 초기화 실패!")
         }
     }
 
@@ -48,7 +47,7 @@ class OCRProcessor {
             tessBaseApi.setImage(bitmap)
             tessBaseApi.utF8Text ?: ""
         } catch (e: Exception) {
-            Log.e("OCRProcessor", "Error during OCR: ${e.message}")
+            Log.e("OCRProcessor", "OCR 처리 중 오류: ${e.message}")
             ""
         }
     }
