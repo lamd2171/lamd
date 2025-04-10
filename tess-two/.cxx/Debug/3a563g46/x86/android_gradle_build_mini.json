@@ -1,0 +1,27 @@
+{
+  "buildFiles": [
+    "C:\\Users\\abc\\AndroidStudioProjects\\bitconintauto\\tess-two\\src\\main\\cpp\\CMakeLists.txt"
+  ],
+  "cleanCommandsComponents": [
+    [
+      "C:\\Users\\abc\\AppData\\Local\\Android\\Sdk\\cmake\\3.22.1\\bin\\ninja.exe",
+      "-C",
+      "C:\\Users\\abc\\AndroidStudioProjects\\bitconintauto\\tess-two\\.cxx\\Debug\\3a563g46\\x86",
+      "clean"
+    ]
+  ],
+  "buildTargetsCommandComponents": [
+    "C:\\Users\\abc\\AppData\\Local\\Android\\Sdk\\cmake\\3.22.1\\bin\\ninja.exe",
+    "-C",
+    "C:\\Users\\abc\\AndroidStudioProjects\\bitconintauto\\tess-two\\.cxx\\Debug\\3a563g46\\x86",
+    "{LIST_OF_TARGETS_TO_BUILD}"
+  ],
+  "libraries": {
+    "native-lib::@6890427a1f51a3e7e1df": {
+      "artifactName": "native-lib",
+      "abi": "x86",
+      "output": "C:\\Users\\abc\\AndroidStudioProjects\\bitconintauto\\tess-two\\build\\intermediates\\cxx\\Debug\\3a563g46\\obj\\x86\\libnative-lib.so",
+      "runtimeFiles": []
+    }
+  }
+}

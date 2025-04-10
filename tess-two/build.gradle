@@ -1,0 +1,53 @@
+plugins {
+    id 'com.android.library'
+}
+
+android {
+    namespace 'com.googlecode.tesseract.android'
+    compileSdk = 34
+
+    defaultConfig {
+        minSdk = 24
+        targetSdk = 34
+
+        ndk {
+            abiFilters += ["armeabi-v7a", "x86"]
+        }
+
+        externalNativeBuild {
+            cmake {
+                cppFlags += ""
+            }
+        }
+
+        consumerProguardFiles "consumer-rules.pro"
+    }
+
+    sourceSets {
+        main {
+            jniLibs.srcDirs = ['src/main/jniLibs']
+        }
+    }
+
+    externalNativeBuild {
+        cmake {
+            path = file("src/main/cpp/CMakeLists.txt")
+        }
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled = false
+            proguardFiles(getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro')
+        }
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
+    }
+}
+
+dependencies {
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+}
