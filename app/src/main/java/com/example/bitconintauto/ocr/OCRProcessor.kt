@@ -12,10 +12,12 @@ class OCRProcessor {
     private val tessBaseApi = TessBaseAPI()
 
     fun init(context: Context) {
-        val tessDir = File(context.filesDir, "tessdata")
-        if (!tessDir.exists()) tessDir.mkdirs()
+        val tessDataDir = File(context.filesDir, "tessdata")
+        if (!tessDataDir.exists()) {
+            tessDataDir.mkdirs()
+        }
 
-        val trainedData = File(tessDir, "eng.traineddata")
+        val trainedData = File(tessDataDir, "eng.traineddata")
         if (!trainedData.exists()) {
             try {
                 context.assets.open("tessdata/eng.traineddata").use { input ->
