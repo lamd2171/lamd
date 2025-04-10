@@ -1,18 +1,10 @@
-<?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">bitconintauto</string>
+    <string name="app_name">BitconintAuto</string>
+    <string name="accessibility_description">자동 클릭 기능을 위한 접근성 서비스입니다.</string>
     <string name="start">시작</string>
     <string name="stop">중지</string>
     <string name="reset">초기화</string>
-    <string name="register_coordinate">좌표 등록</string>
-    <string name="input_value">값 입력</string>
-    <string name="input_dialog_title">합산할 값 입력</string>
-    <string name="ok">확인</string>
-    <string name="cancel">취소</string>
-    <string name="overlay_permission_required">오버레이 권한이 필요합니다.</string>
-    <string name="accessibility_service_required">접근성 서비스가 필요합니다.</string>
-    <string name="service_running">서비스 실행 중</string>
-    <string name="service_stopped">서비스 중지됨</string>
-    <string name="accessibility_service_description">자동화 서비스를 사용하려면 이 권한을 허용해주세요.</string>
-    <string name="accessibility_description">접근성 서비스 설명입니다.</string>
+    <string name="input">값 입력</string>
+    <string name="app_running">실행 중</string>
+    <string name="app_stopped">중지됨</string>
 </resources>

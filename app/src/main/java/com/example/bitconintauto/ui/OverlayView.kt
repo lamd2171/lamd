@@ -1,43 +1,42 @@
 package com.example.bitconintauto.ui
 
 import android.content.Context
-import android.graphics.PixelFormat
-import android.view.*
-import android.widget.TextView
-import android.widget.Toast
-import com.example.bitconintauto.R
+import android.graphics.*
+import android.view.View
+import com.example.bitconintauto.model.Coordinate
 
-class OverlayView(private val context: Context) {
-    private var windowManager: WindowManager =
-        context.getSystemService(Context.WINDOW_SERVICE) as WindowManager
-    private var overlayView: View? = null
+class OverlayView(context: Context) : View(context) {
 
-    fun show(message: String) {
-        if (overlayView != null) return
-
-        val inflater = LayoutInflater.from(context)
-        overlayView = inflater.inflate(R.layout.overlay_view, null)
-        overlayView?.findViewById<TextView>(R.id.overlay_text)?.text = message
-
-        val params = WindowManager.LayoutParams(
-            WindowManager.LayoutParams.WRAP_CONTENT,
-            WindowManager.LayoutParams.WRAP_CONTENT,
-            WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY,
-            WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE or WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL,
-            PixelFormat.TRANSLUCENT
-        )
-
-        params.gravity = Gravity.TOP or Gravity.START
-        params.x = 100
-        params.y = 100
-
-        windowManager.addView(overlayView, params)
+    private val paint = Paint().apply {
+        color = Color.RED
+        style = Paint.Style.STROKE
+        strokeWidth = 4f
     }
 
-    fun hide() {
-        if (overlayView != null) {
-            windowManager.removeView(overlayView)
-            overlayView = null
+    private val textPaint = Paint().apply {
+        color = Color.WHITE
+        textSize = 36f
+        typeface = Typeface.DEFAULT_BOLD
+    }
+
+    private var coordinates: List<Coordinate> = emptyList()
+
+    fun setCoordinates(coords: List<Coordinate>) {
+        coordinates = coords
+        invalidate()
+    }
+
+    override fun onDraw(canvas: Canvas) {
+        super.onDraw(canvas)
+        coordinates.forEachIndexed { index, coordinate ->
+            canvas.drawRect(
+                coordinate.x - 20f,
+                coordinate.y - 20f,
+                coordinate.x + 20f,
+                coordinate.y + 20f,
+                paint
+            )
+            canvas.drawText("C$index", coordinate.x + 25f, coordinate.y.toFloat(), textPaint)
         }
     }
 }

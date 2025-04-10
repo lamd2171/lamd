@@ -1,5 +1,4 @@
-cmake_minimum_required(VERSION 3.10.2)
-project("tess-two")
+cmake_minimum_required(VERSION 3.4.1)
 
 add_library(
         native-lib

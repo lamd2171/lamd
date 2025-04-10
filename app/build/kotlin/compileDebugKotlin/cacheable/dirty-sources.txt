@@ -32,6 +32,7 @@ C:\Users\abc\AndroidStudioProjects\bitconintauto\app\src\main\java\com\example\b
 C:\Users\abc\AndroidStudioProjects\bitconintauto\app\src\main\java\com\example\bitconintauto\MyAccessibilityService.kt
 C:\Users\abc\AndroidStudioProjects\bitconintauto\app\src\main\java\com\example\bitconintauto\util\CoordinateUtils.kt
 C:\Users\abc\AndroidStudioProjects\bitconintauto\app\src\main\java\com\example\bitconintauto\util\AppLogger.kt
+C:\Users\abc\AndroidStudioProjects\bitconintauto\app\src\main\java\com\example\bitconintauto\util\ConditionChecker.kt
 C:\Users\abc\AndroidStudioProjects\bitconintauto\app\src\main\java\com\example\bitconintauto\model\Coordinate.kt
 C:\Users\abc\AndroidStudioProjects\bitconintauto\app\src\main\java\com\example\bitconintauto\util\Logger.kt
 C:\Users\abc\AndroidStudioProjects\bitconintauto\app\src\main\java\com\example\bitconintauto\util\SoundPlayer.kt

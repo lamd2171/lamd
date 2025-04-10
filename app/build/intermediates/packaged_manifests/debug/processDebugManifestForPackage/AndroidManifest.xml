@@ -8,16 +8,17 @@
         android:minSdkVersion="24"
         android:targetSdkVersion="34" />
 
+    <!-- 필요한 권한 -->
     <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
-    <uses-permission android:name="android.permission.BIND_ACCESSIBILITY_SERVICE" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
 
     <permission
         android:name="com.example.bitconintauto.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION"
         android:protectionLevel="signature" />
 
-    <uses-permission android:name="com.example.bitconintauto.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION" />
-
+    <uses-permission android:name="com.example.bitconintauto.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION" /> <!-- ⛔ BIND_ACCESSIBILITY_SERVICE는 삭제됨 -->
     <application
         android:name="com.example.bitconintauto.MyApplication"
         android:allowBackup="true"
@@ -30,10 +31,11 @@
         android:supportsRtl="true"
         android:testOnly="true"
         android:theme="@style/Theme.BitconintAuto" >
+
+        <!-- 메인 액티비티 -->
         <activity
             android:name="com.example.bitconintauto.MainActivity"
-            android:exported="true"
-            android:theme="@style/Theme.BitconintAuto.NoActionBar" >
+            android:exported="true" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -41,6 +43,7 @@
             </intent-filter>
         </activity>
 
+        <!-- 접근성 서비스 등록 -->
         <service
             android:name="com.example.bitconintauto.service.MyAccessibilityService"
             android:exported="false"
