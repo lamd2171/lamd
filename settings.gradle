@@ -1,3 +1,3 @@
 rootProject.name = "bitconintauto"
-include ':app', ':tess-two'
+include ':app'
 

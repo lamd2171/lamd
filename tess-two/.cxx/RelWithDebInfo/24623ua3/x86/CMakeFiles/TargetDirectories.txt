@@ -1,3 +1,0 @@
-C:/Users/abc/AndroidStudioProjects/bitconintauto/tess-two/.cxx/RelWithDebInfo/24623ua3/x86/CMakeFiles/native-lib.dir
-C:/Users/abc/AndroidStudioProjects/bitconintauto/tess-two/.cxx/RelWithDebInfo/24623ua3/x86/CMakeFiles/edit_cache.dir
-C:/Users/abc/AndroidStudioProjects/bitconintauto/tess-two/.cxx/RelWithDebInfo/24623ua3/x86/CMakeFiles/rebuild_cache.dir

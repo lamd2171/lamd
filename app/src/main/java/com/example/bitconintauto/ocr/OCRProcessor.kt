@@ -3,51 +3,25 @@ package com.example.bitconintauto.ocr
 import android.content.Context
 import android.graphics.Bitmap
 import android.util.Log
-import com.googlecode.tesseract.android.TessBaseAPI
-import java.io.File
-import java.io.FileOutputStream
+import cz.adaptech.tesseract4android.Tesseract
 
 class OCRProcessor {
 
-    private val tessBaseApi = TessBaseAPI()
+    private lateinit var tesseract: Tesseract
 
     fun init(context: Context) {
-        val tessDir = File(context.filesDir, "tesseract/tessdata")
-        if (!tessDir.exists()) {
-            tessDir.mkdirs()
-        }
-
-        val trainedData = File(tessDir, "eng.traineddata")
-        if (!trainedData.exists()) {
-            try {
-                context.assets.open("tessdata/eng.traineddata").use { input ->
-                    FileOutputStream(trainedData).use { output ->
-                        val buffer = ByteArray(1024)
-                        var read: Int
-                        while (input.read(buffer).also { read = it } != -1) {
-                            output.write(buffer, 0, read)
-                        }
-                    }
-                }
-            } catch (e: Exception) {
-                Log.e("OCRProcessor", "traineddata 복사 실패: ${e.message}")
-            }
-        }
-
-        val dataPath = File(context.filesDir, "tesseract").absolutePath
-
-        // ⚠ GitHub 기준에 맞춘 핵심 변경
-        val initSuccess = tessBaseApi.init(dataPath)
-
-        if (!initSuccess) {
-            Log.e("OCRProcessor", "TessBaseAPI 초기화 실패")
+        try {
+            tesseract = Tesseract(context)
+            tesseract.init("eng") // 언어 설정
+        } catch (e: Exception) {
+            Log.e("OCRProcessor", "Tesseract 초기화 실패: ${e.message}")
         }
     }
 
     fun getText(bitmap: Bitmap): String {
         return try {
-            tessBaseApi.setImage(bitmap)
-            tessBaseApi.utF8Text ?: ""
+            tesseract.setImage(bitmap)
+            tesseract.utF8Text ?: ""
         } catch (e: Exception) {
             Log.e("OCRProcessor", "OCR 처리 실패: ${e.message}")
             ""
@@ -55,6 +29,10 @@ class OCRProcessor {
     }
 
     fun stop() {
-        tessBaseApi.end()
+        try {
+            tesseract.recycle()
+        } catch (e: Exception) {
+            Log.e("OCRProcessor", "Tesseract 정리 실패: ${e.message}")
+        }
     }
 }

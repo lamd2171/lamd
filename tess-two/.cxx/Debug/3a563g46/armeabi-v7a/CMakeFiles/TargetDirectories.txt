@@ -1,3 +1,0 @@
-C:/Users/abc/AndroidStudioProjects/bitconintauto/tess-two/.cxx/Debug/3a563g46/armeabi-v7a/CMakeFiles/native-lib.dir
-C:/Users/abc/AndroidStudioProjects/bitconintauto/tess-two/.cxx/Debug/3a563g46/armeabi-v7a/CMakeFiles/edit_cache.dir
-C:/Users/abc/AndroidStudioProjects/bitconintauto/tess-two/.cxx/Debug/3a563g46/armeabi-v7a/CMakeFiles/rebuild_cache.dir
