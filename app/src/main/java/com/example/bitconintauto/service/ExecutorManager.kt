@@ -1,13 +1,13 @@
-package com.example.bitconintauto.logic
+package com.example.bitconintauto.service
 
 import android.content.Context
 import android.util.Log
 import com.example.bitconintauto.model.Coordinate
-import com.example.bitconintauto.service.AutoClicker
 import com.example.bitconintauto.ocr.OCRProcessor
 import com.example.bitconintauto.util.CoordinateManager
 import com.example.bitconintauto.util.OCRCaptureUtils
 import com.example.bitconintauto.util.PreferenceHelper
+import com.example.bitconintauto.util.ValueChangeDetector
 import kotlinx.coroutines.*
 
 object ExecutorManager {

@@ -25,7 +25,7 @@ object ScreenCaptureHelper {
                 )
                 onCaptured(cropped)
             } else {
-                Logger.error("PixelCopy 실패")
+                AppLogger.error("PixelCopy 실패")
                 onCaptured(null)
             }
         }, Handler())

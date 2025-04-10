@@ -4,6 +4,7 @@ import android.accessibilityservice.AccessibilityService
 import android.graphics.Path
 import com.example.bitconintauto.service.GestureBuilder
 import com.example.bitconintauto.service.GesturePerformer
+import com.example.bitconintauto.model.Coordinate
 
 object AutomationUtils {
 
