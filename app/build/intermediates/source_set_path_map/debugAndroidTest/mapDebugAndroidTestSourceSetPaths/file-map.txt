@@ -1,0 +1,4 @@
+com.example.bitconintauto.test.app-androidTest-0 C:\Users\abc\AndroidStudioProjects\bitconintauto\app\build\generated\res\resValues\androidTest\debug
+com.example.bitconintauto.test.app-mergeDebugAndroidTestResources-1 C:\Users\abc\AndroidStudioProjects\bitconintauto\app\build\intermediates\incremental\debugAndroidTest\mergeDebugAndroidTestResources\merged.dir
+com.example.bitconintauto.test.app-mergeDebugAndroidTestResources-2 C:\Users\abc\AndroidStudioProjects\bitconintauto\app\build\intermediates\incremental\debugAndroidTest\mergeDebugAndroidTestResources\stripped.dir
+com.example.bitconintauto.test.app-debugAndroidTest-3 C:\Users\abc\AndroidStudioProjects\bitconintauto\app\build\intermediates\merged_res\debugAndroidTest\mergeDebugAndroidTestResources
