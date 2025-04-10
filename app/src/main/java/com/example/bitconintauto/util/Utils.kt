@@ -1,55 +1,48 @@
-package com.example.bitconintauto.utils
+package com.example.bitconintauto.util
 
+import android.accessibilityservice.AccessibilityService
 import android.graphics.Bitmap
-import android.graphics.BitmapFactory
 import android.graphics.Rect
 import android.util.Base64
-import android.util.Log
+import com.example.bitconintauto.model.Coordinate
+import com.example.bitconintauto.ocr.OCRProcessor
 import java.io.ByteArrayOutputStream
-import java.text.DecimalFormat
 
 object Utils {
 
-    fun cropBitmap(source: Bitmap, rect: Rect): Bitmap {
-        val safeRect = Rect(
-            rect.left.coerceAtLeast(0),
-            rect.top.coerceAtLeast(0),
-            rect.right.coerceAtMost(source.width),
-            rect.bottom.coerceAtMost(source.height)
-        )
+    fun cropBitmap(original: Bitmap, cropRect: Rect): Bitmap {
         return Bitmap.createBitmap(
-            source,
-            safeRect.left,
-            safeRect.top,
-            safeRect.width(),
-            safeRect.height()
+            original,
+            cropRect.left,
+            cropRect.top,
+            cropRect.width(),
+            cropRect.height()
         )
     }
 
     fun bitmapToBase64(bitmap: Bitmap): String {
-        val outputStream = ByteArrayOutputStream()
-        bitmap.compress(Bitmap.CompressFormat.PNG, 100, outputStream)
-        val byteArray = outputStream.toByteArray()
+        val stream = ByteArrayOutputStream()
+        bitmap.compress(Bitmap.CompressFormat.PNG, 100, stream)
+        val byteArray = stream.toByteArray()
         return Base64.encodeToString(byteArray, Base64.DEFAULT)
     }
 
-    fun base64ToBitmap(encoded: String): Bitmap? {
-        return try {
-            val decodedBytes = Base64.decode(encoded, Base64.DEFAULT)
-            BitmapFactory.decodeByteArray(decodedBytes, 0, decodedBytes.size)
-        } catch (e: Exception) {
-            Log.e("Utils", "base64ToBitmap error: ${e.message}")
-            null
-        }
+    fun base64ToBitmap(base64Str: String): Bitmap {
+        val decodedBytes = Base64.decode(base64Str, Base64.DEFAULT)
+        return android.graphics.BitmapFactory.decodeByteArray(decodedBytes, 0, decodedBytes.size)
     }
 
     fun isValidNumber(text: String): Boolean {
-        return text.trim().matches(Regex("^[0-9]+(\\.[0-9]+)?$"))
+        return text.toDoubleOrNull() != null
     }
 
-    fun formatDecimal(value: Double, digits: Int = 6): String {
-        val pattern = "0.${"#".repeat(digits)}"
-        val formatter = DecimalFormat(pattern)
-        return formatter.format(value)
+    fun formatDecimal(value: Double, decimalPlaces: Int = 3): String {
+        return "%.${decimalPlaces}f".format(value)
+    }
+
+    fun readValueAt(service: AccessibilityService, coordinate: Coordinate): Double? {
+        val bitmap = OCRCaptureUtils.capture(service, coordinate) ?: return null
+        val text = OCRProcessor().getText(bitmap)
+        return text.toDoubleOrNull()
     }
 }
