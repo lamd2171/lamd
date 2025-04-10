@@ -13,10 +13,9 @@ C:\Users\abc\AndroidStudioProjects\bitconintauto\app\src\main\java\com\example\b
 C:\Users\abc\AndroidStudioProjects\bitconintauto\app\src\main\java\com\example\bitconintauto\util\AutomationUtils.kt
 C:\Users\abc\AndroidStudioProjects\bitconintauto\app\src\main\java\com\example\bitconintauto\util\OCRCaptureUtils.kt
 C:\Users\abc\AndroidStudioProjects\bitconintauto\app\src\main\java\com\example\bitconintauto\util\OcrProcessor.kt
-C:\Users\abc\AndroidStudioProjects\bitconintauto\app\src\main\java\com\example\bitconintauto\Utils.kt
+C:\Users\abc\AndroidStudioProjects\bitconintauto\app\src\main\java\com\example\bitconintauto\util\ValueChangeDetector.kt
 C:\Users\abc\AndroidStudioProjects\bitconintauto\app\src\main\java\com\example\bitconintauto\service\MyAccessibilityService.kt
 C:\Users\abc\AndroidStudioProjects\bitconintauto\app\src\main\java\com\example\bitconintauto\ui\OverlayView.kt
-C:\Users\abc\AndroidStudioProjects\bitconintauto\app\src\main\java\com\example\bitconintauto\service\ValueChangeDetector.kt
 C:\Users\abc\AndroidStudioProjects\bitconintauto\app\src\main\java\com\example\bitconintauto\util\ScreenCaptureHelper.kt
 C:\Users\abc\AndroidStudioProjects\bitconintauto\app\src\main\java\com\example\bitconintauto\util\Coordinate.kt
 C:\Users\abc\AndroidStudioProjects\bitconintauto\app\src\main\java\com\example\bitconintauto\util\ResolutionHelper.kt
@@ -29,5 +28,6 @@ C:\Users\abc\AndroidStudioProjects\bitconintauto\app\src\main\java\com\example\b
 C:\Users\abc\AndroidStudioProjects\bitconintauto\app\src\main\java\com\example\bitconintauto\util\CoordinateUtils.kt
 C:\Users\abc\AndroidStudioProjects\bitconintauto\app\src\main\java\com\example\bitconintauto\util\AppLogger.kt
 C:\Users\abc\AndroidStudioProjects\bitconintauto\app\src\main\java\com\example\bitconintauto\util\ConditionChecker.kt
+C:\Users\abc\AndroidStudioProjects\bitconintauto\app\src\main\java\com\example\bitconintauto\util\AutomationClipboard.kt
 C:\Users\abc\AndroidStudioProjects\bitconintauto\app\src\main\java\com\example\bitconintauto\model\Coordinate.kt
 C:\Users\abc\AndroidStudioProjects\bitconintauto\app\src\main\java\com\example\bitconintauto\util\SoundPlayer.kt

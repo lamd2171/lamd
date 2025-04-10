@@ -1,52 +1,44 @@
 package com.example.bitconintauto.util
 
-import android.content.Context
-import android.graphics.Point
 import com.example.bitconintauto.model.Coordinate
-import org.json.JSONArray
-import java.io.File
 
 object CoordinateManager {
 
-    private const val FILENAME = "coordinates.json"
-    private var cachedCoordinates: MutableList<Coordinate> = mutableListOf()
+    private val registeredCoordinates = mutableMapOf<String, List<Coordinate>>()
 
-    fun saveCoordinates(context: Context, coordinates: List<Coordinate>) {
-        val jsonArray = JSONArray()
-        coordinates.forEach {
-            val jsonObj = it.toJson()
-            jsonArray.put(jsonObj)
-        }
-        File(context.filesDir, FILENAME).writeText(jsonArray.toString())
-        cachedCoordinates = coordinates.toMutableList()
+    fun register(name: String, coordinates: List<Coordinate>) {
+        registeredCoordinates[name] = coordinates
     }
 
-    fun loadCoordinates(context: Context): List<Coordinate> {
-        val file = File(context.filesDir, FILENAME)
-        if (!file.exists()) return emptyList()
-        val text = file.readText()
-        val jsonArray = JSONArray(text)
-        val list = mutableListOf<Coordinate>()
-        for (i in 0 until jsonArray.length()) {
-            val obj = jsonArray.getJSONObject(i)
-            list.add(Coordinate.fromJson(obj))
-        }
-        cachedCoordinates = list
-        return list
+    fun get(name: String): List<Coordinate> {
+        return registeredCoordinates[name] ?: emptyList()
     }
 
-    fun clearCoordinates(context: Context) {
-        File(context.filesDir, FILENAME).delete()
-        cachedCoordinates.clear()
+    fun getPrimaryCoordinate(): Coordinate? {
+        return registeredCoordinates["primary"]?.firstOrNull()
     }
 
-    fun getPrimaryCoordinate(): Coordinate? = cachedCoordinates.getOrNull(0)
-    fun getCopyTarget(): Coordinate? = cachedCoordinates.getOrNull(1)
-    fun getPasteTarget(): Coordinate? = cachedCoordinates.getOrNull(2)
-    fun getFinalActionCoordinate(): Coordinate? = cachedCoordinates.getOrNull(3)
+    fun getClickPathSequence(): List<Coordinate> {
+        return registeredCoordinates["click"] ?: emptyList()
+    }
 
-    fun getResolution(context: Context): Point {
-        val displayMetrics = context.resources.displayMetrics
-        return Point(displayMetrics.widthPixels, displayMetrics.heightPixels)
+    fun getCopyTarget(): Coordinate {
+        return registeredCoordinates["copy"]?.firstOrNull() ?: Coordinate(0, 0)
+    }
+
+    fun getPasteTarget(): Coordinate {
+        return registeredCoordinates["paste"]?.firstOrNull() ?: Coordinate(0, 0)
+    }
+
+    fun getUserOffset(): Float {
+        return 0.001f // 기본 오프셋 값, 필요시 수정
+    }
+
+    fun getFinalActions(): List<Coordinate> {
+        return registeredCoordinates["final"] ?: emptyList()
+    }
+
+    fun reset() {
+        registeredCoordinates.clear()
     }
 }
