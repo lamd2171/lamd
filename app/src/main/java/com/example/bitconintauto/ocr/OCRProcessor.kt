@@ -17,11 +17,11 @@ class OCRProcessor {
             tessDir.mkdirs()
         }
 
-        val trainedDataFile = File(tessDir, "eng.traineddata")
-        if (!trainedDataFile.exists()) {
+        val trainedData = File(tessDir, "eng.traineddata")
+        if (!trainedData.exists()) {
             try {
                 context.assets.open("tessdata/eng.traineddata").use { input ->
-                    FileOutputStream(trainedDataFile).use { output ->
+                    FileOutputStream(trainedData).use { output ->
                         val buffer = ByteArray(1024)
                         var read: Int
                         while (input.read(buffer).also { read = it } != -1) {
@@ -35,8 +35,11 @@ class OCRProcessor {
         }
 
         val dataPath = File(context.filesDir, "tesseract").absolutePath
-        val success = tessBaseApi.init(dataPath, "eng")
-        if (!success) {
+
+        // ⚠ GitHub 기준에 맞춘 핵심 변경
+        val initSuccess = tessBaseApi.init(dataPath)
+
+        if (!initSuccess) {
             Log.e("OCRProcessor", "TessBaseAPI 초기화 실패")
         }
     }
