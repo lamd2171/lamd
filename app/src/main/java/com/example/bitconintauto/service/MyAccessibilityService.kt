@@ -1,6 +1,6 @@
 package com.example.bitconintauto.service
 
-import android.accessibilityservice.AccessibilityEvent
+import android.view.accessibility.AccessibilityEvent
 import android.accessibilityservice.AccessibilityService
 import android.os.Build
 import android.view.accessibility.AccessibilityNodeInfo
