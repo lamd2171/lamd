@@ -2,8 +2,10 @@ package com.example.bitconintauto.service
 
 import android.os.Handler
 import android.os.Looper
+import android.content.Context
 
 class CycleHandler(
+    private val context: Context, // ← 이 줄 추가
     private val intervalMillis: Long,
     private val onLog: (String) -> Unit
 ) {
@@ -15,7 +17,7 @@ class CycleHandler(
             if (isRunning) {
                 onLog("자동 실행 중...")
                 try {
-                    ExecutorManager.start()
+                    ExecutorManager.start(context)
                 } catch (e: Exception) {
                     onLog("오류 발생: ${e.message}")
                 }
