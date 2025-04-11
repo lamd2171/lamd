@@ -88,13 +88,16 @@ class MainActivity : AppCompatActivity() {
 
         resetButton.setOnClickListener {
             PreferenceHelper.clear(this)
+            CoordinateManager.reset()
+            CoordinateManager.saveToPrefs(this)
             statusText.text = "상태: 초기화 완료"
         }
 
         addCoordButton.setOnClickListener {
-            TouchCaptureOverlay(this).show { x, y ->
+            val overlay = TouchCaptureOverlay(this) { x, y ->
                 showCoordinateTypeDialog(x, y)
             }
+            overlay.show()
         }
 
         viewCoordsButton.setOnClickListener {
@@ -130,6 +133,14 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    override fun onDestroy() {
+        super.onDestroy()
+        CoordinateManager.removeCoordinateChangedListener()
+        floatingController.dismiss()
+        val wm = getSystemService(Context.WINDOW_SERVICE) as WindowManager
+        wm.removeView(overlayView)
+    }
+
     private fun initOverlay() {
         overlayView = OverlayView(this)
         val params = WindowManager.LayoutParams(
@@ -158,61 +169,6 @@ class MainActivity : AppCompatActivity() {
         startActivity(intent)
     }
 
-    private fun showCoordinateTypeDialog(x: Int, y: Int) {
-        val types = arrayOf("primary", "click", "copy", "paste", "final")
-        AlertDialog.Builder(this)
-            .setTitle("좌표 유형 선택")
-            .setItems(types) { _, which ->
-                val selectedType = types[which]
-                showLabelInputDialog(x, y, selectedType)
-            }
-            .show()
-    }
-
-    private fun showLabelInputDialog(x: Int, y: Int, type: String) {
-        val input = EditText(this)
-        input.hint = "라벨 입력"
-
-        AlertDialog.Builder(this)
-            .setTitle("좌표 라벨 입력")
-            .setView(input)
-            .setPositiveButton("다음") { _, _ ->
-                val label = input.text.toString()
-                showExpectedValueDialog(x, y, type, label)
-            }
-            .setNegativeButton("취소", null)
-            .show()
-    }
-
-    private fun showExpectedValueDialog(x: Int, y: Int, type: String, label: String) {
-        val input = EditText(this)
-        input.hint = "expectedValue 입력 (예: 5.0, >=5.0 등)"
-
-        AlertDialog.Builder(this)
-            .setTitle("expectedValue 입력")
-            .setView(input)
-            .setPositiveButton("저장") { _, _ ->
-                val expectedValue = input.text.toString()
-                CoordinateManager.append(
-                    type,
-                    Coordinate(x, y, 0, 0, label, expectedValue)
-                )
-                Toast.makeText(this, "좌표 등록 완료", Toast.LENGTH_SHORT).show()
-            }
-            .setNegativeButton("취소", null)
-            .show()
-    }
-
-    override fun onDestroy() {
-        super.onDestroy()
-        CoordinateManager.removeCoordinateChangedListener()
-        floatingController.dismiss()
-        overlayView?.let {
-            val wm = getSystemService(Context.WINDOW_SERVICE) as WindowManager
-            wm.removeView(it)
-        }
-    }
-
     private fun showTutorialDialog() {
         val dialogView = layoutInflater.inflate(R.layout.dialog_tutorial, null)
         val checkbox = dialogView.findViewById<CheckBox>(R.id.checkboxDontShowAgain)
@@ -227,6 +183,39 @@ class MainActivity : AppCompatActivity() {
                 dialog.dismiss()
             }
             .setCancelable(false)
+            .show()
+    }
+
+    private fun showCoordinateTypeDialog(x: Int, y: Int) {
+        val coordTypes = arrayOf("primary", "click", "copy", "paste", "final")
+
+        AlertDialog.Builder(this)
+            .setTitle("좌표 용도 선택")
+            .setItems(coordTypes) { _, which ->
+                val selectedType = coordTypes[which]
+                showLabelInputDialog(x, y, selectedType)
+            }
+            .setCancelable(true)
+            .show()
+    }
+
+    private fun showLabelInputDialog(x: Int, y: Int, type: String) {
+        val input = EditText(this).apply {
+            hint = "예: 복사 위치"
+        }
+
+        AlertDialog.Builder(this)
+            .setTitle("라벨 입력")
+            .setView(input)
+            .setPositiveButton("확인") { _, _ ->
+                val label = input.text.toString()
+                val coord = Coordinate(x, y, label = label)
+                CoordinateManager.append(type, coord)
+                overlayView?.setCoordinates(CoordinateManager.get(type))
+                Toast.makeText(this, "$type 좌표 등록됨: ($x, $y) 라벨: $label", Toast.LENGTH_SHORT).show()
+                CoordinateManager.saveToPrefs(this)
+            }
+            .setNegativeButton("취소", null)
             .show()
     }
 }
