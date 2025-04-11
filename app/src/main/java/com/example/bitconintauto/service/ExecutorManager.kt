@@ -1,4 +1,4 @@
-package com.example.bitconintauto.util
+package com.example.bitconintauto.service
 
 import android.content.Context
 import android.util.Log

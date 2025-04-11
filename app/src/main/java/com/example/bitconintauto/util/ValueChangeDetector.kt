@@ -1,4 +1,4 @@
-package com.example.bitconintauto.service
+package com.example.bitconintauto.util
 
 object ValueChangeDetector {
     fun hasSignificantChange(previous: Double?, current: Double?, threshold: Double): Boolean {
