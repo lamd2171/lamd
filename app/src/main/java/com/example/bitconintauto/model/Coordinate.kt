@@ -18,7 +18,6 @@ data class Coordinate(
         json.put("width", width)
         json.put("height", height)
         json.put("label", label)
-        // ✅ null-safe expectedValue 처리
         json.put("expectedValue", expectedValue ?: JSONObject.NULL)
         return json
     }
@@ -26,17 +25,19 @@ data class Coordinate(
     companion object {
 
         fun fromJson(json: JSONObject): Coordinate {
+            val rawExpected = json.opt("expectedValue")
+            val expected = if (rawExpected is String) rawExpected else null
+
             return Coordinate(
                 x = json.optInt("x"),
                 y = json.optInt("y"),
                 width = json.optInt("width", 0),
                 height = json.optInt("height", 0),
                 label = json.optString("label", ""),
-                expectedValue = json.optString("expectedValue", null)
+                expectedValue = expected // ✅ null-safe 처리로 경고 제거
             )
         }
 
-        // ✅ 문자열로부터 좌표 객체 파싱 (선택적 확장 기능)
         fun fromString(input: String?): Coordinate {
             if (input.isNullOrBlank()) return Coordinate(0, 0)
             val parts = input.split(",")
