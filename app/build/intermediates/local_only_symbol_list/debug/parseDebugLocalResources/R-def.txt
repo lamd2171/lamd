@@ -46,6 +46,7 @@ id seekBar
 id seekValueText
 id statusText
 id status_text
+id switchDebugMode
 id tutorial_container
 id tutorial_message
 id tutorial_text

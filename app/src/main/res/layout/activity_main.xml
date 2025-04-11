@@ -73,8 +73,9 @@
         android:id="@+id/btnViewCoords"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="등록된 좌표 보기"
-        android:layout_marginTop="8dp" />
+        android:layout_below="@id/statusText"
+        android:layout_marginTop="12dp"
+        android:text="등록된 좌표 보기" />
 
     <Switch
         android:id="@+id/switchDebugMode"

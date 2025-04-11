@@ -2,24 +2,24 @@ package com.example.bitconintauto.ui
 
 import android.content.Context
 import android.graphics.*
+import android.graphics.drawable.Drawable
+import android.graphics.drawable.ShapeDrawable
+import android.graphics.drawable.shapes.RectShape
 import android.os.Handler
 import android.os.Looper
 import android.view.View
 import android.view.WindowManager
 import android.widget.FrameLayout
 import android.widget.TextView
-import com.example.bitconintauto.R
 
 class OCRDebugOverlay(private val context: Context) {
 
     private val windowManager = context.getSystemService(Context.WINDOW_SERVICE) as WindowManager
     private var container: FrameLayout? = null
-    private var rectView: View? = null
-    private var textView: TextView? = null
-    private val handler = Handler(Looper.getMainLooper())
+    private var handler = Handler(Looper.getMainLooper())
 
     fun show(x: Int, y: Int, width: Int, height: Int, text: String) {
-        dismiss() // 기존 표시 제거
+        dismiss() // 기존 제거
 
         val params = WindowManager.LayoutParams(
             WindowManager.LayoutParams.MATCH_PARENT,
@@ -29,10 +29,9 @@ class OCRDebugOverlay(private val context: Context) {
             PixelFormat.TRANSLUCENT
         )
 
-        container = FrameLayout(context)
+        val containerView = FrameLayout(context)
 
-        // 영역 사각형
-        rectView = View(context).apply {
+        val rectView = View(context).apply {
             background = makeDashedRectDrawable()
             layoutParams = FrameLayout.LayoutParams(width, height).apply {
                 leftMargin = x
@@ -40,9 +39,8 @@ class OCRDebugOverlay(private val context: Context) {
             }
         }
 
-        // 결과 텍스트
-        textView = TextView(context).apply {
-            text = "OCR: $text"
+        val textView = TextView(context).apply {
+            this.text = "OCR: $text"
             setTextColor(Color.YELLOW)
             setBackgroundColor(0x99000000.toInt())
             textSize = 14f
@@ -56,17 +54,22 @@ class OCRDebugOverlay(private val context: Context) {
             }
         }
 
-        container?.addView(rectView)
-        container?.addView(textView)
-        windowManager.addView(container, params)
+        containerView.addView(rectView)
+        containerView.addView(textView)
+        container = containerView
 
-        // 2초 후 자동 제거
+        windowManager.addView(containerView, params)
+
         handler.postDelayed({ dismiss() }, 2000)
     }
 
     fun dismiss() {
         container?.let {
-            windowManager.removeView(it)
+            try {
+                windowManager.removeView(it)
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
             container = null
         }
     }
