@@ -64,7 +64,7 @@ class OverlayView @JvmOverloads constructor(
     fun getOverlayRect(): Rect? = overlayRect
 }
 
-private fun Rect.sort() {
+private fun Rect.sortRect() {
     val left = minOf(this.left, this.right)
     val top = minOf(this.top, this.bottom)
     val right = maxOf(this.left, this.right)

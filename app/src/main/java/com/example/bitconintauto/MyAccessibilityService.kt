@@ -12,7 +12,6 @@ import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.WindowManager
 import android.view.accessibility.AccessibilityEvent
-import android.view.accessibility.AccessibilityNodeInfo
 import android.widget.TextView
 import android.widget.Toast
 
@@ -21,7 +20,9 @@ class MyAccessibilityService : AccessibilityService() {
     private lateinit var windowManager: WindowManager
     private var overlayView: TextView? = null
 
+    // ✅ Handler deprecated 해결
     private val handler = Handler(Looper.getMainLooper())
+
     private val runnable = object : Runnable {
         override fun run() {
             performAutomation()
@@ -39,14 +40,15 @@ class MyAccessibilityService : AccessibilityService() {
             feedbackType = AccessibilityServiceInfo.FEEDBACK_GENERIC
             notificationTimeout = 100
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
-                flags = AccessibilityServiceInfo.FLAG_REPORT_VIEW_IDS or AccessibilityServiceInfo.FLAG_RETRIEVE_INTERACTIVE_WINDOWS
+                flags = AccessibilityServiceInfo.FLAG_REPORT_VIEW_IDS or
+                        AccessibilityServiceInfo.FLAG_RETRIEVE_INTERACTIVE_WINDOWS
             }
         }
         serviceInfo = info
     }
 
     override fun onAccessibilityEvent(event: AccessibilityEvent?) {
-        // 이벤트 핸들링 필요 시 여기에 작성
+        // 필요한 경우 이벤트 처리 로직 추가
     }
 
     override fun onInterrupt() {
@@ -54,30 +56,35 @@ class MyAccessibilityService : AccessibilityService() {
     }
 
     private fun showOverlay(text: String) {
-        windowManager = getSystemService(WINDOW_SERVICE) as WindowManager
+        if (!::windowManager.isInitialized) {
+            windowManager = getSystemService(WINDOW_SERVICE) as WindowManager
+        }
+
         if (overlayView != null) return
 
-        val inflater = LayoutInflater.from(this)
         overlayView = TextView(this).apply {
             this.text = text
-            setBackgroundColor(0x80000000.toInt())
+            setBackgroundColor(0x80000000.toInt()) // 반투명 배경
             setTextColor(0xFFFFFFFF.toInt())
             textSize = 16f
             setPadding(30, 20, 30, 20)
         }
 
+        val layoutType = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
+            WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY
+        else
+            WindowManager.LayoutParams.TYPE_PHONE // ✅ deprecated 처리
+
         val params = WindowManager.LayoutParams(
             WindowManager.LayoutParams.WRAP_CONTENT,
             WindowManager.LayoutParams.WRAP_CONTENT,
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
-                WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY
-            else WindowManager.LayoutParams.TYPE_PHONE,
+            layoutType,
             WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE or WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL,
             PixelFormat.TRANSLUCENT
-        )
-
-        params.gravity = Gravity.TOP or Gravity.CENTER_HORIZONTAL
-        params.y = 100
+        ).apply {
+            gravity = Gravity.TOP or Gravity.CENTER_HORIZONTAL
+            y = 100
+        }
 
         windowManager.addView(overlayView, params)
     }
@@ -86,7 +93,7 @@ class MyAccessibilityService : AccessibilityService() {
         Log.d("AutoService", "자동화 작업 실행 중...")
         Toast.makeText(this, "자동화 동작 실행", Toast.LENGTH_SHORT).show()
 
-        // 여기에 텍스트 감지 및 자동 클릭/붙여넣기/복사 등 추가
+        // 👉 여기에 OCR/좌표 클릭 등의 자동화 로직 연결 가능
     }
 
     override fun onDestroy() {
