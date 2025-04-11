@@ -1,5 +1,6 @@
 package com.example.bitconintauto.util
 
+import android.util.Log  // ← 상단에 추가 필요
 import android.graphics.Bitmap
 import android.graphics.Rect
 import android.media.ImageReader
@@ -25,7 +26,7 @@ object ScreenCaptureHelper {
                 )
                 onCaptured(cropped)
             } else {
-                AppLogger.error("PixelCopy 실패")
+                Log.e("ScreenCaptureHelper", "PixelCopy 실패")
                 onCaptured(null)
             }
         }, Handler())

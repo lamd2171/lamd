@@ -1,77 +1,54 @@
 package com.example.bitconintauto.service
 
-import android.accessibilityservice.AccessibilityService
 import android.accessibilityservice.AccessibilityEvent
-import android.accessibilityservice.GestureDescription
-import android.graphics.Bitmap
-import android.graphics.Path
+import android.accessibilityservice.AccessibilityService
 import android.os.Build
 import android.view.accessibility.AccessibilityNodeInfo
 import androidx.annotation.RequiresApi
-import com.example.bitconintauto.databinding.OverlayViewBinding
 import com.example.bitconintauto.model.Coordinate
+import com.example.bitconintauto.util.OCRCaptureUtils
 import com.example.bitconintauto.ocr.OCRProcessor
 import com.example.bitconintauto.util.CoordinateManager
-import com.example.bitconintauto.util.NumberDetector
-import com.example.bitconintauto.util.OCRCaptureUtils
 import com.example.bitconintauto.util.PreferenceHelper
+import com.example.bitconintauto.util.ValueChangeDetector
 
 class MyAccessibilityService : AccessibilityService() {
 
-    private lateinit var overlayBinding: OverlayViewBinding
-    private lateinit var executorManager: ExecutorManager
     private lateinit var autoClicker: AutoClicker
-    private lateinit var ocrProcessor: OCRProcessor
-    private lateinit var valueChangeDetector: ValueChangeDetector
+    private var lastDetectedValue: Double? = null
 
     override fun onServiceConnected() {
         super.onServiceConnected()
-        overlayBinding = OverlayViewBinding.inflate(layoutInflater)
-        executorManager = ExecutorManager()
+        PreferenceHelper.accessibilityService = this
         autoClicker = AutoClicker(this)
-        ocrProcessor = OCRProcessor().apply { init(this@MyAccessibilityService) }
-        valueChangeDetector = ValueChangeDetector()
-
-        executorManager.setInterval(3)
-        executorManager.startCycle {
-            performAutomation()
-        }
     }
-
-    override fun onAccessibilityEvent(event: AccessibilityEvent?) {}
-
-    override fun onInterrupt() {}
 
     @RequiresApi(Build.VERSION_CODES.N)
-    private fun performAutomation() {
-        val coordinates = CoordinateManager.getRegisteredCoordinates(this)
-        if (coordinates.isEmpty()) return
+    override fun onAccessibilityEvent(event: AccessibilityEvent?) {
+        if (event?.eventType == AccessibilityEvent.TYPE_WINDOW_CONTENT_CHANGED) {
+            val coord = CoordinateManager.getPrimaryCoordinate() ?: return
+            val bitmap = OCRCaptureUtils.capture(this, coord) ?: return
+            val text = OCRProcessor().getText(bitmap)
+            val currentValue = text.toDoubleOrNull() ?: return
 
-        val primaryCoord = coordinates.first()
-        val bitmap: Bitmap = OCRCaptureUtils.capture(this, primaryCoord) ?: return
+            val threshold = CoordinateManager.getThreshold()
 
-        val number = NumberDetector.detectNumberAt(bitmap) ?: return
-        val threshold = PreferenceHelper.getThreshold(this)
+            if (ValueChangeDetector.hasSignificantChange(lastDetectedValue, currentValue, threshold)) {
+                lastDetectedValue = currentValue
 
-        if (valueChangeDetector.hasSignificantChange(number, threshold)) {
-            val targetNode: AccessibilityNodeInfo? = findPasteTarget()
-            autoClicker.executeCycle(300, 500, "${number + 0.001}", targetNode)
+                val clickPath = CoordinateManager.getClickPathSequence()
+                val copyTarget = CoordinateManager.getCopyTarget()
+                val pasteTarget = CoordinateManager.getPasteTarget()
+
+                val offsetValue = currentValue + 0.001
+                val offsetText = offsetValue.toString()
+
+                autoClicker.executeCycle(clickPath, copyTarget, 0.001f, pasteTarget)
+            }
         }
     }
 
-    private fun findPasteTarget(): AccessibilityNodeInfo? {
-        val rootNode = rootInActiveWindow ?: return null
-        return findEditableNode(rootNode)
-    }
-
-    private fun findEditableNode(node: AccessibilityNodeInfo?): AccessibilityNodeInfo? {
-        if (node == null) return null
-        if (node.className == "android.widget.EditText" && node.isEditable) return node
-
-        for (i in 0 until node.childCount) {
-            val result = findEditableNode(node.getChild(i))
-            if (result != null) return result
-        }
-        return null
+    override fun onInterrupt() {
+        // no-op
     }
 }
