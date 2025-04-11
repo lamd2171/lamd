@@ -2722,6 +2722,7 @@ drawable design_ic_visibility
 drawable design_ic_visibility_off
 drawable design_password_eye
 drawable design_snackbar_background
+drawable floating_button_background
 drawable ic_arrow_back_black_24
 drawable ic_clear_black_24
 drawable ic_clock_black_24dp
@@ -2736,7 +2737,9 @@ drawable ic_mtrl_chip_checked_black
 drawable ic_mtrl_chip_checked_circle
 drawable ic_mtrl_chip_close_circle
 drawable ic_notification
+drawable ic_play
 drawable ic_search_black_24
+drawable ic_stop
 drawable m3_appbar_background
 drawable m3_avd_hide_password
 drawable m3_avd_show_password
@@ -2808,6 +2811,7 @@ drawable notification_template_icon_bg
 drawable notification_template_icon_low_bg
 drawable notification_tile_bg
 drawable notify_panel_notification_icon_bg
+drawable status_indicator_background
 drawable test_level_drawable
 drawable tooltip_frame_dark
 drawable tooltip_frame_light
@@ -2914,6 +2918,9 @@ id btnPermission
 id btnReset
 id btnStart
 id btnStop
+id btn_close_guide
+id btn_next
+id btn_toggle
 id buttonPanel
 id cache_measures
 id callMeasure
@@ -2928,6 +2935,7 @@ id chain
 id chain2
 id chains
 id checkbox
+id checkboxDontShowAgain
 id checked
 id chronometer
 id circle_center
@@ -3003,6 +3011,7 @@ id fill
 id fill_horizontal
 id fill_vertical
 id filled
+id first_click_guide
 id fitCenter
 id fitEnd
 id fitStart
@@ -3023,6 +3032,7 @@ id graph_wrap
 id group_divider
 id grouping
 id groups
+id guide_text
 id header_title
 id hideable
 id home
@@ -3242,6 +3252,7 @@ id startVertical
 id staticLayout
 id staticPostLayout
 id statusText
+id status_text
 id stop
 id stretch
 id submenuarrow
@@ -3294,6 +3305,9 @@ id transition_position
 id transition_scene_layoutid_cache
 id transition_transform
 id triangle
+id tutorial_container
+id tutorial_message
+id tutorial_text
 id unchecked
 id uniform
 id unlabeled
@@ -3424,6 +3438,7 @@ layout abc_search_view
 layout abc_select_dialog_material
 layout abc_tooltip
 layout activity_main
+layout automation_status_indicator
 layout custom_dialog
 layout design_bottom_navigation_item
 layout design_bottom_sheet_dialog
@@ -3441,6 +3456,9 @@ layout design_navigation_menu_item
 layout design_text_input_end_icon
 layout design_text_input_start_icon
 layout dialog_input_value
+layout dialog_tutorial
+layout first_click_guide
+layout floating_controller
 layout m3_alert_dialog
 layout m3_alert_dialog_actions
 layout m3_alert_dialog_title
@@ -3503,6 +3521,7 @@ layout select_dialog_item_material
 layout select_dialog_multichoice_material
 layout select_dialog_singlechoice_material
 layout support_simple_spinner_dropdown_item
+layout tutorial_overlay
 mipmap ic_launcher
 mipmap ic_launcher_round
 plurals mtrl_badge_content_description

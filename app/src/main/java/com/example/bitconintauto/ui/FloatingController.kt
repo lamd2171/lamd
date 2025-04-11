@@ -1,54 +1,67 @@
-package com.example.bitconintauto.ui
+package com.example.bitconintauto.service
 
 import android.content.Context
-import android.graphics.PixelFormat
-import android.view.LayoutInflater
-import android.view.View
-import android.view.WindowManager
-import android.widget.ImageButton
-import com.example.bitconintauto.R
-import com.example.bitconintauto.service.ExecutorManager
+import android.util.Log
+import com.example.bitconintauto.model.Coordinate
+import com.example.bitconintauto.ocr.OCRProcessor
+import com.example.bitconintauto.util.CoordinateManager
+import com.example.bitconintauto.util.OCRCaptureUtils
+import com.example.bitconintauto.util.PreferenceHelper
+import com.example.bitconintauto.util.ValueChangeDetector
+import kotlinx.coroutines.*
 
-class FloatingController(private val context: Context) {
-    private var floatingView: View? = null
-    private val windowManager = context.getSystemService(Context.WINDOW_SERVICE) as WindowManager
+object ExecutorManager {
 
-    private val params = WindowManager.LayoutParams(
-        WindowManager.LayoutParams.WRAP_CONTENT,
-        WindowManager.LayoutParams.WRAP_CONTENT,
-        WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY,
-        WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE or
-                WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS or
-                WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN,
-        PixelFormat.TRANSLUCENT
-    ).apply {
-        x = 100
-        y = 300
-    }
+    private var internalIsRunning = false
 
-    fun show() {
-        if (floatingView != null) return
+    val isRunning: Boolean
+        get() = internalIsRunning
 
-        floatingView = LayoutInflater.from(context).inflate(R.layout.floating_controller, null)
-        val btnToggle = floatingView!!.findViewById<ImageButton>(R.id.btn_toggle)
+    private var job: Job? = null
+    private var lastValue: Double? = null
+    private const val intervalMillis: Long = 2000L
 
-        btnToggle.setOnClickListener {
-            if (ExecutorManager.isRunning()) {
-                ExecutorManager.stop()
-                btnToggle.setImageResource(R.drawable.ic_play)
-            } else {
-                ExecutorManager.start(context)
-                btnToggle.setImageResource(R.drawable.ic_stop)
+    fun start(context: Context) {
+        if (internalIsRunning) return
+        internalIsRunning = true
+
+        val service = PreferenceHelper.accessibilityService
+        if (service == null) {
+            Log.e("ExecutorManager", "AccessibilityService not available")
+            return
+        }
+
+        val autoClicker = AutoClicker(service)
+        val ocrProcessor = OCRProcessor().apply { init(context) }
+
+        job = CoroutineScope(Dispatchers.Default).launch {
+            while (internalIsRunning) {
+                val primaryCoord: Coordinate = CoordinateManager.getPrimaryCoordinate() ?: continue
+                val bitmap = OCRCaptureUtils.capture(service, primaryCoord)
+                val currentValue = bitmap?.let { ocrProcessor.getText(it).toDoubleOrNull() }
+
+                if (ValueChangeDetector.hasSignificantChange(lastValue, currentValue, CoordinateManager.getThreshold())) {
+                    Log.d("ExecutorManager", "Value changed: $lastValue → $currentValue")
+                    lastValue = currentValue
+
+                    withContext(Dispatchers.Main) {
+                        autoClicker.executeCycle(
+                            CoordinateManager.getClickPathSequence(),
+                            CoordinateManager.getCopyTarget(),
+                            CoordinateManager.getUserOffset(),
+                            CoordinateManager.getPasteTarget()
+                        )
+                    }
+                }
+
+                delay(intervalMillis)
             }
         }
-
-        windowManager.addView(floatingView, params)
     }
 
-    fun dismiss() {
-        floatingView?.let {
-            windowManager.removeView(it)
-            floatingView = null
-        }
+    fun stop() {
+        internalIsRunning = false
+        job?.cancel()
+        job = null
     }
 }

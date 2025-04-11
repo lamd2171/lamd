@@ -27,9 +27,9 @@ class CoordinateIndicatorView @JvmOverloads constructor(
         invalidate()
     }
 
-    override fun onDraw(canvas: Canvas?) {
+    // ✅ 정확한 override 시그니처
+    override fun onDraw(canvas: Canvas) {
         super.onDraw(canvas)
-        canvas ?: return
 
         coordinates.forEach { coord ->
             canvas.drawCircle(coord.x.toFloat(), coord.y.toFloat(), 30f, paint)
