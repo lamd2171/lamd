@@ -122,7 +122,18 @@ class MainActivity : AppCompatActivity() {
 
         // 좌표 추가 버튼 (개선 예정)
         addCoordButton.setOnClickListener {
-            Toast.makeText(this, "좌표 등록 기능이 곧 활성화됩니다.", Toast.LENGTH_SHORT).show()
+            val overlay = TouchCaptureOverlay(this) { coordinate ->
+                // 1. 좌표 등록
+                CoordinateManager.register("primary", listOf(coordinate))
+
+                // 2. OverlayView에 반영
+                overlayView.setCoordinates(CoordinateManager.get("primary"))
+
+                // 3. 사용자 안내
+                Toast.makeText(this, "좌표 등록됨: (${coordinate.x}, ${coordinate.y})", Toast.LENGTH_SHORT).show()
+            }
+
+            overlay.show()
         }
 
         // 주기 설정
