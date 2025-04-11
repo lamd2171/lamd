@@ -8,19 +8,13 @@
         android:minSdkVersion="24"
         android:targetSdkVersion="34" />
 
-    <!-- 필요한 권한 -->
-    <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
-    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
-    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
-
     <permission
         android:name="com.example.bitconintauto.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION"
         android:protectionLevel="signature" />
 
-    <uses-permission android:name="com.example.bitconintauto.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION" /> <!-- ⛔ BIND_ACCESSIBILITY_SERVICE는 삭제됨 -->
+    <uses-permission android:name="com.example.bitconintauto.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION" />
+
     <application
-        android:name="com.example.bitconintauto.MyApplication"
         android:allowBackup="true"
         android:appComponentFactory="androidx.core.app.CoreComponentFactory"
         android:debuggable="true"
@@ -31,7 +25,7 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.BitconintAuto" >
 
-        <!-- 메인 액티비티 -->
+        <!-- ✅ 메인 액티비티 -->
         <activity
             android:name="com.example.bitconintauto.MainActivity"
             android:exported="true" >
@@ -42,7 +36,10 @@
             </intent-filter>
         </activity>
 
-        <!-- 접근성 서비스 등록 -->
+        <!-- ✅ 좌표 리스트 보기 액티비티 -->
+        <activity android:name="com.example.bitconintauto.ui.CoordinateListActivity" />
+
+        <!-- ✅ 접근성 서비스 등록 -->
         <service
             android:name="com.example.bitconintauto.service.MyAccessibilityService"
             android:exported="false"

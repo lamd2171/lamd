@@ -1,16 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.example.bitconintauto">
-
-    <!-- 필요한 권한 -->
     <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
-    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
-    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
-    <!-- ⛔ BIND_ACCESSIBILITY_SERVICE는 삭제됨 -->
-
     <application
-        android:name=".MyApplication"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
@@ -18,7 +10,7 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.BitconintAuto">
 
-        <!-- 메인 액티비티 -->
+        <!-- ✅ 메인 액티비티 -->
         <activity android:name=".MainActivity"
             android:exported="true">
             <intent-filter>
@@ -27,7 +19,10 @@
             </intent-filter>
         </activity>
 
-        <!-- 접근성 서비스 등록 -->
+        <!-- ✅ 좌표 리스트 보기 액티비티 -->
+        <activity android:name=".ui.CoordinateListActivity" />
+
+        <!-- ✅ 접근성 서비스 등록 -->
         <service
             android:name=".service.MyAccessibilityService"
             android:permission="android.permission.BIND_ACCESSIBILITY_SERVICE"

@@ -3,6 +3,7 @@ package com.example.bitconintauto
 import android.content.Context
 import android.content.Intent
 import android.graphics.PixelFormat
+import android.net.Uri
 import android.os.Bundle
 import android.provider.Settings
 import android.view.WindowManager
@@ -28,11 +29,10 @@ class MainActivity : AppCompatActivity() {
     private lateinit var seekBar: SeekBar
     private lateinit var seekValueText: TextView
     private lateinit var debugModeSwitch: Switch
-
-    private var interval: Int = 3
-
-    private lateinit var overlayView: OverlayView
     private lateinit var floatingController: FloatingController
+
+    private var overlayView: OverlayView? = null
+    private var interval: Int = 3
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -45,7 +45,6 @@ class MainActivity : AppCompatActivity() {
         }
 
         PreferenceHelper.init(this)
-
         CoordinateManager.init(this)
         CoordinateManager.loadFromPrefs(this)
 
@@ -53,40 +52,17 @@ class MainActivity : AppCompatActivity() {
             showTutorialDialog()
         }
 
+        // ✅ 오버레이 권한 체크
         if (!Settings.canDrawOverlays(this)) {
-            AlertDialog.Builder(this)
-                .setTitle("권한 요청")
-                .setMessage("다른 앱 위에 표시 권한이 필요합니다.")
-                .setPositiveButton("설정으로 이동") { _, _ ->
-                    startActivity(Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION))
-                }
-                .setNegativeButton("취소", null)
-                .show()
-        }
-
-        overlayView = OverlayView(this)
-        val params = WindowManager.LayoutParams(
-            WindowManager.LayoutParams.MATCH_PARENT,
-            WindowManager.LayoutParams.MATCH_PARENT,
-            WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY,
-            WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE or WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE,
-            PixelFormat.TRANSLUCENT
-        )
-        val wm = getSystemService(Context.WINDOW_SERVICE) as WindowManager
-        wm.addView(overlayView, params)
-
-        CoordinateManager.setOnCoordinateChangedListener {
-            overlayView.setCoordinates(CoordinateManager.get("primary"))
-        }
-
-        if (CoordinateManager.isFirstClick()) {
-            val guide = FirstClickGuideOverlay(this)
-            guide.show {}
+            requestOverlayPermission()
+        } else {
+            initOverlay()
         }
 
         floatingController = FloatingController(this)
         floatingController.show()
 
+        // UI 초기화
         startButton = findViewById(R.id.btnStart)
         stopButton = findViewById(R.id.btnStop)
         resetButton = findViewById(R.id.btnReset)
@@ -97,15 +73,6 @@ class MainActivity : AppCompatActivity() {
         statusText = findViewById(R.id.statusText)
         seekBar = findViewById(R.id.seekBar)
         seekValueText = findViewById(R.id.seekValueText)
-
-        // ✅ 디버그 모드 스위치 초기화
-        val isDebugEnabled = PreferenceHelper.getString(this, "debug_mode") == "true"
-        debugModeSwitch.isChecked = isDebugEnabled
-
-        debugModeSwitch.setOnCheckedChangeListener { _, isChecked ->
-            PreferenceHelper.saveString(this, "debug_mode", isChecked.toString())
-            Toast.makeText(this, "디버그 모드: ${if (isChecked) "ON" else "OFF"}", Toast.LENGTH_SHORT).show()
-        }
 
         permissionButton.setOnClickListener {
             startActivity(Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS))
@@ -123,25 +90,27 @@ class MainActivity : AppCompatActivity() {
 
         resetButton.setOnClickListener {
             PreferenceHelper.clear(this)
-            CoordinateManager.reset()
             statusText.text = "상태: 초기화 완료"
         }
 
         addCoordButton.setOnClickListener {
-            val overlay = TouchCaptureOverlay(this) { x, y ->
-                showCoordinateTypeDialog(x, y)
-            }
-            overlay.show()
+            Toast.makeText(this, "좌표 등록 기능이 곧 활성화됩니다.", Toast.LENGTH_SHORT).show()
         }
 
         viewCoordsButton.setOnClickListener {
             startActivity(Intent(this, CoordinateListActivity::class.java))
         }
 
+        val isDebugEnabled = PreferenceHelper.getString(this, "debug_mode") == "true"
+        debugModeSwitch.isChecked = isDebugEnabled
+        debugModeSwitch.setOnCheckedChangeListener { _, isChecked ->
+            PreferenceHelper.saveString(this, "debug_mode", isChecked.toString())
+            Toast.makeText(this, "디버그 모드: ${if (isChecked) "ON" else "OFF"}", Toast.LENGTH_SHORT).show()
+        }
+
         seekBar.max = 10
         seekBar.progress = interval
         seekValueText.text = "${interval}초"
-
         seekBar.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
             override fun onProgressChanged(sb: SeekBar?, value: Int, fromUser: Boolean) {
                 interval = if (value == 0) 1 else value
@@ -154,12 +123,62 @@ class MainActivity : AppCompatActivity() {
         })
     }
 
+    override fun onResume() {
+        super.onResume()
+        if (Settings.canDrawOverlays(this) && overlayView == null) {
+            initOverlay()
+        }
+    }
+
+    private fun initOverlay() {
+        overlayView = OverlayView(this)
+        val params = WindowManager.LayoutParams(
+            WindowManager.LayoutParams.MATCH_PARENT,
+            WindowManager.LayoutParams.MATCH_PARENT,
+            WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY,
+            WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE or WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE,
+            PixelFormat.TRANSLUCENT
+        )
+        val wm = getSystemService(Context.WINDOW_SERVICE) as WindowManager
+        wm.addView(overlayView, params)
+
+        CoordinateManager.setOnCoordinateChangedListener {
+            overlayView?.setCoordinates(CoordinateManager.get("primary"))
+        }
+
+        if (CoordinateManager.isFirstClick()) {
+            val guide = FirstClickGuideOverlay(this)
+            guide.show {}
+        }
+    }
+
+    private fun requestOverlayPermission() {
+        AlertDialog.Builder(this)
+            .setTitle("권한 요청")
+            .setMessage("다른 앱 위에 표시 권한이 필요합니다.")
+            .setPositiveButton("설정으로 이동") { _, _ ->
+                try {
+                    val intent = Intent(
+                        Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
+                        Uri.parse("package:$packageName")
+                    )
+                    startActivity(intent)
+                } catch (e: Exception) {
+                    Toast.makeText(this, "권한 설정 화면에 진입할 수 없습니다.", Toast.LENGTH_LONG).show()
+                }
+            }
+            .setNegativeButton("취소", null)
+            .show()
+    }
+
     override fun onDestroy() {
         super.onDestroy()
         CoordinateManager.removeCoordinateChangedListener()
         floatingController.dismiss()
-        val wm = getSystemService(Context.WINDOW_SERVICE) as WindowManager
-        wm.removeView(overlayView)
+        overlayView?.let {
+            val wm = getSystemService(Context.WINDOW_SERVICE) as WindowManager
+            wm.removeView(it)
+        }
     }
 
     private fun showTutorialDialog() {
@@ -176,38 +195,6 @@ class MainActivity : AppCompatActivity() {
                 dialog.dismiss()
             }
             .setCancelable(false)
-            .show()
-    }
-
-    private fun showCoordinateTypeDialog(x: Int, y: Int) {
-        val coordTypes = arrayOf("primary", "click", "copy", "paste", "final")
-
-        AlertDialog.Builder(this)
-            .setTitle("좌표 용도 선택")
-            .setItems(coordTypes) { _, which ->
-                val selectedType = coordTypes[which]
-                showLabelInputDialog(x, y, selectedType)
-            }
-            .setCancelable(true)
-            .show()
-    }
-
-    private fun showLabelInputDialog(x: Int, y: Int, type: String) {
-        val input = EditText(this).apply {
-            hint = "예: 복사 위치"
-        }
-
-        AlertDialog.Builder(this)
-            .setTitle("라벨 입력")
-            .setView(input)
-            .setPositiveButton("확인") { _, _ ->
-                val label = input.text.toString()
-                val coord = Coordinate(x, y, label = label)
-                CoordinateManager.append(type, coord)
-                overlayView.setCoordinates(CoordinateManager.get(type))
-                Toast.makeText(this, "$type 좌표 등록됨: ($x, $y)\n라벨: $label", Toast.LENGTH_SHORT).show()
-            }
-            .setNegativeButton("취소", null)
             .show()
     }
 }
