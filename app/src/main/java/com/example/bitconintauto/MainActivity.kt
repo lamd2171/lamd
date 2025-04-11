@@ -1,11 +1,11 @@
 package com.example.bitconintauto
 
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.provider.Settings
-import android.widget.Button
-import android.widget.SeekBar
-import android.widget.TextView
+import android.widget.*
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import com.example.bitconintauto.service.MyAccessibilityService
 import com.example.bitconintauto.util.PreferenceHelper
@@ -21,11 +21,23 @@ class MainActivity : AppCompatActivity() {
     private lateinit var seekBar: SeekBar
     private lateinit var seekValueText: TextView
 
-    private var interval: Int = 3 // 기본값
+    private var interval: Int = 3
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+
+        if (SharedPrefUtils.isFirstRun(this)) {
+            val tutorial = TutorialOverlay(this)
+            tutorial.show()
+            SharedPrefUtils.setFirstRunComplete(this)
+        }
+
+        PreferenceHelper.init(this)
+
+        if (!PreferenceHelper.isTutorialSeen()) {
+            showTutorialDialog()
+        }
 
         // View 초기화
         startButton = findViewById(R.id.btnStart)
@@ -37,38 +49,19 @@ class MainActivity : AppCompatActivity() {
         seekBar = findViewById(R.id.seekBar)
         seekValueText = findViewById(R.id.seekValueText)
 
-        // SeekBar 동작
-        seekBar.max = 10
-        seekBar.progress = interval
-        seekValueText.text = "${interval}초"
-
-
-        seekBar.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
-            override fun onProgressChanged(sb: SeekBar?, value: Int, fromUser: Boolean) {
-                interval = if (value == 0) 1 else value
-                seekValueText.text = "${interval}초"
-                PreferenceHelper.saveString(this@MainActivity, "cycle_interval", interval.toString())
-            }
-
-            override fun onStartTrackingTouch(sb: SeekBar?) {}
-            override fun onStopTrackingTouch(sb: SeekBar?) {}
-        })
-
-        // 접근성 권한 열기 버튼
+        // 접근성 권한 버튼
         permissionButton.setOnClickListener {
-            val intent = Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS)
-            startActivity(intent)
+            startActivity(Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS))
         }
 
-        // 자동화 시작
+        // 시작 버튼
         startButton.setOnClickListener {
             statusText.text = "상태: 실행 중"
-
-            val serviceIntent = Intent(this, MyAccessibilityService::class.java)
-            startService(serviceIntent)
+            val intent = Intent(this, MyAccessibilityService::class.java)
+            startService(intent)
         }
 
-        // 자동화 중지
+        // 중지 버튼
         stopButton.setOnClickListener {
             statusText.text = "상태: 정지됨"
             stopService(Intent(this, MyAccessibilityService::class.java))
@@ -80,10 +73,42 @@ class MainActivity : AppCompatActivity() {
             statusText.text = "상태: 초기화 완료"
         }
 
-        // 좌표 추가 (자동화 앱의 로직에 따라 구현 필요)
+        // 좌표 추가
         addCoordButton.setOnClickListener {
-            // 예: 좌표 등록 화면으로 전환 또는 좌표 감지 UI 활성화
-            statusText.text = "좌표 등록 모드"
+            Toast.makeText(this, "좌표 등록 기능이 곧 활성화됩니다.", Toast.LENGTH_SHORT).show()
         }
+
+        // 실행 주기 설정
+        seekBar.max = 10
+        seekBar.progress = interval
+        seekValueText.text = "${interval}초"
+
+        seekBar.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
+            override fun onProgressChanged(sb: SeekBar?, value: Int, fromUser: Boolean) {
+                interval = if (value == 0) 1 else value
+                seekValueText.text = "${interval}초"
+                PreferenceHelper.saveString(this@MainActivity, "cycle_interval", interval.toString())
+            }
+
+            override fun onStartTrackingTouch(sb: SeekBar?) {}
+            override fun onStopTrackingTouch(sb: SeekBar?) {}
+        })
+    }
+
+    private fun showTutorialDialog() {
+        val dialogView = layoutInflater.inflate(R.layout.dialog_tutorial, null)
+        val checkbox = dialogView.findViewById<CheckBox>(R.id.checkboxDontShowAgain)
+
+        AlertDialog.Builder(this)
+            .setTitle("앱 사용 안내")
+            .setView(dialogView)
+            .setPositiveButton("확인") { dialog, _ ->
+                if (checkbox.isChecked) {
+                    PreferenceHelper.setTutorialSeen(true)
+                }
+                dialog.dismiss()
+            }
+            .setCancelable(false)
+            .show()
     }
 }

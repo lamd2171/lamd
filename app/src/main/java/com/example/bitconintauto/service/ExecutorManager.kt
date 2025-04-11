@@ -4,6 +4,7 @@ import android.content.Context
 import android.util.Log
 import com.example.bitconintauto.model.Coordinate
 import com.example.bitconintauto.ocr.OCRProcessor
+import com.example.bitconintauto.ui.AutomationStatusIndicator
 import com.example.bitconintauto.util.CoordinateManager
 import com.example.bitconintauto.util.OCRCaptureUtils
 import com.example.bitconintauto.util.PreferenceHelper
@@ -17,6 +18,8 @@ object ExecutorManager {
     private var lastValue: Double? = null
     private const val intervalMillis: Long = 2000L
 
+    private var statusIndicator: AutomationStatusIndicator? = null
+
     fun start(context: Context) {
         if (isRunning) return
         isRunning = true
@@ -26,6 +29,10 @@ object ExecutorManager {
             Log.e("ExecutorManager", "AccessibilityService not available")
             return
         }
+
+        // 상태 표시 아이콘 띄우기
+        statusIndicator = AutomationStatusIndicator(context)
+        statusIndicator?.show()
 
         val autoClicker = AutoClicker(service)
         val ocrProcessor = OCRProcessor().apply { init(context) }
@@ -59,5 +66,9 @@ object ExecutorManager {
         isRunning = false
         job?.cancel()
         job = null
+
+        // 상태 아이콘 제거
+        statusIndicator?.dismiss()
+        statusIndicator = null
     }
 }
