@@ -29,37 +29,39 @@ class MainActivity : AppCompatActivity() {
     private lateinit var seekBar: SeekBar
     private lateinit var seekValueText: TextView
     private lateinit var debugModeSwitch: Switch
-    private lateinit var floatingController: FloatingController
 
-    private var overlayView: OverlayView? = null
     private var interval: Int = 3
+    private var overlayView: OverlayView? = null
+    private lateinit var floatingController: FloatingController
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        if (SharedPrefUtils.isFirstRun(this)) {
-            val tutorial = TutorialOverlay(this)
-            tutorial.show()
-            SharedPrefUtils.setFirstRunComplete(this)
-        }
-
         PreferenceHelper.init(this)
         CoordinateManager.init(this)
         CoordinateManager.loadFromPrefs(this)
 
-        if (!PreferenceHelper.isTutorialSeen()) {
-            showTutorialDialog()
-        }
-
         if (!Settings.canDrawOverlays(this)) {
-            requestOverlayPermission()
+            showOverlayPermissionDialog()
         } else {
             initOverlay()
         }
 
-        floatingController = FloatingController(this)
-        floatingController.show()
+        if (SharedPrefUtils.isFirstRun(this) && Settings.canDrawOverlays(this)) {
+            try {
+                val tutorial = TutorialOverlay(this)
+                tutorial.show()
+                SharedPrefUtils.setFirstRunComplete(this)
+            } catch (e: Exception) {
+                e.printStackTrace()
+                Toast.makeText(this, "튜토리얼 표시 실패", Toast.LENGTH_SHORT).show()
+            }
+        }
+
+        if (!PreferenceHelper.isTutorialSeen()) {
+            showTutorialDialog()
+        }
 
         startButton = findViewById(R.id.btnStart)
         stopButton = findViewById(R.id.btnStop)
@@ -94,10 +96,14 @@ class MainActivity : AppCompatActivity() {
         }
 
         addCoordButton.setOnClickListener {
-            val overlay = TouchCaptureOverlay(this) { x, y ->
-                showCoordinateTypeDialog(x, y)
+            if (Settings.canDrawOverlays(this)) {
+                val overlay = TouchCaptureOverlay(this) { x, y ->
+                    showCoordinateTypeDialog(x, y)
+                }
+                overlay.show()
+            } else {
+                Toast.makeText(this, "오버레이 권한이 없습니다.", Toast.LENGTH_SHORT).show()
             }
-            overlay.show()
         }
 
         viewCoordsButton.setOnClickListener {
@@ -124,21 +130,47 @@ class MainActivity : AppCompatActivity() {
             override fun onStartTrackingTouch(sb: SeekBar?) {}
             override fun onStopTrackingTouch(sb: SeekBar?) {}
         })
+
+        if (Settings.canDrawOverlays(this)) {
+            floatingController = FloatingController(this)
+            floatingController.show()
+        }
     }
 
     override fun onResume() {
         super.onResume()
-        if (Settings.canDrawOverlays(this) && overlayView == null) {
-            initOverlay()
+        if (Settings.canDrawOverlays(this)) {
+            if (overlayView == null) {
+                initOverlay()
+            }
+            if (!::floatingController.isInitialized) {
+                floatingController = FloatingController(this)
+                floatingController.show()
+            }
+
+            // 💡 튜토리얼이 제대로 표시되지 않았을 때 보완
+            if (SharedPrefUtils.isFirstRun(this)) {
+                try {
+                    val tutorial = TutorialOverlay(this)
+                    tutorial.show()
+                    SharedPrefUtils.setFirstRunComplete(this)
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                }
+            }
         }
     }
 
     override fun onDestroy() {
         super.onDestroy()
         CoordinateManager.removeCoordinateChangedListener()
-        floatingController.dismiss()
-        val wm = getSystemService(Context.WINDOW_SERVICE) as WindowManager
-        wm.removeView(overlayView)
+        if (::floatingController.isInitialized) {
+            floatingController.dismiss()
+        }
+        overlayView?.let {
+            val wm = getSystemService(Context.WINDOW_SERVICE) as WindowManager
+            wm.removeView(it)
+        }
     }
 
     private fun initOverlay() {
@@ -150,8 +182,14 @@ class MainActivity : AppCompatActivity() {
             WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE or WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE,
             PixelFormat.TRANSLUCENT
         )
+
         val wm = getSystemService(Context.WINDOW_SERVICE) as WindowManager
-        wm.addView(overlayView, params)
+        try {
+            wm.addView(overlayView, params)
+        } catch (e: Exception) {
+            e.printStackTrace()
+            Toast.makeText(this, "오버레이 표시 실패", Toast.LENGTH_SHORT).show()
+        }
 
         CoordinateManager.setOnCoordinateChangedListener {
             overlayView?.setCoordinates(CoordinateManager.get("primary"))
@@ -163,10 +201,17 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun requestOverlayPermission() {
-        val intent = Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION)
-        intent.data = Uri.parse("package:$packageName")
-        startActivity(intent)
+    private fun showOverlayPermissionDialog() {
+        AlertDialog.Builder(this)
+            .setTitle("권한 요청")
+            .setMessage("다른 앱 위에 표시 권한이 필요합니다. 설정으로 이동해 주세요.")
+            .setPositiveButton("설정으로 이동") { _, _ ->
+                val intent = Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION)
+                intent.data = Uri.parse("package:$packageName")
+                startActivity(intent)
+            }
+            .setNegativeButton("취소", null)
+            .show()
     }
 
     private fun showTutorialDialog() {
@@ -200,9 +245,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun showLabelInputDialog(x: Int, y: Int, type: String) {
-        val input = EditText(this).apply {
-            hint = "예: 복사 위치"
-        }
+        val input = EditText(this).apply { hint = "예: 복사 위치" }
 
         AlertDialog.Builder(this)
             .setTitle("라벨 입력")
