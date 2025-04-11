@@ -4,26 +4,20 @@ import android.content.Context
 import android.util.Log
 import com.example.bitconintauto.model.Coordinate
 import com.example.bitconintauto.ocr.OCRProcessor
-import com.example.bitconintauto.util.CoordinateManager
-import com.example.bitconintauto.util.OCRCaptureUtils
-import com.example.bitconintauto.util.PreferenceHelper
-import com.example.bitconintauto.util.ValueChangeDetector
+import com.example.bitconintauto.util.*
 import kotlinx.coroutines.*
 
 object ExecutorManager {
 
-    private var internalIsRunning = false
-
     val isRunning: Boolean
-        get() = internalIsRunning
+        get() = job?.isActive == true
 
     private var job: Job? = null
     private var lastValue: Double? = null
     private const val intervalMillis: Long = 2000L
 
     fun start(context: Context) {
-        if (internalIsRunning) return
-        internalIsRunning = true
+        if (isRunning) return
 
         val service = PreferenceHelper.accessibilityService
         if (service == null) {
@@ -35,8 +29,8 @@ object ExecutorManager {
         val ocrProcessor = OCRProcessor().apply { init(context) }
 
         job = CoroutineScope(Dispatchers.Default).launch {
-            while (internalIsRunning) {
-                val primaryCoord: Coordinate = CoordinateManager.getPrimaryCoordinate() ?: continue
+            while (isActive) {
+                val primaryCoord = CoordinateManager.getPrimaryCoordinate() ?: continue
                 val bitmap = OCRCaptureUtils.capture(service, primaryCoord)
                 val currentValue = bitmap?.let { ocrProcessor.getText(it).toDoubleOrNull() }
 
@@ -60,7 +54,6 @@ object ExecutorManager {
     }
 
     fun stop() {
-        internalIsRunning = false
         job?.cancel()
         job = null
     }

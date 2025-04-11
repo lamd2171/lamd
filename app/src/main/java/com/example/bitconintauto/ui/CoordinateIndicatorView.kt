@@ -9,8 +9,7 @@ import android.view.View
 import com.example.bitconintauto.model.Coordinate
 
 class CoordinateIndicatorView @JvmOverloads constructor(
-    context: Context,
-    attrs: AttributeSet? = null
+    context: Context, attrs: AttributeSet? = null
 ) : View(context, attrs) {
 
     private val paint = Paint().apply {
@@ -23,16 +22,16 @@ class CoordinateIndicatorView @JvmOverloads constructor(
     private var coordinates: List<Coordinate> = emptyList()
 
     fun updateCoordinates(coords: List<Coordinate>) {
-        this.coordinates = coords
+        coordinates = coords
         invalidate()
     }
 
-    // ✅ 정확한 override 시그니처
     override fun onDraw(canvas: Canvas) {
         super.onDraw(canvas)
-
-        coordinates.forEach { coord ->
-            canvas.drawCircle(coord.x.toFloat(), coord.y.toFloat(), 30f, paint)
+        coordinates.forEachIndexed { index, coordinate ->
+            val x = coordinate.x.toFloat()
+            val y = coordinate.y.toFloat()
+            canvas.drawCircle(x, y, 16f, paint)
         }
     }
 }
