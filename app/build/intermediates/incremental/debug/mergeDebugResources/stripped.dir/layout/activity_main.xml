@@ -68,5 +68,11 @@
         android:text="상태: 대기 중"
         android:textSize="18sp"
         android:textStyle="bold" />
+    <Button
+        android:id="@+id/btnViewCoords"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="등록된 좌표 보기"
+        android:layout_marginTop="8dp" />
 
 </RelativeLayout>

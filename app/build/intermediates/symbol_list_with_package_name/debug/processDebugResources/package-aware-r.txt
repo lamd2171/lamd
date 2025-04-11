@@ -2914,10 +2914,12 @@ id bounceBoth
 id bounceEnd
 id bounceStart
 id btnAddCoord
+id btnDelete
 id btnPermission
 id btnReset
 id btnStart
 id btnStop
+id btnViewCoords
 id btn_close_guide
 id btn_next
 id btn_toggle
@@ -3003,6 +3005,10 @@ id end
 id endToStart
 id enterAlways
 id enterAlwaysCollapsed
+id etExpectedValue
+id etHeight
+id etLabel
+id etWidth
 id exitUntilCollapsed
 id expand_activities_button
 id expanded_menu
@@ -3172,11 +3178,13 @@ id progress_horizontal
 id radio
 id ratio
 id rectangles
+id recyclerView
 id reverseSawtooth
 id right
 id rightToLeft
 id right_icon
 id right_side
+id root
 id rounded
 id row_index_key
 id save_non_transition_alpha
@@ -3308,6 +3316,8 @@ id triangle
 id tutorial_container
 id tutorial_message
 id tutorial_text
+id tvDetails
+id tvLabel
 id unchecked
 id uniform
 id unlabeled
@@ -3437,8 +3447,10 @@ layout abc_search_dropdown_item_icons_2line
 layout abc_search_view
 layout abc_select_dialog_material
 layout abc_tooltip
+layout activity_coordinate_list
 layout activity_main
 layout automation_status_indicator
+layout coordinate_list_item
 layout custom_dialog
 layout design_bottom_navigation_item
 layout design_bottom_sheet_dialog
@@ -3455,6 +3467,7 @@ layout design_navigation_menu
 layout design_navigation_menu_item
 layout design_text_input_end_icon
 layout design_text_input_start_icon
+layout dialog_edit_coordinate
 layout dialog_input_value
 layout dialog_tutorial
 layout first_click_guide

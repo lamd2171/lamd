@@ -4,6 +4,7 @@ import android.content.Context
 import android.util.Log
 import com.example.bitconintauto.model.Coordinate
 import com.example.bitconintauto.ocr.OCRProcessor
+import com.example.bitconintauto.ui.OCRDebugOverlay
 import com.example.bitconintauto.util.*
 import kotlinx.coroutines.*
 
@@ -31,7 +32,20 @@ object ExecutorManager {
             while (isActive) {
                 val primaryCoord = CoordinateManager.getPrimaryCoordinate() ?: continue
                 val bitmap = OCRCaptureUtils.capture(service, primaryCoord)
-                val currentValue = bitmap?.let { ocrProcessor.getText(it).toDoubleOrNull() }
+                val recognizedText = bitmap?.let { ocrProcessor.getText(it) }
+                val currentValue = recognizedText?.toDoubleOrNull()
+
+                // ✅ OCR 디버그 모드 표시
+                if (bitmap != null && CoordinateManager.isDebugModeEnabled()) {
+                    val overlay = OCRDebugOverlay(context)
+                    overlay.show(
+                        primaryCoord.x,
+                        primaryCoord.y,
+                        if (primaryCoord.width > 0) primaryCoord.width else 80,
+                        if (primaryCoord.height > 0) primaryCoord.height else 40,
+                        recognizedText ?: "?"
+                    )
+                }
 
                 val expectedRaw = primaryCoord.expectedValue
                 val matched = expectedRaw?.let {

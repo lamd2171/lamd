@@ -23,9 +23,11 @@ class MainActivity : AppCompatActivity() {
     private lateinit var resetButton: Button
     private lateinit var addCoordButton: Button
     private lateinit var permissionButton: Button
+    private lateinit var viewCoordsButton: Button
     private lateinit var statusText: TextView
     private lateinit var seekBar: SeekBar
     private lateinit var seekValueText: TextView
+    private lateinit var debugModeSwitch: Switch
 
     private var interval: Int = 3
 
@@ -36,7 +38,6 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        // 최초 튜토리얼
         if (SharedPrefUtils.isFirstRun(this)) {
             val tutorial = TutorialOverlay(this)
             tutorial.show()
@@ -45,11 +46,13 @@ class MainActivity : AppCompatActivity() {
 
         PreferenceHelper.init(this)
 
+        CoordinateManager.init(this)
+        CoordinateManager.loadFromPrefs(this)
+
         if (!PreferenceHelper.isTutorialSeen()) {
             showTutorialDialog()
         }
 
-        // 오버레이 권한 체크
         if (!Settings.canDrawOverlays(this)) {
             AlertDialog.Builder(this)
                 .setTitle("권한 요청")
@@ -61,7 +64,6 @@ class MainActivity : AppCompatActivity() {
                 .show()
         }
 
-        // OverlayView 초기화 및 등록
         overlayView = OverlayView(this)
         val params = WindowManager.LayoutParams(
             WindowManager.LayoutParams.MATCH_PARENT,
@@ -73,55 +75,58 @@ class MainActivity : AppCompatActivity() {
         val wm = getSystemService(Context.WINDOW_SERVICE) as WindowManager
         wm.addView(overlayView, params)
 
-        // 좌표 변경 시 자동으로 OverlayView 갱신
         CoordinateManager.setOnCoordinateChangedListener {
             overlayView.setCoordinates(CoordinateManager.get("primary"))
         }
 
-        // 최초 좌표 안내 오버레이
         if (CoordinateManager.isFirstClick()) {
             val guide = FirstClickGuideOverlay(this)
             guide.show {}
         }
 
-        // 플로팅 버튼 표시
         floatingController = FloatingController(this)
         floatingController.show()
 
-        // View 초기화
         startButton = findViewById(R.id.btnStart)
         stopButton = findViewById(R.id.btnStop)
         resetButton = findViewById(R.id.btnReset)
         addCoordButton = findViewById(R.id.btnAddCoord)
         permissionButton = findViewById(R.id.btnPermission)
+        viewCoordsButton = findViewById(R.id.btnViewCoords)
+        debugModeSwitch = findViewById(R.id.switchDebugMode)
         statusText = findViewById(R.id.statusText)
         seekBar = findViewById(R.id.seekBar)
         seekValueText = findViewById(R.id.seekValueText)
 
-        // 접근성 권한 이동
+        // ✅ 디버그 모드 스위치 초기화
+        val isDebugEnabled = PreferenceHelper.getString(this, "debug_mode") == "true"
+        debugModeSwitch.isChecked = isDebugEnabled
+
+        debugModeSwitch.setOnCheckedChangeListener { _, isChecked ->
+            PreferenceHelper.saveString(this, "debug_mode", isChecked.toString())
+            Toast.makeText(this, "디버그 모드: ${if (isChecked) "ON" else "OFF"}", Toast.LENGTH_SHORT).show()
+        }
+
         permissionButton.setOnClickListener {
             startActivity(Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS))
         }
 
-        // 시작 버튼
         startButton.setOnClickListener {
             statusText.text = "상태: 실행 중"
             startService(Intent(this, MyAccessibilityService::class.java))
         }
 
-        // 중지 버튼
         stopButton.setOnClickListener {
             statusText.text = "상태: 정지됨"
             stopService(Intent(this, MyAccessibilityService::class.java))
         }
 
-        // 초기화 버튼
         resetButton.setOnClickListener {
             PreferenceHelper.clear(this)
+            CoordinateManager.reset()
             statusText.text = "상태: 초기화 완료"
         }
 
-        // 좌표 추가 버튼 → 터치 후 좌표 타입 선택
         addCoordButton.setOnClickListener {
             val overlay = TouchCaptureOverlay(this) { x, y ->
                 showCoordinateTypeDialog(x, y)
@@ -129,7 +134,10 @@ class MainActivity : AppCompatActivity() {
             overlay.show()
         }
 
-        // 주기 설정
+        viewCoordsButton.setOnClickListener {
+            startActivity(Intent(this, CoordinateListActivity::class.java))
+        }
+
         seekBar.max = 10
         seekBar.progress = interval
         seekValueText.text = "${interval}초"
@@ -195,10 +203,8 @@ class MainActivity : AppCompatActivity() {
             .setPositiveButton("확인") { _, _ ->
                 val label = input.text.toString()
                 val coord = Coordinate(x, y, label = label)
-
-                CoordinateManager.register(type, listOf(coord))
+                CoordinateManager.append(type, coord)
                 overlayView.setCoordinates(CoordinateManager.get(type))
-
                 Toast.makeText(this, "$type 좌표 등록됨: ($x, $y)\n라벨: $label", Toast.LENGTH_SHORT).show()
             }
             .setNegativeButton("취소", null)

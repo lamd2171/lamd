@@ -28,3 +28,6 @@ object OCRCaptureUtils {
             Bitmap.createBitmap(region.width(), region.height(), Bitmap.Config.ARGB_8888)
         } catch (e: Exception) {
             null
+        }
+    }
+}

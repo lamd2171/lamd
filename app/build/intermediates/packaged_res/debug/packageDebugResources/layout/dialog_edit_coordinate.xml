@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:padding="20dp"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <EditText
+        android:id="@+id/etLabel"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="라벨 (예: 복사 위치)"
+        android:inputType="textPersonName" />
+
+    <EditText
+        android:id="@+id/etExpectedValue"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="감지할 값 (예: >=5.0)"
+        android:inputType="text" />
+
+    <EditText
+        android:id="@+id/etWidth"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="OCR 영역 너비 (예: 80)"
+        android:inputType="number" />
+
+    <EditText
+        android:id="@+id/etHeight"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="OCR 영역 높이 (예: 40)"
+        android:inputType="number" />
+</LinearLayout>
