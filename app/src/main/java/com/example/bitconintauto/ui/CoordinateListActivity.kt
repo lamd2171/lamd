@@ -28,10 +28,34 @@ class CoordinateListActivity : AppCompatActivity() {
         adapter = CoordinateAdapter(
             getAllCoordinates(),
             onDeleteClicked = { item -> removeCoordinate(item) },
-            onItemClicked = { item -> showEditDialog(item) } // ✅ 클릭 수정 기능 연결
+            onItemClicked = { item ->
+                showEditModeChoice(item)
+            }
         )
 
         recyclerView.adapter = adapter
+    }
+
+    private fun showEditModeChoice(item: CoordinateItem) {
+        val options = arrayOf("드래그로 크기 조절", "다이얼로그로 수정")
+
+        AlertDialog.Builder(this)
+            .setTitle("수정 방식 선택")
+            .setItems(options) { _, which ->
+                when (which) {
+                    0 -> {
+                        // ✅ 드래그 방식 편집
+                        OverlayResizableEditor(this, item.coordinate) {
+                            adapter.updateList(getAllCoordinates())
+                        }
+                    }
+                    1 -> {
+                        // ✅ 기존 다이얼로그 수정
+                        showEditDialog(item)
+                    }
+                }
+            }
+            .show()
     }
 
     private fun getAllCoordinates(): MutableList<CoordinateItem> {

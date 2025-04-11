@@ -3038,6 +3038,7 @@ id graph_wrap
 id group_divider
 id grouping
 id groups
+id guideText
 id guide_text
 id header_title
 id hideable
@@ -3156,6 +3157,7 @@ id onDateChanged
 id onInterceptTouchReturnSwipe
 id outline
 id outward
+id overlayGuideRoot
 id overlayRoot
 id overshoot
 id packed
@@ -3530,6 +3532,7 @@ layout notification_template_custom_big
 layout notification_template_icon_group
 layout notification_template_part_chronometer
 layout notification_template_part_time
+layout overlay_registration_guide
 layout overlay_view
 layout select_dialog_item_material
 layout select_dialog_multichoice_material

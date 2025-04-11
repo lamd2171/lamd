@@ -17,6 +17,14 @@ object CoordinateManager {
         context = appContext.applicationContext
     }
 
+    fun replace(old: Coordinate, new: Coordinate) {
+        val updated = registeredCoordinates.mapValues { entry ->
+            entry.value.map { if (it == old) new else it }.toMutableList()
+        }
+        registeredCoordinates.clear()
+        registeredCoordinates.putAll(updated)
+    }
+
     fun register(name: String, coordinates: List<Coordinate>) {
         registeredCoordinates[name] = coordinates.toMutableList()
         save()

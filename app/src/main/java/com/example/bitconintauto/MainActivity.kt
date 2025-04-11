@@ -50,12 +50,14 @@ class MainActivity : AppCompatActivity() {
 
         if (SharedPrefUtils.isFirstRun(this) && Settings.canDrawOverlays(this)) {
             try {
-                val tutorial = TutorialOverlay(this)
-                tutorial.show()
-                SharedPrefUtils.setFirstRunComplete(this)
+                val guide = CoordinateRegistrationGuide(this) {
+                    Toast.makeText(this, "초기 등록이 완료되었습니다.", Toast.LENGTH_SHORT).show()
+                    SharedPrefUtils.setFirstRunComplete(this)
+                }
+                guide.start()
             } catch (e: Exception) {
                 e.printStackTrace()
-                Toast.makeText(this, "튜토리얼 표시 실패", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, "초기 등록 가이드 실패", Toast.LENGTH_SHORT).show()
             }
         }
 

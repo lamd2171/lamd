@@ -1,13 +1,10 @@
 package com.example.bitconintauto.overlay
 
 import android.content.Context
-import android.graphics.Canvas
-import android.graphics.Color
-import android.graphics.Paint
-import android.graphics.Rect
+import android.graphics.*
 import android.util.AttributeSet
-import android.view.MotionEvent
 import android.view.View
+import com.example.bitconintauto.model.Coordinate
 
 class OverlayView @JvmOverloads constructor(
     context: Context,
@@ -20,54 +17,37 @@ class OverlayView @JvmOverloads constructor(
         style = Paint.Style.STROKE
     }
 
-    private var overlayRect: Rect? = null
-    private var startX = 0
-    private var startY = 0
-
-    var onRegionSelected: ((Rect) -> Unit)? = null
-
-    override fun onDraw(canvas: Canvas) {
-        super.onDraw(canvas)
-        overlayRect?.let { canvas.drawRect(it, rectPaint) }
+    private val textPaint = Paint().apply {
+        color = Color.WHITE
+        textSize = 28f
+        isAntiAlias = true
+        typeface = Typeface.DEFAULT_BOLD
     }
 
-    override fun onTouchEvent(event: MotionEvent): Boolean {
-        when (event.action) {
-            MotionEvent.ACTION_DOWN -> {
-                startX = event.x.toInt()
-                startY = event.y.toInt()
-                overlayRect = Rect(startX, startY, startX, startY)
-                invalidate()
-            }
+    private var coordinates: List<Coordinate> = emptyList()
 
-            MotionEvent.ACTION_MOVE -> {
-                overlayRect?.right = event.x.toInt()
-                overlayRect?.bottom = event.y.toInt()
-                invalidate()
-            }
-
-            MotionEvent.ACTION_UP -> {
-                overlayRect?.let {
-                    it.sort()
-                    onRegionSelected?.invoke(it)
-                }
-            }
-        }
-        return true
-    }
-
-    fun clearOverlay() {
-        overlayRect = null
+    fun setCoordinates(coords: List<Coordinate>) {
+        coordinates = coords
         invalidate()
     }
 
-    fun getOverlayRect(): Rect? = overlayRect
-}
+    override fun onDraw(canvas: Canvas) {
+        super.onDraw(canvas)
 
-private fun Rect.sortRect() {
-    val left = minOf(this.left, this.right)
-    val top = minOf(this.top, this.bottom)
-    val right = maxOf(this.left, this.right)
-    val bottom = maxOf(this.top, this.bottom)
-    this.set(left, top, right, bottom)
+        for (coord in coordinates) {
+            val rect = Rect(
+                coord.x,
+                coord.y,
+                coord.x + coord.width,
+                coord.y + coord.height
+            )
+            canvas.drawRect(rect, rectPaint)
+
+            val label = coord.label.ifBlank { "(${coord.x},${coord.y})" }
+            val value = coord.expectedValue ?: ""
+            val text = "$label${if (value.isNotBlank()) " [$value]" else ""}"
+
+            canvas.drawText(text, rect.left.toFloat(), rect.top - 10f, textPaint)
+        }
+    }
 }

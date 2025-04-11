@@ -38,7 +38,9 @@ id etHeight
 id etLabel
 id etWidth
 id first_click_guide
+id guideText
 id guide_text
+id overlayGuideRoot
 id overlayRoot
 id recyclerView
 id root
@@ -61,6 +63,7 @@ layout dialog_input_value
 layout dialog_tutorial
 layout first_click_guide
 layout floating_controller
+layout overlay_registration_guide
 layout overlay_view
 layout tutorial_overlay
 mipmap ic_launcher
