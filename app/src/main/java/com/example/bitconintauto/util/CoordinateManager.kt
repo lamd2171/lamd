@@ -41,4 +41,7 @@ object CoordinateManager {
     fun reset() {
         registeredCoordinates.clear()
     }
+    fun getThreshold(): Double {
+        return 1.0
+    }
 }
