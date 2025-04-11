@@ -15,7 +15,7 @@ class OverlayView(context: Context) : View(context) {
     }
 
     private val fillPaint = Paint().apply {
-        color = Color.argb(60, 255, 0, 0) // 매우 연한 빨강 (배경 강조용)
+        color = Color.argb(60, 255, 0, 0) // 매우 연한 빨강
         style = Paint.Style.FILL
     }
 
@@ -35,20 +35,24 @@ class OverlayView(context: Context) : View(context) {
 
     override fun onDraw(canvas: Canvas) {
         super.onDraw(canvas)
+
         coordinates.forEachIndexed { index, coordinate ->
             val left = coordinate.x - 30f
             val top = coordinate.y - 30f
             val right = coordinate.x + 30f
             val bottom = coordinate.y + 30f
 
-            // 배경 강조 (사각형 내부)
+            // 배경 + 테두리
             canvas.drawRect(left, top, right, bottom, fillPaint)
-
-            // 테두리 강조
             canvas.drawRect(left, top, right, bottom, boxPaint)
 
-            // 좌표 인덱스 텍스트
-            canvas.drawText("C$index", right + 10f, bottom, textPaint)
+            // 텍스트 구성: label (또는 좌표명) + expectedValue 조건
+            val label = coordinate.label.takeIf { it.isNotBlank() } ?: "C$index"
+            val expected = coordinate.expectedValue?.takeIf { it.isNotBlank() } ?: ""
+            val displayText = if (expected.isNotEmpty()) "$label ($expected)" else label
+
+            // 텍스트 표시 (박스 우측 하단에)
+            canvas.drawText(displayText, right + 10f, bottom, textPaint)
         }
     }
 }

@@ -13,7 +13,6 @@ object ExecutorManager {
         get() = job?.isActive == true
 
     private var job: Job? = null
-    private var lastValue: Double? = null
     private const val intervalMillis: Long = 2000L
 
     fun start(context: Context) {
@@ -34,9 +33,13 @@ object ExecutorManager {
                 val bitmap = OCRCaptureUtils.capture(service, primaryCoord)
                 val currentValue = bitmap?.let { ocrProcessor.getText(it).toDoubleOrNull() }
 
-                if (ValueChangeDetector.hasSignificantChange(lastValue, currentValue, CoordinateManager.getThreshold())) {
-                    Log.d("ExecutorManager", "Value changed: $lastValue → $currentValue")
-                    lastValue = currentValue
+                val expectedRaw = primaryCoord.expectedValue
+                val matched = expectedRaw?.let {
+                    ComparisonUtils.matchCondition(currentValue ?: 0.0, it)
+                } ?: false
+
+                if (matched) {
+                    Log.d("ExecutorManager", "OCR 조건 만족: $currentValue matches $expectedRaw")
 
                     withContext(Dispatchers.Main) {
                         autoClicker.executeCycle(
@@ -46,6 +49,8 @@ object ExecutorManager {
                             CoordinateManager.getPasteTarget()
                         )
                     }
+                } else {
+                    Log.d("ExecutorManager", "OCR 조건 불일치: $currentValue vs 조건 $expectedRaw")
                 }
 
                 delay(intervalMillis)

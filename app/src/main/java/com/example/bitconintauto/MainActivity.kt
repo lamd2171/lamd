@@ -9,6 +9,7 @@ import android.view.WindowManager
 import android.widget.*
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import com.example.bitconintauto.model.Coordinate
 import com.example.bitconintauto.service.MyAccessibilityService
 import com.example.bitconintauto.ui.*
 import com.example.bitconintauto.util.CoordinateManager
@@ -120,19 +121,11 @@ class MainActivity : AppCompatActivity() {
             statusText.text = "상태: 초기화 완료"
         }
 
-        // 좌표 추가 버튼 (개선 예정)
+        // 좌표 추가 버튼 → 터치 후 좌표 타입 선택
         addCoordButton.setOnClickListener {
-            val overlay = TouchCaptureOverlay(this) { coordinate ->
-                // 1. 좌표 등록
-                CoordinateManager.register("primary", listOf(coordinate))
-
-                // 2. OverlayView에 반영
-                overlayView.setCoordinates(CoordinateManager.get("primary"))
-
-                // 3. 사용자 안내
-                Toast.makeText(this, "좌표 등록됨: (${coordinate.x}, ${coordinate.y})", Toast.LENGTH_SHORT).show()
+            val overlay = TouchCaptureOverlay(this) { x, y ->
+                showCoordinateTypeDialog(x, y)
             }
-
             overlay.show()
         }
 
@@ -175,6 +168,40 @@ class MainActivity : AppCompatActivity() {
                 dialog.dismiss()
             }
             .setCancelable(false)
+            .show()
+    }
+
+    private fun showCoordinateTypeDialog(x: Int, y: Int) {
+        val coordTypes = arrayOf("primary", "click", "copy", "paste", "final")
+
+        AlertDialog.Builder(this)
+            .setTitle("좌표 용도 선택")
+            .setItems(coordTypes) { _, which ->
+                val selectedType = coordTypes[which]
+                showLabelInputDialog(x, y, selectedType)
+            }
+            .setCancelable(true)
+            .show()
+    }
+
+    private fun showLabelInputDialog(x: Int, y: Int, type: String) {
+        val input = EditText(this).apply {
+            hint = "예: 복사 위치"
+        }
+
+        AlertDialog.Builder(this)
+            .setTitle("라벨 입력")
+            .setView(input)
+            .setPositiveButton("확인") { _, _ ->
+                val label = input.text.toString()
+                val coord = Coordinate(x, y, label = label)
+
+                CoordinateManager.register(type, listOf(coord))
+                overlayView.setCoordinates(CoordinateManager.get(type))
+
+                Toast.makeText(this, "$type 좌표 등록됨: ($x, $y)\n라벨: $label", Toast.LENGTH_SHORT).show()
+            }
+            .setNegativeButton("취소", null)
             .show()
     }
 }
