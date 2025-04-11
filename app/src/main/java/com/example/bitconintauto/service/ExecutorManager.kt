@@ -4,7 +4,6 @@ import android.content.Context
 import android.util.Log
 import com.example.bitconintauto.model.Coordinate
 import com.example.bitconintauto.ocr.OCRProcessor
-import com.example.bitconintauto.ui.AutomationStatusIndicator
 import com.example.bitconintauto.util.CoordinateManager
 import com.example.bitconintauto.util.OCRCaptureUtils
 import com.example.bitconintauto.util.PreferenceHelper
@@ -13,16 +12,18 @@ import kotlinx.coroutines.*
 
 object ExecutorManager {
 
-    private var isRunning = false
+    private var internalIsRunning = false
+
+    val isRunning: Boolean
+        get() = internalIsRunning
+
     private var job: Job? = null
     private var lastValue: Double? = null
     private const val intervalMillis: Long = 2000L
 
-    private var statusIndicator: AutomationStatusIndicator? = null
-
     fun start(context: Context) {
-        if (isRunning) return
-        isRunning = true
+        if (internalIsRunning) return
+        internalIsRunning = true
 
         val service = PreferenceHelper.accessibilityService
         if (service == null) {
@@ -30,15 +31,11 @@ object ExecutorManager {
             return
         }
 
-        // 상태 표시 아이콘 띄우기
-        statusIndicator = AutomationStatusIndicator(context)
-        statusIndicator?.show()
-
         val autoClicker = AutoClicker(service)
         val ocrProcessor = OCRProcessor().apply { init(context) }
 
         job = CoroutineScope(Dispatchers.Default).launch {
-            while (isRunning) {
+            while (internalIsRunning) {
                 val primaryCoord: Coordinate = CoordinateManager.getPrimaryCoordinate() ?: continue
                 val bitmap = OCRCaptureUtils.capture(service, primaryCoord)
                 val currentValue = bitmap?.let { ocrProcessor.getText(it).toDoubleOrNull() }
@@ -63,12 +60,8 @@ object ExecutorManager {
     }
 
     fun stop() {
-        isRunning = false
+        internalIsRunning = false
         job?.cancel()
         job = null
-
-        // 상태 아이콘 제거
-        statusIndicator?.dismiss()
-        statusIndicator = null
     }
 }
