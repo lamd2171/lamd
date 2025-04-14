@@ -2913,13 +2913,10 @@ id bounce
 id bounceBoth
 id bounceEnd
 id bounceStart
-id btnAddCoord
 id btnDelete
-id btnPermission
 id btnReset
 id btnStart
 id btnStop
-id btnViewCoords
 id btn_close_guide
 id btn_next
 id btn_toggle
@@ -3158,7 +3155,6 @@ id onInterceptTouchReturnSwipe
 id outline
 id outward
 id overlayGuideRoot
-id overlayRoot
 id overshoot
 id packed
 id parallax
@@ -3223,8 +3219,6 @@ id search_view_status_bar_spacer
 id search_view_toolbar
 id search_view_toolbar_container
 id search_voice_btn
-id seekBar
-id seekValueText
 id select_dialog_listview
 id selected
 id selection_type
@@ -3261,14 +3255,12 @@ id startToEnd
 id startVertical
 id staticLayout
 id staticPostLayout
-id statusText
 id status_text
 id stop
 id stretch
 id submenuarrow
 id submit_area
 id supportScrollUp
-id switchDebugMode
 id tabMode
 id tag_accessibility_actions
 id tag_accessibility_clickable_spans

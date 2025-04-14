@@ -5,12 +5,11 @@ import org.json.JSONObject
 data class Coordinate(
     val x: Int,
     val y: Int,
-    val width: Int = 0,
-    val height: Int = 0,
+    val width: Int = 100,
+    val height: Int = 100,
     val label: String = "",
-    var expectedValue: String? = null
+    val expectedValue: String? = null
 ) {
-
     fun toJson(): JSONObject {
         val json = JSONObject()
         json.put("x", x)
@@ -23,31 +22,15 @@ data class Coordinate(
     }
 
     companion object {
-
         fun fromJson(json: JSONObject): Coordinate {
-            val rawExpected = json.opt("expectedValue")
-            val expected = if (rawExpected is String) rawExpected else null
-
             return Coordinate(
                 x = json.optInt("x"),
                 y = json.optInt("y"),
-                width = json.optInt("width", 0),
-                height = json.optInt("height", 0),
+                width = json.optInt("width", 100),
+                height = json.optInt("height", 100),
                 label = json.optString("label", ""),
-                expectedValue = expected // ✅ null-safe 처리로 경고 제거
+                expectedValue = json.optString("expectedValue", null)
             )
-        }
-
-        fun fromString(input: String?): Coordinate {
-            if (input.isNullOrBlank()) return Coordinate(0, 0)
-            val parts = input.split(",")
-            return try {
-                val x = parts.getOrNull(0)?.trim()?.toIntOrNull() ?: 0
-                val y = parts.getOrNull(1)?.trim()?.toIntOrNull() ?: 0
-                Coordinate(x, y)
-            } catch (e: Exception) {
-                Coordinate(0, 0)
-            }
         }
     }
 

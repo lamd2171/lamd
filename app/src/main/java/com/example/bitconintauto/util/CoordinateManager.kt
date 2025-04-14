@@ -1,108 +1,64 @@
 package com.example.bitconintauto.util
 
 import android.content.Context
+import android.graphics.Rect
 import com.example.bitconintauto.model.Coordinate
 import org.json.JSONArray
 import org.json.JSONObject
+import java.io.File
 
 object CoordinateManager {
 
-    private const val PREF_KEY = "saved_coordinates"
-    private val registeredCoordinates = mutableMapOf<String, MutableList<Coordinate>>()
-    private var onCoordinateChanged: (() -> Unit)? = null
-    private var context: Context? = null  // ✅ 자동 저장용 context 보관
+    private val coordinates: MutableMap<String, MutableList<Coordinate>> = mutableMapOf()
+    private const val fileName = "coordinates.json"
 
-    // 앱 시작 시 1회 초기화
-    fun init(appContext: Context) {
-        context = appContext.applicationContext
-    }
-
-    fun replace(old: Coordinate, new: Coordinate) {
-        val updated = registeredCoordinates.mapValues { entry ->
-            entry.value.map { if (it == old) new else it }.toMutableList()
+    fun append(name: String, coord: Coordinate) {
+        if (!coordinates.containsKey(name)) {
+            coordinates[name] = mutableListOf()
         }
-        registeredCoordinates.clear()
-        registeredCoordinates.putAll(updated)
-    }
-
-    fun register(name: String, coordinates: List<Coordinate>) {
-        registeredCoordinates[name] = coordinates.toMutableList()
-        save()
-        onCoordinateChanged?.invoke()
-    }
-
-    fun append(name: String, coordinate: Coordinate) {
-        val list = registeredCoordinates.getOrPut(name) { mutableListOf() }
-        list.add(coordinate)
-        save()
-        onCoordinateChanged?.invoke()
-    }
-
-    fun reset() {
-        registeredCoordinates.clear()
-        save()
-        onCoordinateChanged?.invoke()
+        coordinates[name]?.add(coord)
     }
 
     fun get(name: String): List<Coordinate> {
-        return registeredCoordinates[name] ?: emptyList()
+        return coordinates[name] ?: emptyList()
     }
 
-    fun getPrimaryCoordinate(): Coordinate? = get("primary").firstOrNull()
-    fun getClickPathSequence(): List<Coordinate> = get("click")
-    fun getCopyTarget(): Coordinate = get("copy").firstOrNull() ?: Coordinate(0, 0)
-    fun getPasteTarget(): Coordinate = get("paste").firstOrNull() ?: Coordinate(0, 0)
-    fun getFinalActions(): List<Coordinate> = get("final")
-    fun getUserOffset(): Float = 0.001f
-    fun getThreshold(): Double = 1.0
-    fun isFirstClick(): Boolean = get("primary").isEmpty()
-
-    fun setOnCoordinateChangedListener(listener: () -> Unit) {
-        onCoordinateChanged = listener
+    fun reset() {
+        coordinates.clear()
     }
 
-    fun removeCoordinateChangedListener() {
-        onCoordinateChanged = null
-    }
-
-    // ✅ 디버그 모드 활성화 여부
-    fun isDebugModeEnabled(): Boolean {
-        return PreferenceHelper.getString(context ?: return false, "debug_mode") == "true"
-    }
-
-    // ✅ 내부 저장된 context로 자동 저장
-    private fun save() {
-        context?.let { saveToPrefs(it) }
-    }
-
-    fun saveToPrefs(context: Context) {
-        val root = JSONObject()
-        for ((type, coords) in registeredCoordinates) {
-            val array = JSONArray()
-            coords.forEach { array.put(it.toJson()) }
-            root.put(type, array)
+    fun save(context: Context) {
+        val json = JSONObject()
+        coordinates.forEach { (name, list) ->
+            val arr = JSONArray()
+            list.forEach { arr.put(it.toJson()) }
+            json.put(name, arr)
         }
-        PreferenceHelper.saveString(context, PREF_KEY, root.toString())
+        File(context.filesDir, fileName).writeText(json.toString())
     }
 
-    fun loadFromPrefs(context: Context) {
-        try {
-            val saved = PreferenceHelper.getString(context, PREF_KEY) ?: return
-            val root = JSONObject(saved)
-            for (key in root.keys()) {
-                val array = root.optJSONArray(key) ?: continue
-                val list = mutableListOf<Coordinate>()
-                for (i in 0 until array.length()) {
-                    val coordJson = array.optJSONObject(i) ?: continue
-                    list.add(Coordinate.fromJson(coordJson))
-                }
-                registeredCoordinates[key] = list
+    fun load(context: Context) {
+        val file = File(context.filesDir, fileName)
+        if (!file.exists()) return
+        val json = JSONObject(file.readText())
+        coordinates.clear()
+        for (key in json.keys()) {
+            val arr = json.getJSONArray(key)
+            val list = mutableListOf<Coordinate>()
+            for (i in 0 until arr.length()) {
+                list.add(Coordinate.fromJson(arr.getJSONObject(i)))
             }
-            // context 저장도 같이 수행
-            init(context)
-        } catch (e: Exception) {
-            e.printStackTrace()
+            coordinates[key] = list
         }
-        onCoordinateChanged?.invoke()
+    }
+
+    fun getTriggerRegion(): Rect {
+        val trigger = get("trigger").firstOrNull() ?: return Rect(0, 0, 100, 100)
+        return Rect(
+            trigger.x,
+            trigger.y,
+            trigger.x + trigger.width,
+            trigger.y + trigger.height
+        )
     }
 }
