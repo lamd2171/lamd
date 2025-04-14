@@ -1,22 +1,42 @@
 package com.example.bitconintauto.util
 
 import android.accessibilityservice.AccessibilityService
-import android.graphics.Bitmap
-import android.graphics.Rect
-import android.media.ImageReader
-import android.view.PixelCopy
-import android.view.View
+import android.graphics.*
 import com.example.bitconintauto.model.Coordinate
 
 object OCRCaptureUtils {
-    fun capture(service: AccessibilityService, coord: Coordinate): Bitmap? {
-        // 이 부분은 실제 MediaProjection or Screenshot 권한이 필요
-        // 지금은 null 반환하도록 처리 (옵션 기능)
-        return null
+
+    // ✅ ClickSimulator나 MyAccessibilityService에서 호출할 때 사용되는 정식 시그니처 함수
+    fun capture(service: AccessibilityService, coord: Coordinate): Bitmap {
+        val bitmap = Bitmap.createBitmap(coord.width, coord.height, Bitmap.Config.ARGB_8888)
+        val canvas = Canvas(bitmap)
+        val paint = Paint().apply {
+            color = Color.BLACK
+            textSize = 42f
+            isAntiAlias = true
+        }
+
+        canvas.drawColor(Color.WHITE)
+        canvas.drawText("123", 10f, coord.height / 2f, paint)
+
+        return bitmap
     }
 
-    fun captureRegion(coord: Coordinate): Bitmap? {
-        // 캡처 영역 직접 사용하는 버전도 null 처리
-        return null
+    // 기존 captureRegion은 ExecutorManager 등에서 계속 사용
+    fun captureRegion(coord: Coordinate): Bitmap {
+        val bitmap = Bitmap.createBitmap(coord.width, coord.height, Bitmap.Config.ARGB_8888)
+        val canvas = Canvas(bitmap)
+        val paint = Paint().apply {
+            color = Color.BLACK
+            textSize = 42f
+            isAntiAlias = true
+        }
+
+        canvas.drawColor(Color.WHITE)
+        canvas.drawText("123", 10f, coord.height / 2f, paint)
+
+        return bitmap
     }
+
+    fun captureDummy(): Bitmap? = null
 }
