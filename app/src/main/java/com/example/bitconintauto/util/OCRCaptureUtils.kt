@@ -6,7 +6,7 @@ import com.example.bitconintauto.model.Coordinate
 
 object OCRCaptureUtils {
 
-    // ✅ ClickSimulator나 MyAccessibilityService에서 호출할 때 사용되는 정식 시그니처 함수
+    // 실제 캡처를 할 수 있는 구조가 아니므로 빈 비트맵만 반환 (샘플 구조 유지)
     fun capture(service: AccessibilityService, coord: Coordinate): Bitmap {
         val bitmap = Bitmap.createBitmap(coord.width, coord.height, Bitmap.Config.ARGB_8888)
         val canvas = Canvas(bitmap)
@@ -17,12 +17,11 @@ object OCRCaptureUtils {
         }
 
         canvas.drawColor(Color.WHITE)
-        canvas.drawText("123", 10f, coord.height / 2f, paint)
+        canvas.drawText("", 10f, coord.height / 2f, paint)
 
         return bitmap
     }
 
-    // 기존 captureRegion은 ExecutorManager 등에서 계속 사용
     fun captureRegion(coord: Coordinate): Bitmap {
         val bitmap = Bitmap.createBitmap(coord.width, coord.height, Bitmap.Config.ARGB_8888)
         val canvas = Canvas(bitmap)
@@ -33,7 +32,8 @@ object OCRCaptureUtils {
         }
 
         canvas.drawColor(Color.WHITE)
-        canvas.drawText("123", 10f, coord.height / 2f, paint)
+        // ✅ 아래 줄을 반드시 삭제 또는 주석 처리
+        // canvas.drawText("123", 10f, coord.height / 2f, paint)
 
         return bitmap
     }

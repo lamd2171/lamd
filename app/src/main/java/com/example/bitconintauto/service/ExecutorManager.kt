@@ -26,12 +26,13 @@ object ExecutorManager {
         isRunning = true
         Toast.makeText(service, "✅ 자동화 시작됨", Toast.LENGTH_SHORT).show()
 
-        CoordinateManager.set("trigger", Coordinate(x = 80, y = 220, width = 500, height = 100, label = "trigger"))
+        CoordinateManager.set("trigger", Coordinate(x = 50, y = 240, width = 350, height = 120, label = "trigger"))
 
         ocrProcessor = OCRProcessor().apply { init(service) }
         debugOverlay = OCRDebugOverlay(service.applicationContext)
         val click = ClickSimulator(service)
 
+        // ✅ OCR 반복 루프 안쪽에서 trigger 좌표 없을 때는 OCR 시도 X
         job = CoroutineScope(Dispatchers.Default).launch {
             while (isRunning) {
                 delay(2000)
@@ -42,21 +43,26 @@ object ExecutorManager {
                 }
 
                 val bitmap = OCRCaptureUtils.capture(service, trigger) ?: continue
-                val text = ocrProcessor?.getText(bitmap)?.trim() ?: ""
-                val lines = text.split("\n")
-                val lastLineDigits = lines.lastOrNull()?.replace("[^0-9.]".toRegex(), "") ?: ""
-                val triggerRaw = lastLineDigits.toDoubleOrNull() ?: 0.0
+                val rawText = ocrProcessor?.getText(bitmap)?.replace("\n", " ")?.trim() ?: ""
+
+                val numberMatches = Regex("""\d+(\.\d+)?""").findAll(rawText).map { it.value }.toList()
+                val numberText = numberMatches.maxByOrNull { it.length } ?: "0"
+                val number = numberText.toDoubleOrNull() ?: 0.0
+                val triggerValue = number.toInt()
+
+
+                Log.d("Executor", "[🔍 OCR] raw='$rawText' / parsed='$numberText' / trigger=$triggerValue")
 
                 withContext(Dispatchers.Main) {
-                    val status = if (triggerRaw >= 1.0) "✅ 조건 충족" else "⏸ 조건 미달"
-                    debugOverlay?.show(trigger.toRect(), "trigger\n$text\n$status")
+                    val status = if (triggerValue >= 1) "✅ 조건 충족" else "⏸ 조건 미달"
+                    debugOverlay?.show(trigger.toRect(), "trigger:\n$numberText ($triggerValue)\n$status")
+
                 }
 
-                if (triggerRaw >= 1.0) {
-                    Log.d("Executor", "[✅ Trigger 감지: $text → 추출: $triggerRaw] 루틴 실행")
+                if (triggerValue >= 1) {
+                    Log.d("Executor", "[✅ Trigger 감지: $numberText] 루틴 실행")
                     executeStepFlow(click)
                 }
-
             }
         }
     }
