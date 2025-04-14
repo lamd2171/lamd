@@ -25,6 +25,25 @@ object SharedPrefUtils {
         prefs.edit().putBoolean(KEY_FIRST_RUN, true).apply()
     }
 
+    // SharedPrefUtils.kt 내에 추가
+    fun init(context: Context) {
+        preferences = context.getSharedPreferences("prefs", Context.MODE_PRIVATE)
+    }
+
+    fun loadFromPrefs(context: Context) {
+        val json = preferences.getString("coordinates", null) ?: return
+        CoordinateManager.loadFromJson(json)
+    }
+
+    fun setDebugMode(enabled: Boolean) {
+        preferences.edit().putBoolean("debug_mode", enabled).apply()
+    }
+
+    fun isDebugMode(): Boolean {
+        return preferences.getBoolean("debug_mode", false)
+    }
+
+
     private fun getPrefs(context: Context): SharedPreferences {
         return context.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE)
     }

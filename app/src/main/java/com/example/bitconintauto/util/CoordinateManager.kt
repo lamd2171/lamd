@@ -6,6 +6,7 @@ import com.example.bitconintauto.model.Coordinate
 import org.json.JSONArray
 import org.json.JSONObject
 import java.io.File
+import com.example.bitconintauto.util.CoordinateManager
 
 object CoordinateManager {
 
@@ -61,4 +62,30 @@ object CoordinateManager {
             trigger.y + trigger.height
         )
     }
+    fun getFinalActions(): List<Coordinate> {
+        return registeredCoordinates["final"] ?: emptyList()
+    }
+
+    fun loadFromPrefs(context: Context) {
+        val prefs = context.getSharedPreferences("coordinates", Context.MODE_PRIVATE)
+        val jsonString = prefs.getString("all_coords", null) ?: return
+        try {
+            val jsonObject = JSONObject(jsonString)
+            val restored = mutableMapOf<String, MutableList<Coordinate>>()
+            jsonObject.keys().forEach { key ->
+                val list = mutableListOf<Coordinate>()
+                val array = jsonObject.optJSONArray(key)
+                for (i in 0 until array.length()) {
+                    list.add(Coordinate.fromJson(array.getJSONObject(i)))
+                }
+                restored[key] = list
+            }
+            registeredCoordinates.clear()
+            registeredCoordinates.putAll(restored)
+            listener?.invoke()
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+    }
+
 }

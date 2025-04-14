@@ -1,75 +1,47 @@
 package com.example.bitconintauto.util
 
-import android.content.Context
+import android.accessibilityservice.AccessibilityService
+import android.accessibilityservice.GestureDescription
 import android.graphics.Path
-import android.graphics.Point
-import android.os.SystemClock
-import android.view.MotionEvent
-import android.view.accessibility.AccessibilityNodeInfo
+import android.os.Build
+import android.os.Handler
+import android.os.Looper
+import androidx.annotation.RequiresApi
 import com.example.bitconintauto.model.Coordinate
 
-class ClickSimulator(private val context: Context) {
+object ClickSimulator {
 
-    private fun performClick(x: Int, y: Int) {
-        val downTime = SystemClock.uptimeMillis()
-        val eventTime = SystemClock.uptimeMillis()
-        val motionEventDown = MotionEvent.obtain(
-            downTime,
-            eventTime,
-            MotionEvent.ACTION_DOWN,
-            x.toFloat(),
-            y.toFloat(),
-            0
-        )
-        val motionEventUp = MotionEvent.obtain(
-            downTime,
-            eventTime + 100,
-            MotionEvent.ACTION_UP,
-            x.toFloat(),
-            y.toFloat(),
-            0
-        )
-        context.sendBroadcast(Intent("com.example.bitconintauto.ACTION_SIMULATE_TOUCH").apply {
-            putExtra("motionEventDown", motionEventDown)
-            putExtra("motionEventUp", motionEventUp)
-        })
+    fun click(service: AccessibilityService, x: Int, y: Int, delay: Long = 0L) {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N) return
+
+        Handler(Looper.getMainLooper()).postDelayed({
+            val path = Path().apply {
+                moveTo(x.toFloat(), y.toFloat())
+            }
+
+            val gesture = GestureDescription.Builder()
+                .addStroke(GestureDescription.StrokeDescription(path, 0, 100))
+                .build()
+
+            service.dispatchGesture(gesture, null, null)
+        }, delay)
     }
 
-    fun tap(name: String) {
-        val coord = CoordinateManager.get(name).firstOrNull() ?: return
-        performClick(coord.x, coord.y)
+    fun clickCoordinate(service: AccessibilityService, coordinate: Coordinate, delay: Long = 0L) {
+        click(service, coordinate.x, coordinate.y, delay)
     }
 
-    fun scrollToBottom(area: String) {
-        // 단순히 아래로 3번 드래그하는 구조 (임시 구현)
-        repeat(3) {
-            dragDown(CoordinateManager.get(area).firstOrNull())
+    fun clickPathSequence(
+        service: AccessibilityService,
+        path: List<Coordinate>,
+        delayBetween: Long = 500L
+    ) {
+        if (path.isEmpty()) return
+
+        var totalDelay = 0L
+        for (coord in path) {
+            clickCoordinate(service, coord, totalDelay)
+            totalDelay += delayBetween
         }
-    }
-
-    fun scrollTo(area: String, untilName: String) {
-        // 실제 조건 기반은 OCR과 연동하거나 좌표 기준
-        repeat(2) {
-            dragDown(CoordinateManager.get(area).firstOrNull())
-        }
-    }
-
-    fun clearAndInput(name: String, text: String) {
-        // 클릭 → 텍스트 삭제 → 입력 구조 필요 (간략화)
-        tap(name)
-        // 실제 텍스트 입력 생략
-    }
-
-    fun readValue(name: String): String {
-        // OCR 또는 좌표 기반으로 값을 읽는다고 가정 (임시 더미 반환)
-        return "100.000"
-    }
-
-    fun dragDown(center: Coordinate?) {
-        if (center == null) return
-        val startX = center.x
-        val startY = center.y - 100
-        val endY = center.y + 300
-        // 실제 드래그 구현은 AccessibilityGesture 또는 shell 명령 필요
     }
 }

@@ -2913,7 +2913,9 @@ id bounce
 id bounceBoth
 id bounceEnd
 id bounceStart
+id btnAddCoord
 id btnDelete
+id btnPermission
 id btnReset
 id btnStart
 id btnStop
@@ -3261,6 +3263,7 @@ id stretch
 id submenuarrow
 id submit_area
 id supportScrollUp
+id switchDebug
 id tabMode
 id tag_accessibility_actions
 id tag_accessibility_clickable_spans

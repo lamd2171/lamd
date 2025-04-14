@@ -8,6 +8,25 @@
     android:background="#101010">
 
     <Button
+        android:id="@+id/btnPermission"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="접근성 권한" />
+
+    <Button
+        android:id="@+id/btnAddCoord"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="좌표 추가" />
+
+    <Switch
+        android:id="@+id/switchDebug"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="디버그 모드" />
+
+
+    <Button
         android:id="@+id/btnStart"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

@@ -1,52 +1,54 @@
 package com.example.bitconintauto.service
 
-import android.accessibilityservice.AccessibilityService
-import android.accessibilityservice.GestureDescription
-import android.graphics.Path
-import android.os.Build
-import androidx.annotation.RequiresApi
+import android.content.Context
+import android.util.Log
 import com.example.bitconintauto.model.Coordinate
-import com.example.bitconintauto.util.AutomationClipboard
-import com.example.bitconintauto.util.AutomationUtils
+import com.example.bitconintauto.ocr.OCRProcessor
+import com.example.bitconintauto.util.ClickSimulator
 import com.example.bitconintauto.util.CoordinateManager
 import com.example.bitconintauto.util.Utils
 
-class AutoClicker(private val service: AccessibilityService) {
+object AutoClicker {
 
-    @RequiresApi(Build.VERSION_CODES.N)
-    fun performClick(x: Int, y: Int) {
-        val path = Path().apply {
-            moveTo(x.toFloat(), y.toFloat())
+    fun executeAutomation(context: Context) {
+        Log.d("AutoClicker", "자동화 루틴 시작")
+
+        // 1. 트리거 좌표 (PRIMARY)
+        val trigger = CoordinateManager.get("primary").firstOrNull() ?: return
+        val triggerText = OCRProcessor.getText(context, trigger)
+        val triggerValue = triggerText?.toDoubleOrNull()
+        if (triggerValue == null || triggerValue < 1 || triggerText.contains(".")) {
+            Log.d("AutoClicker", "트리거 값 조건 불충족: $triggerText")
+            return
         }
-        val gesture = GestureDescription.Builder()
-            .addStroke(GestureDescription.StrokeDescription(path, 0, 100))
-            .build()
-        service.dispatchGesture(gesture, null, null)
-    }
 
-    fun performTextPaste(text: String, target: Coordinate) {
-        AutomationClipboard.setText(service, text)
-        AutomationUtils.performAutoClick(service, target)
-    }
+        // 2. 클릭 경로 실행
+        CoordinateManager.get("click").forEach {
+            ClickSimulator.performClick(it.x, it.y)
+            Thread.sleep(700)
+        }
 
-    @RequiresApi(Build.VERSION_CODES.N)
-    fun executeCycle(
-        clickPath: List<Coordinate>,
-        copyTarget: Coordinate,
-        offset: Float,
-        pasteTarget: Coordinate
-    ) {
-        clickPath.forEach {
-            AutomationUtils.performAutoClick(service, it)
+        // 3. 복사 대상 텍스트 추출
+        val copyTarget = CoordinateManager.get("copy").firstOrNull()
+        val copiedText = copyTarget?.let { OCRProcessor.getText(context, it) } ?: return
+        Log.d("AutoClicker", "복사된 텍스트: $copiedText")
+
+        // 4. 계산 수행 (0.001 더함)
+        val calculated = Utils.addValueSafely(copiedText, 0.001)
+        Log.d("AutoClicker", "계산 결과: $calculated")
+
+        // 5. 붙여넣기 좌표 입력
+        val pasteTarget = CoordinateManager.get("paste").firstOrNull()
+        if (pasteTarget != null) {
+            ClickSimulator.inputText(pasteTarget.x, pasteTarget.y, calculated)
+        }
+
+        // 6. 최종 클릭 (send 등)
+        CoordinateManager.get("final").forEach {
+            ClickSimulator.performClick(it.x, it.y)
             Thread.sleep(500)
         }
 
-        val copiedValue = Utils.readValueAt(service, copyTarget)
-        val offsetValue = copiedValue?.plus(offset) ?: return
-        val offsetString = offsetValue.toString()
-
-        performTextPaste(offsetString, pasteTarget)
-
-        AutomationUtils.performFinalActions(service, CoordinateManager.getFinalActions())
+        Log.d("AutoClicker", "자동화 루틴 완료")
     }
 }

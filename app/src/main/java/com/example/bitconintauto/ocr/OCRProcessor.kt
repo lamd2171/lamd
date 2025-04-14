@@ -2,53 +2,48 @@ package com.example.bitconintauto.ocr
 
 import android.content.Context
 import android.graphics.Bitmap
+import android.graphics.Rect
 import android.util.Log
 import com.googlecode.tesseract.android.TessBaseAPI
 import java.io.File
 import java.io.FileOutputStream
 
-class OCRProcessor {
+object OCRProcessor {
 
-    private val tessBaseApi = TessBaseAPI()
+    private var tessBaseAPI: TessBaseAPI? = null
+    private const val TESS_DATA_PATH = "tessdata"
+    private const val LANG = "eng"
 
     fun init(context: Context) {
-        val tessDataDir = File(context.filesDir, "tessdata")
-        if (!tessDataDir.exists()) {
-            tessDataDir.mkdirs()
-        }
+        val dir = File(context.filesDir, TESS_DATA_PATH)
+        if (!dir.exists()) dir.mkdirs()
 
-        val trainedData = File(tessDataDir, "eng.traineddata")
+        val trainedData = File(dir, "$LANG.traineddata")
         if (!trainedData.exists()) {
-            try {
-                context.assets.open("tessdata/eng.traineddata").use { input ->
-                    FileOutputStream(trainedData).use { output ->
-                        val buffer = ByteArray(1024)
-                        var read: Int
-                        while (input.read(buffer).also { read = it } != -1) {
-                            output.write(buffer, 0, read)
-                        }
-                    }
+            context.assets.open("tessdata/$LANG.traineddata").use { input ->
+                FileOutputStream(trainedData).use { output ->
+                    input.copyTo(output)
                 }
-            } catch (e: Exception) {
-                Log.e("OCRProcessor", "traineddata 복사 실패: ${e.message}")
             }
         }
 
-        val dataPath = context.filesDir.absolutePath
-        tessBaseApi.init(dataPath, "eng")
+        tessBaseAPI = TessBaseAPI().apply {
+            init(context.filesDir.absolutePath, LANG)
+        }
     }
 
-    fun getText(bitmap: Bitmap): String {
+    fun recognizeText(bitmap: Bitmap): String {
         return try {
-            tessBaseApi.setImage(bitmap)
-            tessBaseApi.utF8Text ?: ""
+            tessBaseAPI?.setImage(bitmap)
+            tessBaseAPI?.utF8Text?.trim() ?: ""
         } catch (e: Exception) {
             Log.e("OCRProcessor", "OCR 실패: ${e.message}")
             ""
         }
     }
 
-    fun stop() {
-        tessBaseApi.end()
+    fun release() {
+        tessBaseAPI?.end()
+        tessBaseAPI = null
     }
 }
