@@ -16,6 +16,15 @@ class MainActivity : AppCompatActivity() {
     private lateinit var controller: FloatingController
     private var isOverlayShown = false
 
+    override fun onResume() {
+        super.onResume()
+        val tvStatus = findViewById<TextView>(R.id.tv_status)
+        tvStatus.text = if (MyAccessibilityService.instance != null) {
+            "접근성 서비스: 활성화됨"
+        } else {
+            "접근성 서비스: 비활성화됨"
+        }
+    }
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -25,12 +34,7 @@ class MainActivity : AppCompatActivity() {
         val btnOpenSettings = findViewById<Button>(R.id.btn_open_settings)
         val btnStartOverlay = findViewById<Button>(R.id.btn_start_overlay)
 
-        // 접근성 서비스 상태 표시
-        tvStatus.text = if (MyAccessibilityService.instance != null) {
-            "접근성 서비스: 활성화됨"
-        } else {
-            "접근성 서비스: 비활성화됨"
-        }
+
 
         // 접근성 설정 화면으로 이동
         btnOpenSettings.setOnClickListener {

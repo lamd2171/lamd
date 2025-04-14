@@ -9,35 +9,40 @@ import android.widget.TextView
 class OCRDebugOverlay(private val context: Context) {
     private var textView: TextView? = null
     private val windowManager = context.getSystemService(Context.WINDOW_SERVICE) as WindowManager
+    private var currentRect: Rect? = null
 
     fun show(rect: Rect, text: String) {
-        dismiss()
+        if (textView == null) {
+            textView = TextView(context).apply {
+                setBackgroundColor(0x55FF0000) // 반투명 빨강
+                setTextColor(0xFFFFFFFF.toInt())
+                setPadding(8, 8, 8, 8)
+                textSize = 12f
+            }
 
-        textView = TextView(context).apply {
-            this.text = text
-            setBackgroundColor(0xAA000000.toInt())
-            setTextColor(0xFFFFFFFF.toInt())
-            setPadding(8, 8, 8, 8)
+            val params = WindowManager.LayoutParams(
+                rect.width(),
+                rect.height(),
+                WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY,
+                WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE or WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE,
+                PixelFormat.TRANSLUCENT
+            ).apply {
+                x = rect.left
+                y = rect.top
+            }
+
+            windowManager.addView(textView, params)
+            currentRect = rect
         }
 
-        val params = WindowManager.LayoutParams(
-            rect.width(),
-            rect.height(),
-            WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY,
-            WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE,
-            PixelFormat.TRANSLUCENT
-        ).apply {
-            x = rect.left
-            y = rect.top
-        }
-
-        windowManager.addView(textView, params)
+        textView?.text = text
     }
 
     fun dismiss() {
         textView?.let {
             windowManager.removeView(it)
             textView = null
+            currentRect = null
         }
     }
 }

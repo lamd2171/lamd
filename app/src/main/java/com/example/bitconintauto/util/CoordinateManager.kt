@@ -5,6 +5,11 @@ import com.example.bitconintauto.model.Coordinate
 object CoordinateManager {
     private val coordinates = mutableMapOf<String, MutableList<Coordinate>>()
 
+    init {
+        // 기본 트리거 좌표 등록 (LDPlayer 기준)
+        set("trigger", Coordinate(x = 200, y = 120, width = 140, height = 60))
+    }
+
     fun get(label: String): List<Coordinate> = coordinates[label] ?: emptyList()
 
     fun set(label: String, coordinate: Coordinate) {

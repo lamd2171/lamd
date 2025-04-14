@@ -6,7 +6,7 @@ import com.example.bitconintauto.ocr.OCRProcessor
 import com.example.bitconintauto.ui.OCRDebugOverlay
 import com.example.bitconintauto.util.*
 import kotlinx.coroutines.*
-import android.content.Context
+import android.util.Log
 
 object ExecutorManager {
     private var isRunning = false
@@ -19,8 +19,6 @@ object ExecutorManager {
         isRunning = true
 
         ocrProcessor = OCRProcessor().apply { init(service) }
-
-        // ⚠️ 여기는 Context가 필요하므로 service로부터 getApplicationContext 사용
         debugOverlay = OCRDebugOverlay(service.applicationContext)
         val click = ClickSimulator(service)
 
@@ -28,7 +26,12 @@ object ExecutorManager {
             while (isRunning) {
                 delay(2000)
 
-                val triggerCoordinate = CoordinateManager.get("trigger").firstOrNull() ?: continue
+                val triggerCoordinate = CoordinateManager.getPrimaryCoordinate()
+                if (triggerCoordinate == null) {
+                    Log.e("ExecutorManager", "trigger 좌표 없음")
+                    continue
+                }
+
                 val bitmap = OCRCaptureUtils.captureRegion(triggerCoordinate)
                 val text = bitmap?.let { ocrProcessor?.getText(it) } ?: ""
                 val triggerValue = text.trim().toDoubleOrNull()?.toInt() ?: 0
