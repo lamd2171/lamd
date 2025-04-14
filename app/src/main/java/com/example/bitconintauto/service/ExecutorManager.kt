@@ -84,9 +84,62 @@ object ExecutorManager {
 
     fun getIsRunning(): Boolean = isRunning
 
+    // ✅ 실제 자동화 동작 구현
     private suspend fun executeStepFlow(click: ClickSimulator) {
-        Log.d("Executor", "[▶️] 루틴 동작 중... (실제 클릭 루틴 진입)")
-        delay(1000)
-        // 여기서 자동화 클릭 실행 로직이 들어감
+        Log.d("Executor", "[▶️] 루틴 동작 중... (클릭 시작)")
+        delay(500)
+
+        // 1️⃣ 클릭 루틴 (step2~step10)
+        val clickSequence = CoordinateManager.getClickPathSequence()
+        for ((i, coord) in clickSequence.withIndex()) {
+            Log.d("Executor", "[🧭] 클릭 ${i + 1}: ${coord.label}")
+            click.performClick(coord)
+            delay(500)
+        }
+
+        // 2️⃣ 복사 대상 클릭 및 OCR 읽기
+        val copyTarget = CoordinateManager.getCopyTarget()
+        val copyText = if (copyTarget != null) {
+            click.performClick(copyTarget)
+            delay(300)
+            click.readText(copyTarget)
+        } else {
+            Log.e("Executor", "[❌] 복사 대상이 없음.")
+            return
+        }
+        Log.d("Executor", "[📋] 복사된 텍스트: $copyText")
+
+        val value = copyText.toDoubleOrNull()
+        if (value == null) {
+            Log.e("Executor", "[❌] 복사된 값 숫자 변환 실패: $copyText")
+            return
+        }
+
+        // 3️⃣ 계산 수행 (+0.001)
+        val result = value + 0.001
+        val resultText = "%.6f".format(result)
+        Log.d("Executor", "[➕] 계산 결과: $resultText")
+
+        // 4️⃣ 붙여넣기 대상 클릭 + 입력
+        val pasteTarget = CoordinateManager.getPasteTarget()
+        if (pasteTarget != null) {
+            click.clearAndInput(pasteTarget.label, resultText)
+            Log.d("Executor", "[📥] 입력 완료: $resultText")
+        } else {
+            Log.e("Executor", "[❌] 붙여넣기 대상이 없음.")
+            return
+        }
+
+        delay(500)
+
+        // 5️⃣ 최종 클릭 루틴
+        val finalSequence = CoordinateManager.getFinalClickCoordinates()
+        for ((i, coord) in finalSequence.withIndex()) {
+            Log.d("Executor", "[✅] 최종 클릭 ${i + 1}: ${coord.label}")
+            click.performClick(coord)
+            delay(500)
+        }
+
+        Log.d("Executor", "[🏁] 루틴 완료.")
     }
 }

@@ -1,7 +1,14 @@
 package com.example.bitconintauto.util
 
 import android.accessibilityservice.AccessibilityService
+import android.graphics.Path
+import android.graphics.Rect
+import android.os.Build
+import android.util.Log
+import android.view.accessibility.AccessibilityNodeInfo
+import androidx.annotation.RequiresApi
 import com.example.bitconintauto.model.Coordinate
+import kotlinx.coroutines.*
 import com.example.bitconintauto.ocr.OCRProcessor
 
 class ClickSimulator(private val service: AccessibilityService) {
@@ -24,7 +31,13 @@ class ClickSimulator(private val service: AccessibilityService) {
 
     fun clearAndInput(coord: Coordinate, text: String) {
         performClick(coord)
+        Thread.sleep(200)
         AccessibilityTextInput.sendText(service, text)
+    }
+
+    fun readText(coord: Coordinate): String {
+        val bitmap = OCRCaptureUtils.capture(service, coord) ?: return ""
+        return OCRProcessor().getText(bitmap)
     }
 
     fun isValueMatched(label1: String, label2: String): Boolean {
@@ -37,16 +50,40 @@ class ClickSimulator(private val service: AccessibilityService) {
         return v1 == v2
     }
 
-    fun readText(coord: Coordinate): String {
-        val bitmap = OCRCaptureUtils.capture(service, coord) ?: return ""
-        return OCRProcessor().getText(bitmap)
+    // ✅ 아래는 실제 동작하는 스크롤 제스처 구현부
+
+    fun scrollToBottom(label: String) {
+        val coord = CoordinateManager.get(label).firstOrNull() ?: return
+        val startX = coord.x + coord.width / 2
+        val startY = coord.y + coord.height - 10
+        val endX = startX
+        val endY = coord.y + 10
+
+        simulateSwipe(startX, startY, endX, endY)
     }
 
     fun scrollTo(label: String, targetLabel: String) {
-        // 실제 앱에서 필요한 경우 구현, 없으면 생략
+        // 아직 타겟 요소 탐지 로직은 미구현 상태 (OCR이나 Node 탐색 필요)
+        // 대신 스크롤 여러번 시도하도록 구성
+        repeat(3) {
+            scrollToBottom(label)
+            Thread.sleep(500)
+        }
     }
 
-    fun scrollToBottom(label: String) {
-        // 실제 앱에서 필요한 경우 구현, 없으면 생략
+    private fun simulateSwipe(startX: Int, startY: Int, endX: Int, endY: Int) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            val path = Path().apply {
+                moveTo(startX.toFloat(), startY.toFloat())
+                lineTo(endX.toFloat(), endY.toFloat())
+            }
+
+            val gesture = android.accessibilityservice.GestureDescription.Builder()
+                .addStroke(android.accessibilityservice.GestureDescription.StrokeDescription(path, 0, 300))
+                .build()
+
+            service.dispatchGesture(gesture, null, null)
+            Log.d("ClickSimulator", "[🖐] 스크롤 제스처 실행: $startX,$startY → $endX,$endY")
+        }
     }
 }
