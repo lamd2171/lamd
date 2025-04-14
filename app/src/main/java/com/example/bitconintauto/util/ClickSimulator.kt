@@ -13,7 +13,7 @@ import com.example.bitconintauto.model.Coordinate
 import com.example.bitconintauto.ocr.OCRProcessor
 import kotlinx.coroutines.*
 
-class ClickSimulator(private val service: AccessibilityService) {
+class ClickSimulator(val service: AccessibilityService) {
 
     fun performClick(label: String) {
         val coord = CoordinateManager.get(label).firstOrNull() ?: return

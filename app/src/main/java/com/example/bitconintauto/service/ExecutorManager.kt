@@ -88,7 +88,7 @@ object ExecutorManager {
             val bmp = OCRCaptureUtils.capture(click.service, coord) ?: continue
             val ocrText = OCRProcessor().getText(bmp).trim()
 
-            Log.d("Executor", "[🔍 OCR Step] $label → "$ocrText" vs "$keyword")
+            Log.d("Executor", "[🔍 OCR Step] $label → \"$ocrText\" vs \"$keyword\"")
             if (ocrText.contains(keyword, true)) {
                 click.performClick(coord)
                 Log.d("Executor", "[✅ 클릭] $label ($keyword)")
