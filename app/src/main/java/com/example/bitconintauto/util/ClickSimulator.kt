@@ -23,7 +23,7 @@ class ClickSimulator(private val service: AccessibilityService) {
     fun performClick(coord: Coordinate) {
         val x = coord.x + coord.width / 2
         val y = coord.y + coord.height / 2
-        Log.d("ClickSimulator", "[👆] 좌표 클릭: (${x}, ${y})")
+        Log.d("ClickSimulator", "[\uD83D\uDC46] 좌표 클릭: (${x}, ${y})")
         AccessibilityTapper.simulateClick(service, x, y)
     }
 
@@ -41,7 +41,7 @@ class ClickSimulator(private val service: AccessibilityService) {
     fun readText(coord: Coordinate): String {
         val bitmap = OCRCaptureUtils.capture(service, coord) ?: return ""
         val text = OCRProcessor().getText(bitmap).trim()
-        Log.d("ClickSimulator", "[🔍] OCR 텍스트 추출 결과: $text")
+        Log.d("ClickSimulator", "[\uD83D\uDD0D] OCR 텍스트 추출 결과: $text")
         return text
     }
 
@@ -52,7 +52,7 @@ class ClickSimulator(private val service: AccessibilityService) {
         val v2 = CoordinateManager.get(label2).firstOrNull()?.let { coord2 ->
             OCRCaptureUtils.capture(service, coord2)?.let { bmp -> OCRProcessor().getText(bmp) }?.toDoubleOrNull()
         } ?: return false
-        Log.d("ClickSimulator", "[📐] 비교 값 → v1: $v1, v2: $v2")
+        Log.d("ClickSimulator", "[\uD83D\uDCCA] 비교 값 → v1: $v1, v2: $v2")
         return v1 == v2
     }
 
@@ -76,7 +76,7 @@ class ClickSimulator(private val service: AccessibilityService) {
         repeat(5) {
             val coord = CoordinateManager.get(targetLabel).firstOrNull()
             if (coord != null) {
-                Log.d("ClickSimulator", "[👀] '$targetLabel' 감지됨")
+                Log.d("ClickSimulator", "[\uD83D\uDC40] '$targetLabel' 감지됨")
                 return
             }
             Log.d("ClickSimulator", "[⬇️] '$targetLabel' 미감지 → 스크롤 시도 ($it)")
@@ -95,7 +95,7 @@ class ClickSimulator(private val service: AccessibilityService) {
                 .addStroke(android.accessibilityservice.GestureDescription.StrokeDescription(path, 0, 300))
                 .build()
             service.dispatchGesture(gesture, null, null)
-            Log.d("ClickSimulator", "[🖐] 스크롤 제스처 실행: $startX,$startY → $endX,$endY")
+            Log.d("ClickSimulator", "[\uD83D\uDD50] 스크롤 제스처 실행: $startX,$startY → $endX,$endY")
         }
     }
 
@@ -105,7 +105,7 @@ class ClickSimulator(private val service: AccessibilityService) {
         val bitmap = OCRCaptureUtils.capture(service, coord) ?: return
         val text = OCRProcessor().getText(bitmap).trim()
 
-        Log.d("ClickSimulator", "[🔍] '$label'에서 OCR 텍스트 감지: '$text' vs '$targetText'")
+        Log.d("ClickSimulator", "[\uD83D\uDD0D] '$label'에서 OCR 텍스트 감지: '$text' vs '$targetText'")
         if (text.contains(targetText, ignoreCase = true)) {
             Log.d("ClickSimulator", "[✅] '$targetText' 감지됨 → 클릭 실행")
             performClick(coord)

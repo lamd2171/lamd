@@ -16,6 +16,7 @@ object ExecutorManager {
     private var job: Job? = null
     private var ocrProcessor: OCRProcessor? = null
     private var debugOverlay: OCRDebugOverlay? = null
+    private var isExecutingSteps = false
 
     fun start(service: AccessibilityService) {
         if (isRunning) {
@@ -26,7 +27,7 @@ object ExecutorManager {
         isRunning = true
         Toast.makeText(service, "✅ 자동화 시작됨", Toast.LENGTH_SHORT).show()
 
-        CoordinateManager.set("trigger", Coordinate(x = 120, y = 220, width = 300, height = 100, label = "trigger"))
+        CoordinateManager.set("trigger", Coordinate(x = 45, y = 240, width = 350, height = 120, label = "trigger"))
 
         ocrProcessor = OCRProcessor().apply { init(service) }
         debugOverlay = OCRDebugOverlay(service.applicationContext)
@@ -52,7 +53,9 @@ object ExecutorManager {
 
                 if (triggerValue >= 1) {
                     Log.d("Executor", "[✅ Trigger 감지: $text] 루틴 실행")
+                    isExecutingSteps = true
                     executeStepFlow(click)
+                    isExecutingSteps = false
                 }
             }
         }
