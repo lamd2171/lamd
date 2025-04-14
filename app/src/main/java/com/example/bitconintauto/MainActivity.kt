@@ -11,6 +11,15 @@ import androidx.appcompat.app.AppCompatActivity
 import com.example.bitconintauto.service.MyAccessibilityService
 import com.example.bitconintauto.ui.FloatingController
 
+import android.app.Activity
+import android.content.Context
+import android.media.projection.MediaProjection
+import android.media.projection.MediaProjectionManager
+
+private lateinit var mediaProjectionManager: MediaProjectionManager
+private var mediaProjection: MediaProjection? = null
+private val REQUEST_SCREEN_CAPTURE = 1001
+
 class MainActivity : AppCompatActivity() {
 
     private lateinit var controller: FloatingController
@@ -61,6 +70,9 @@ class MainActivity : AppCompatActivity() {
                 controller.show()
                 isOverlayShown = true
             }
+            mediaProjectionManager = getSystemService(Context.MEDIA_PROJECTION_SERVICE) as MediaProjectionManager
+            val captureIntent = mediaProjectionManager.createScreenCaptureIntent()
+            startActivityForResult(captureIntent, REQUEST_SCREEN_CAPTURE)
         }
     }
 
@@ -70,4 +82,16 @@ class MainActivity : AppCompatActivity() {
         }
         super.onDestroy()
     }
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if (requestCode == REQUEST_SCREEN_CAPTURE && resultCode == Activity.RESULT_OK && data != null) {
+            mediaProjection = mediaProjectionManager.getMediaProjection(resultCode, data)
+            if (mediaProjection != null) {
+                // OCRCaptureUtils 에 전달
+                com.example.bitconintauto.util.OCRCaptureUtils.setMediaProjection(mediaProjection!!)
+                Toast.makeText(this, "화면 캡처 권한 허용됨", Toast.LENGTH_SHORT).show()
+            }
+        }
+    }
+
 }

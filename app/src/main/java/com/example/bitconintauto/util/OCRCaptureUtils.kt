@@ -1,41 +1,71 @@
 package com.example.bitconintauto.util
 
 import android.accessibilityservice.AccessibilityService
-import android.graphics.*
+import android.graphics.Bitmap
+import android.graphics.Canvas
+import android.graphics.Rect
+import android.media.ImageReader
+import android.media.projection.MediaProjection
+import android.os.Build
+import android.util.DisplayMetrics
+import android.view.WindowManager
+import androidx.annotation.RequiresApi
 import com.example.bitconintauto.model.Coordinate
+import java.nio.ByteBuffer
 
 object OCRCaptureUtils {
 
-    // 실제 캡처를 할 수 있는 구조가 아니므로 빈 비트맵만 반환 (샘플 구조 유지)
-    fun capture(service: AccessibilityService, coord: Coordinate): Bitmap {
-        val bitmap = Bitmap.createBitmap(coord.width, coord.height, Bitmap.Config.ARGB_8888)
-        val canvas = Canvas(bitmap)
-        val paint = Paint().apply {
-            color = Color.BLACK
-            textSize = 42f
-            isAntiAlias = true
-        }
+    private var projection: MediaProjection? = null
+    private var imageReader: ImageReader? = null
 
-        canvas.drawColor(Color.WHITE)
-        canvas.drawText("", 10f, coord.height / 2f, paint)
-
-        return bitmap
+    fun setMediaProjection(mediaProjection: MediaProjection) {
+        projection = mediaProjection
     }
 
-    fun captureRegion(coord: Coordinate): Bitmap {
-        val bitmap = Bitmap.createBitmap(coord.width, coord.height, Bitmap.Config.ARGB_8888)
-        val canvas = Canvas(bitmap)
-        val paint = Paint().apply {
-            color = Color.BLACK
-            textSize = 42f
-            isAntiAlias = true
+    @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
+    fun capture(service: AccessibilityService, coord: Coordinate): Bitmap? {
+        val windowManager = service.getSystemService(WindowManager::class.java)
+        val metrics = DisplayMetrics().also {
+            windowManager.defaultDisplay.getRealMetrics(it)
         }
 
-        canvas.drawColor(Color.WHITE)
-        // ✅ 아래 줄을 반드시 삭제 또는 주석 처리
-        // canvas.drawText("123", 10f, coord.height / 2f, paint)
+        val screenWidth = metrics.widthPixels
+        val screenHeight = metrics.heightPixels
+        val screenDensity = metrics.densityDpi
 
-        return bitmap
+        if (imageReader == null) {
+            imageReader = ImageReader.newInstance(screenWidth, screenHeight, 0x1, 2)
+        }
+
+        projection?.createVirtualDisplay(
+            "ScreenCapture",
+            screenWidth,
+            screenHeight,
+            screenDensity,
+            0,
+            imageReader?.surface,
+            null,
+            null
+        ) ?: return null
+
+        val image = imageReader?.acquireLatestImage() ?: return null
+
+        val planes = image.planes
+        val buffer: ByteBuffer = planes[0].buffer
+        val pixelStride = planes[0].pixelStride
+        val rowStride = planes[0].rowStride
+        val rowPadding = rowStride - pixelStride * screenWidth
+
+        val bitmap = Bitmap.createBitmap(
+            screenWidth + rowPadding / pixelStride,
+            screenHeight,
+            Bitmap.Config.ARGB_8888
+        )
+        bitmap.copyPixelsFromBuffer(buffer)
+        image.close()
+
+        val rect = Rect(coord.x, coord.y, coord.x + coord.width, coord.y + coord.height)
+        return Bitmap.createBitmap(bitmap, rect.left, rect.top, rect.width(), rect.height())
     }
 
     fun captureDummy(): Bitmap? = null
