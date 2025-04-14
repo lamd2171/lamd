@@ -34,11 +34,11 @@ class FloatingController(private val context: Context) {
 
         // 실행 상태에 따라 버튼 상태 설정
         btnToggle.setImageResource(
-            if (ExecutorManager.isRunning) R.drawable.ic_stop else R.drawable.ic_play
+            if (ExecutorManager.getIsRunning()) R.drawable.ic_stop else R.drawable.ic_play
         )
 
         btnToggle.setOnClickListener {
-            if (ExecutorManager.isRunning) {
+            if (ExecutorManager.getIsRunning()) {
                 ExecutorManager.stop()
                 btnToggle.setImageResource(R.drawable.ic_play)
             } else {

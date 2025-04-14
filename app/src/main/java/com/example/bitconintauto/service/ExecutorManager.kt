@@ -4,6 +4,7 @@ package com.example.bitconintauto.service
 import android.content.Context
 import android.graphics.Rect
 import android.util.Log
+import com.example.bitconintauto.model.Coordinate
 import com.example.bitconintauto.ocr.OCRProcessor
 import com.example.bitconintauto.ui.OCRDebugOverlay
 import com.example.bitconintauto.util.ClickSimulator
@@ -21,9 +22,9 @@ object ExecutorManager {
         if (isRunning) return
         isRunning = true
 
-        ocrProcessor = OCRProcessor().apply { init(context) }
-        debugOverlay = OCRDebugOverlay(context)
-        val click = ClickSimulator(context)
+        ocrProcessor = OCRProcessor().apply { init(service) }
+        debugOverlay = OCRDebugOverlay(service)
+        val click = ClickSimulator(service)
 
         job = CoroutineScope(Dispatchers.Default).launch {
             while (isRunning) {
@@ -37,7 +38,9 @@ object ExecutorManager {
                 val triggerValue = text.trim().toDoubleOrNull()?.toInt() ?: 0
 
                 withContext(Dispatchers.Main) {
-                    debugOverlay?.show(triggerCoordinate.toRect(), text)
+                    private fun Coordinate.toRect(): Rect {
+                        return Rect(x, y, x + width, y + height)
+                    }
                 }
 
                 if (triggerValue >= 1) {
@@ -53,6 +56,12 @@ object ExecutorManager {
         debugOverlay?.dismiss()
         job = null
     }
+
+    private fun Coordinate.toRect(): Rect {
+        return Rect(x, y, x + width, y + height)
+    }
+
+    fun getIsRunning(): Boolean = isRunning
 
     private suspend fun executeStepFlow(click: ClickSimulator) {
         val sequence = listOf(

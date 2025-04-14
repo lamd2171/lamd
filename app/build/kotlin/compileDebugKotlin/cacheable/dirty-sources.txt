@@ -1,15 +1,14 @@
 C:\Users\abc\AndroidStudioProjects\bitconintauto\app\src\main\java\com\example\bitconintauto\MyApplication.kt
 C:\Users\abc\AndroidStudioProjects\bitconintauto\app\src\main\java\com\example\bitconintauto\util\NumberDetector.kt
 C:\Users\abc\AndroidStudioProjects\bitconintauto\app\src\main\java\com\example\bitconintauto\service\CycleHandler.kt
-C:\Users\abc\AndroidStudioProjects\bitconintauto\app\src\main\java\com\example\bitconintauto\ui\CoordinateRegistrationGuide.kt
 C:\Users\abc\AndroidStudioProjects\bitconintauto\app\src\main\java\com\example\bitconintauto\OverlayView.kt
 C:\Users\abc\AndroidStudioProjects\bitconintauto\app\src\main\java\com\example\bitconintauto\service\AutoClicker.kt
+C:\Users\abc\AndroidStudioProjects\bitconintauto\app\src\main\java\com\example\bitconintauto\util\AccessibilityTapper.kt
 C:\Users\abc\AndroidStudioProjects\bitconintauto\app\src\main\java\com\example\bitconintauto\util\ClickSimulator.kt
 C:\Users\abc\AndroidStudioProjects\bitconintauto\app\src\main\java\com\example\bitconintauto\util\PreferenceHelper.kt
 C:\Users\abc\AndroidStudioProjects\bitconintauto\app\src\main\java\com\example\bitconintauto\ui\FloatingController.kt
 C:\Users\abc\AndroidStudioProjects\bitconintauto\app\src\main\java\com\example\bitconintauto\service\OCRProcessor.kt
 C:\Users\abc\AndroidStudioProjects\bitconintauto\app\src\main\java\com\example\bitconintauto\ui\TutorialOverlay.kt
-C:\Users\abc\AndroidStudioProjects\bitconintauto\app\src\main\java\com\example\bitconintauto\ui\OverlayResizableEditor.kt
 C:\Users\abc\AndroidStudioProjects\bitconintauto\app\src\main\java\com\example\bitconintauto\MainActivity.kt
 C:\Users\abc\AndroidStudioProjects\bitconintauto\app\src\main\java\com\example\bitconintauto\ocr\OCRProcessor.kt
 C:\Users\abc\AndroidStudioProjects\bitconintauto\app\src\main\java\com\example\bitconintauto\ui\OCRDebugOverlay.kt
@@ -30,6 +29,7 @@ C:\Users\abc\AndroidStudioProjects\bitconintauto\app\src\main\java\com\example\b
 C:\Users\abc\AndroidStudioProjects\bitconintauto\app\src\main\java\com\example\bitconintauto\util\ScreenCaptureHelper.kt
 C:\Users\abc\AndroidStudioProjects\bitconintauto\app\src\main\java\com\example\bitconintauto\ui\CoordinateListActivity.kt
 C:\Users\abc\AndroidStudioProjects\bitconintauto\app\src\main\java\com\example\bitconintauto\util\ResolutionHelper.kt
+C:\Users\abc\AndroidStudioProjects\bitconintauto\app\src\main\java\com\example\bitconintauto\util\AccessibilityTextInput.kt
 C:\Users\abc\AndroidStudioProjects\bitconintauto\app\src\main\java\com\example\bitconintauto\util\Utils.kt
 C:\Users\abc\AndroidStudioProjects\bitconintauto\app\src\main\java\com\example\bitconintauto\util\ComparisonUtils.kt
 C:\Users\abc\AndroidStudioProjects\bitconintauto\app\src\main\java\com\example\bitconintauto\service\OCRInitializer.kt
