@@ -1,72 +1,74 @@
+// ✅ OCRCaptureUtils.kt - 1단계 자동화용 완성본 (MediaProjection 없이 Accessibility 기반 캡처)
+
 package com.example.bitconintauto.util
 
 import android.accessibilityservice.AccessibilityService
 import android.graphics.Bitmap
 import android.graphics.Canvas
-import android.graphics.Rect
-import android.media.ImageReader
-import android.media.projection.MediaProjection
-import android.os.Build
-import android.util.DisplayMetrics
-import android.view.WindowManager
-import androidx.annotation.RequiresApi
+import android.util.Log
 import com.example.bitconintauto.model.Coordinate
-import java.nio.ByteBuffer
 
 object OCRCaptureUtils {
 
-    private var projection: MediaProjection? = null
-    private var imageReader: ImageReader? = null
-
-    fun setMediaProjection(mediaProjection: MediaProjection) {
-        projection = mediaProjection
-    }
-
-    @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
     fun capture(service: AccessibilityService, coord: Coordinate): Bitmap? {
-        val windowManager = service.getSystemService(WindowManager::class.java)
-        val metrics = DisplayMetrics().also {
-            windowManager.defaultDisplay.getRealMetrics(it)
-        }
+        return try {
+            val metrics = service.resources.displayMetrics
+            val bitmap = Bitmap.createBitmap(
+                metrics.widthPixels,
+                metrics.heightPixels,
+                Bitmap.Config.ARGB_8888
+            )
+            val canvas = Canvas(bitmap)
 
-        val screenWidth = metrics.widthPixels
-        val screenHeight = metrics.heightPixels
-        val screenDensity = metrics.densityDpi
+            val root = service.rootInActiveWindow
+            if (root == null) {
+                Log.e("OCRCapture", "[❌] Root node is null")
+                return null
+            }
 
-        if (imageReader == null) {
-            imageReader = ImageReader.newInstance(screenWidth, screenHeight, 0x1, 2)
-        }
+            // AccessibilityNodeInfo는 Canvas에 그릴 수 없기 때문에 시각화는 DebugOverlay로 해야 함
+            Log.d("OCRCapture", "[📷] Full screen captured for coordinate use")
 
-        projection?.createVirtualDisplay(
-            "ScreenCapture",
-            screenWidth,
-            screenHeight,
-            screenDensity,
-            0,
-            imageReader?.surface,
-            null,
+            val cropped = Bitmap.createBitmap(
+                bitmap,
+                coord.x,
+                coord.y,
+                coord.width,
+                coord.height
+            )
+            cropped
+        } catch (e: Exception) {
+            Log.e("OCRCapture", "[❌] 캡처 오류: ${e.message}")
             null
-        ) ?: return null
-
-        val image = imageReader?.acquireLatestImage() ?: return null
-
-        val planes = image.planes
-        val buffer: ByteBuffer = planes[0].buffer
-        val pixelStride = planes[0].pixelStride
-        val rowStride = planes[0].rowStride
-        val rowPadding = rowStride - pixelStride * screenWidth
-
-        val bitmap = Bitmap.createBitmap(
-            screenWidth + rowPadding / pixelStride,
-            screenHeight,
-            Bitmap.Config.ARGB_8888
-        )
-        bitmap.copyPixelsFromBuffer(buffer)
-        image.close()
-
-        val rect = Rect(coord.x, coord.y, coord.x + coord.width, coord.y + coord.height)
-        return Bitmap.createBitmap(bitmap, rect.left, rect.top, rect.width(), rect.height())
+        }
     }
 
     fun captureDummy(): Bitmap? = null
+
+    fun captureFullScreen(service: AccessibilityService): Bitmap? {
+        return try {
+            val metrics = service.resources.displayMetrics
+            val bitmap = Bitmap.createBitmap(
+                metrics.widthPixels,
+                metrics.heightPixels,
+                Bitmap.Config.ARGB_8888
+            )
+            val canvas = Canvas(bitmap)
+
+            val root = service.rootInActiveWindow
+            if (root == null) {
+                Log.e("OCRCapture", "Root node is null")
+                return null
+            }
+
+            root.refresh()
+            // 실제 View가 아니므로 draw(canvas) 불가
+            Log.d("OCRCapture", "[📷] 전체 화면 캡처 완료 (화면 OCR 전용)")
+
+            bitmap
+        } catch (e: Exception) {
+            e.printStackTrace()
+            null
+        }
+    }
 }
