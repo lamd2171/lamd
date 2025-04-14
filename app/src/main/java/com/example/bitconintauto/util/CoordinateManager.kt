@@ -7,7 +7,7 @@ object CoordinateManager {
 
     init {
         // 기본 트리거 좌표 등록 (LDPlayer 기준)
-        set("trigger", Coordinate(x = 200, y = 120, width = 140, height = 60))
+        set("trigger", Coordinate(x = 80, y = 230, width = 430, height = 120))
     }
 
     fun get(label: String): List<Coordinate> = coordinates[label] ?: emptyList()

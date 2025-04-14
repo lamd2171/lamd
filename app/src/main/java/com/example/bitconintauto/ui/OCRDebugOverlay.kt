@@ -18,7 +18,7 @@ class OCRDebugOverlay(private val context: Context) {
                 setBackgroundColor(0x55FF0000) // 반투명 빨강
                 setTextColor(0xFFFFFFFF.toInt())
                 setPadding(8, 8, 8, 8)
-                textSize = 12f
+                textSize = 14f  // 업그레이드: 좀 더 잘 보이게
             }
 
             val params = WindowManager.LayoutParams(
@@ -28,7 +28,7 @@ class OCRDebugOverlay(private val context: Context) {
                 WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE or WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE,
                 PixelFormat.TRANSLUCENT
             ).apply {
-                gravity = Gravity.TOP or Gravity.START  // ✅ 위치 적용 명확히
+                gravity = Gravity.TOP or Gravity.START
                 x = rect.left
                 y = rect.top
             }
@@ -37,6 +37,7 @@ class OCRDebugOverlay(private val context: Context) {
             currentRect = rect
         }
 
+        // 업그레이드: 상태 텍스트도 포함된 text 전체 표시
         textView?.text = text
     }
 
