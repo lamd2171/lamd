@@ -2913,14 +2913,11 @@ id bounce
 id bounceBoth
 id bounceEnd
 id bounceStart
-id btnAddCoord
 id btnDelete
-id btnPermission
-id btnReset
-id btnStart
-id btnStop
 id btn_close_guide
 id btn_next
+id btn_open_settings
+id btn_start_overlay
 id btn_toggle
 id buttonPanel
 id cache_measures
@@ -3185,6 +3182,7 @@ id rightToLeft
 id right_icon
 id right_side
 id root
+id rootLayout
 id rounded
 id row_index_key
 id save_non_transition_alpha
@@ -3263,7 +3261,6 @@ id stretch
 id submenuarrow
 id submit_area
 id supportScrollUp
-id switchDebug
 id tabMode
 id tag_accessibility_actions
 id tag_accessibility_clickable_spans
@@ -3316,6 +3313,7 @@ id tutorial_message
 id tutorial_text
 id tvDetails
 id tvLabel
+id tv_status
 id unchecked
 id uniform
 id unlabeled

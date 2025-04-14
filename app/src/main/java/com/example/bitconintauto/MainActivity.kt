@@ -4,30 +4,64 @@ import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import android.provider.Settings
+import android.widget.Button
+import android.widget.TextView
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import com.example.bitconintauto.service.MyAccessibilityService
 import com.example.bitconintauto.ui.FloatingController
 
 class MainActivity : AppCompatActivity() {
 
     private lateinit var controller: FloatingController
+    private var isOverlayShown = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_main)
 
-        if (!Settings.canDrawOverlays(this)) {
-            val intent = Intent(
-                Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
-                Uri.parse("package:$packageName")
-            )
+        // UI 연결
+        val tvStatus = findViewById<TextView>(R.id.tv_status)
+        val btnOpenSettings = findViewById<Button>(R.id.btn_open_settings)
+        val btnStartOverlay = findViewById<Button>(R.id.btn_start_overlay)
+
+        // 접근성 서비스 상태 표시
+        tvStatus.text = if (MyAccessibilityService.instance != null) {
+            "접근성 서비스: 활성화됨"
+        } else {
+            "접근성 서비스: 비활성화됨"
+        }
+
+        // 접근성 설정 화면으로 이동
+        btnOpenSettings.setOnClickListener {
+            val intent = Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS)
             startActivity(intent)
         }
 
-        controller = FloatingController(this)
-        controller.show()
+        // 오버레이 띄우기
+        btnStartOverlay.setOnClickListener {
+            if (!Settings.canDrawOverlays(this)) {
+                Toast.makeText(this, "오버레이 권한이 필요합니다.", Toast.LENGTH_SHORT).show()
+                val intent = Intent(
+                    Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
+                    Uri.parse("package:$packageName")
+                )
+                startActivity(intent)
+                return@setOnClickListener
+            }
+
+            if (!isOverlayShown) {
+                controller = FloatingController(this)
+                controller.show()
+                isOverlayShown = true
+            }
+        }
     }
 
     override fun onDestroy() {
-        controller.dismiss()
+        if (isOverlayShown) {
+            controller.dismiss()
+        }
         super.onDestroy()
     }
 }

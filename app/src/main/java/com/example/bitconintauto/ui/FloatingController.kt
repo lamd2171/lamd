@@ -7,9 +7,9 @@ import android.view.View
 import android.view.WindowManager
 import android.widget.ImageButton
 import android.widget.Toast
-import com.example.bitconintauto.service.MyAccessibilityService
 import com.example.bitconintauto.R
 import com.example.bitconintauto.service.ExecutorManager
+import com.example.bitconintauto.service.MyAccessibilityService
 
 class FloatingController(private val context: Context) {
     private var floatingView: View? = null
@@ -42,7 +42,6 @@ class FloatingController(private val context: Context) {
                 Toast.makeText(context, "접근성 서비스가 활성화되지 않았습니다.", Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
-            ExecutorManager.start(service) // ✅ 여기서 service는 정확히 AccessibilityService 타입으로 추론됨
 
             if (ExecutorManager.getIsRunning()) {
                 ExecutorManager.stop()

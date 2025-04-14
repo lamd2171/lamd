@@ -9,15 +9,8 @@
         android:layout_width="56dp"
         android:layout_height="56dp"
         android:background="@drawable/floating_button_background"
+        android:src="@drawable/ic_play"
+        android:contentDescription="토글 버튼"
         android:scaleType="centerInside"
-        android:src="@drawable/ic_play"
-        android:contentDescription="플로팅 실행 토글 버튼" />
-
-    <ImageButton
-        android:id="@+id/btn_toggle"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:src="@drawable/ic_play"
-        android:background="@drawable/floating_button_background" />
-
+        android:padding="8dp" />
 </FrameLayout>
