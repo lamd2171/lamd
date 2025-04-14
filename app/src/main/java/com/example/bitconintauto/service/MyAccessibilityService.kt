@@ -5,6 +5,7 @@ import android.accessibilityservice.AccessibilityService
 import android.os.Build
 import android.view.accessibility.AccessibilityNodeInfo
 import androidx.annotation.RequiresApi
+//import androidx.lifecycle.ViewModelProvider.NewInstanceFactory.Companion.instance
 import com.example.bitconintauto.model.Coordinate
 import com.example.bitconintauto.util.OCRCaptureUtils
 import com.example.bitconintauto.ocr.OCRProcessor
@@ -14,11 +15,15 @@ import com.example.bitconintauto.util.ValueChangeDetector
 
 class MyAccessibilityService : AccessibilityService() {
 
+    companion object {
+        var instance: MyAccessibilityService? = null
+    }
     private lateinit var autoClicker: AutoClicker
     private var lastDetectedValue: Double? = null
 
     override fun onServiceConnected() {
         super.onServiceConnected()
+        instance = this // ✅ 여기에 꼭 할당
         PreferenceHelper.accessibilityService = this
         autoClicker = AutoClicker(this)
     }
