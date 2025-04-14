@@ -2,6 +2,7 @@ package com.example.bitconintauto.ui
 
 import android.content.Context
 import android.graphics.PixelFormat
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.WindowManager
@@ -40,15 +41,20 @@ class FloatingController(private val context: Context) {
             val service = MyAccessibilityService.instance
             if (service == null) {
                 Toast.makeText(context, "접근성 서비스가 활성화되지 않았습니다.", Toast.LENGTH_SHORT).show()
+                Log.e("FloatingController", "MyAccessibilityService.instance is null")
                 return@setOnClickListener
             }
 
             if (ExecutorManager.getIsRunning()) {
                 ExecutorManager.stop()
                 btnToggle.setImageResource(R.drawable.ic_play)
+                Toast.makeText(context, "자동화 중지됨", Toast.LENGTH_SHORT).show()
+                Log.d("FloatingController", "자동화 중지 버튼 클릭됨")
             } else {
                 ExecutorManager.start(service)
                 btnToggle.setImageResource(R.drawable.ic_stop)
+                Toast.makeText(context, "자동화 시작됨", Toast.LENGTH_SHORT).show()
+                Log.d("FloatingController", "자동화 시작 버튼 클릭됨")
             }
         }
 

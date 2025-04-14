@@ -3,6 +3,7 @@ package com.example.bitconintauto.ui
 import android.content.Context
 import android.graphics.PixelFormat
 import android.graphics.Rect
+import android.view.Gravity
 import android.view.WindowManager
 import android.widget.TextView
 
@@ -27,6 +28,7 @@ class OCRDebugOverlay(private val context: Context) {
                 WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE or WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE,
                 PixelFormat.TRANSLUCENT
             ).apply {
+                gravity = Gravity.TOP or Gravity.START  // ✅ 위치 적용 명확히
                 x = rect.left
                 y = rect.top
             }

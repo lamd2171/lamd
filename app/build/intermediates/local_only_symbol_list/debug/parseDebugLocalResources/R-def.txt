@@ -28,6 +28,7 @@ id btn_open_settings
 id btn_start_overlay
 id btn_toggle
 id checkboxDontShowAgain
+id debug_overlay_text
 id editValue
 id etExpectedValue
 id etHeight
@@ -51,6 +52,7 @@ layout activity_coordinate_list
 layout activity_main
 layout automation_status_indicator
 layout coordinate_list_item
+layout debug_overlay
 layout dialog_edit_coordinate
 layout dialog_input_value
 layout dialog_tutorial

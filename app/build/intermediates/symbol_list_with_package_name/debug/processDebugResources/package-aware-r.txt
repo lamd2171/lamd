@@ -2961,6 +2961,7 @@ id customPanel
 id cut
 id dataBinding
 id date_picker_actions
+id debug_overlay_text
 id decelerate
 id decelerateAndComplete
 id decor_content_parent
@@ -3448,6 +3449,7 @@ layout activity_main
 layout automation_status_indicator
 layout coordinate_list_item
 layout custom_dialog
+layout debug_overlay
 layout design_bottom_navigation_item
 layout design_bottom_sheet_dialog
 layout design_layout_snackbar

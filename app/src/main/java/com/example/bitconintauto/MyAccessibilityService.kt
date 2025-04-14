@@ -3,26 +3,24 @@ package com.example.bitconintauto
 import android.accessibilityservice.AccessibilityService
 import android.accessibilityservice.AccessibilityServiceInfo
 import android.graphics.PixelFormat
-import android.graphics.Rect
 import android.os.Build
 import android.os.Handler
 import android.os.Looper
 import android.util.Log
 import android.view.Gravity
-import android.view.LayoutInflater
 import android.view.WindowManager
 import android.view.accessibility.AccessibilityEvent
 import android.widget.TextView
 import android.widget.Toast
 
-
-
 class MyAccessibilityService : AccessibilityService() {
+
+    companion object {
+        var instance: MyAccessibilityService? = null  // ✅ 외부에서 접근 가능하도록 설정
+    }
 
     private lateinit var windowManager: WindowManager
     private var overlayView: TextView? = null
-
-    // ✅ Handler deprecated 해결
     private val handler = Handler(Looper.getMainLooper())
 
     private val runnable = object : Runnable {
@@ -34,6 +32,7 @@ class MyAccessibilityService : AccessibilityService() {
 
     override fun onServiceConnected() {
         super.onServiceConnected()
+        instance = this  // ✅ 자동화 루틴 호출에 필수
         showOverlay("서비스 시작됨")
         handler.post(runnable)
 
@@ -50,7 +49,7 @@ class MyAccessibilityService : AccessibilityService() {
     }
 
     override fun onAccessibilityEvent(event: AccessibilityEvent?) {
-        // 필요한 경우 이벤트 처리 로직 추가
+        // 자동화는 ExecutorManager가 수행
     }
 
     override fun onInterrupt() {
@@ -75,7 +74,7 @@ class MyAccessibilityService : AccessibilityService() {
         val layoutType = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
             WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY
         else
-            WindowManager.LayoutParams.TYPE_PHONE // ✅ deprecated 처리
+            WindowManager.LayoutParams.TYPE_PHONE
 
         val params = WindowManager.LayoutParams(
             WindowManager.LayoutParams.WRAP_CONTENT,
@@ -95,7 +94,7 @@ class MyAccessibilityService : AccessibilityService() {
         Log.d("AutoService", "자동화 작업 실행 중...")
         Toast.makeText(this, "자동화 동작 실행", Toast.LENGTH_SHORT).show()
 
-        // 👉 여기에 OCR/좌표 클릭 등의 자동화 로직 연결 가능
+        // 👉 향후 ExecutorManager 등 실제 자동화 루틴 삽입 가능
     }
 
     override fun onDestroy() {
