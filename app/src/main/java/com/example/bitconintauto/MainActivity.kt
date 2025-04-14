@@ -29,6 +29,8 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
+
+
         // UI 연결
         val tvStatus = findViewById<TextView>(R.id.tv_status)
         val btnOpenSettings = findViewById<Button>(R.id.btn_open_settings)

@@ -1,3 +1,5 @@
+// ✅ ExecutorManager.kt - 트리거 영역 유지 + step2~26 순서 보장 전체 흐름 (OCR 포함)
+
 package com.example.bitconintauto.service
 
 import android.accessibilityservice.AccessibilityService
@@ -17,14 +19,14 @@ object ExecutorManager {
 
     fun start(service: AccessibilityService) {
         if (isRunning) {
-            Log.d("Executor", "이미 실행 중입니다.")
             Toast.makeText(service, "이미 실행 중입니다", Toast.LENGTH_SHORT).show()
             return
         }
 
         isRunning = true
-        Log.d("Executor", "✅ 자동화 루틴 시작됨.")
         Toast.makeText(service, "✅ 자동화 시작됨", Toast.LENGTH_SHORT).show()
+
+        CoordinateManager.set("trigger", Coordinate(x = 80, y = 220, width = 500, height = 100, label = "trigger"))
 
         ocrProcessor = OCRProcessor().apply { init(service) }
         debugOverlay = OCRDebugOverlay(service.applicationContext)
@@ -34,42 +36,27 @@ object ExecutorManager {
             while (isRunning) {
                 delay(2000)
 
-                val triggerCoordinate = CoordinateManager.getPrimaryCoordinate()
-                if (triggerCoordinate == null) {
+                val trigger = CoordinateManager.getPrimaryCoordinate() ?: run {
                     Log.e("Executor", "[❌] 트리거 좌표가 없습니다.")
-                    continue
+                    return@launch
                 }
 
-                val bitmap = OCRCaptureUtils.captureRegion(triggerCoordinate)
-                if (bitmap == null) {
-                    Log.e("Executor", "[❌] OCR 캡처 실패")
-                    continue
-                }
-
+                val bitmap = OCRCaptureUtils.capture(service, trigger) ?: continue
                 val text = ocrProcessor?.getText(bitmap)?.trim() ?: ""
-                val triggerValue = text.toDoubleOrNull()?.toInt() ?: 0
-
-                Log.d("Executor", "[🔍] OCR 텍스트: \"$text\"")
-                Log.d("Executor", "[🔍] 파싱된 숫자: $triggerValue")
+                val lines = text.split("\n")
+                val lastLineDigits = lines.lastOrNull()?.replace("[^0-9.]".toRegex(), "") ?: ""
+                val triggerRaw = lastLineDigits.toDoubleOrNull() ?: 0.0
 
                 withContext(Dispatchers.Main) {
-                    val statusText = if (triggerValue >= 1) "✅ 조건 충족" else "⏸ 조건 미달"
-                    debugOverlay?.show(triggerCoordinate.toRect(), "$text\n$statusText")
-
-                    val toastMsg = if (triggerValue >= 1) {
-                        "✅ 조건 만족! 루틴 실행"
-                    } else {
-                        "⏸ 조건 미달 ($triggerValue)"
-                    }
-                    Toast.makeText(service, toastMsg, Toast.LENGTH_SHORT).show()
+                    val status = if (triggerRaw >= 1.0) "✅ 조건 충족" else "⏸ 조건 미달"
+                    debugOverlay?.show(trigger.toRect(), "trigger\n$text\n$status")
                 }
 
-                if (triggerValue >= 1) {
-                    Log.d("Executor", "[✅] 조건 만족! → 루틴 실행 시작.")
+                if (triggerRaw >= 1.0) {
+                    Log.d("Executor", "[✅ Trigger 감지: $text → 추출: $triggerRaw] 루틴 실행")
                     executeStepFlow(click)
-                } else {
-                    Log.d("Executor", "[⏸] 조건 불충족 → $triggerValue < 1 → 대기 중.")
                 }
+
             }
         }
     }
@@ -79,67 +66,99 @@ object ExecutorManager {
         job?.cancel()
         debugOverlay?.dismiss()
         job = null
-        Log.d("Executor", "⛔ 자동화 루틴 정지됨.")
     }
 
     fun getIsRunning(): Boolean = isRunning
 
-    // ✅ 실제 자동화 동작 구현
     private suspend fun executeStepFlow(click: ClickSimulator) {
-        Log.d("Executor", "[▶️] 루틴 동작 중... (클릭 시작)")
         delay(500)
 
-        // 1️⃣ 클릭 루틴 (step2~step10)
-        val clickSequence = CoordinateManager.getClickPathSequence()
-        for ((i, coord) in clickSequence.withIndex()) {
-            Log.d("Executor", "[🧭] 클릭 ${i + 1}: ${coord.label}")
+        val stepLabels = listOf(
+            "step2","step3","step4","step5","step6","step7","step8",
+            "step9","step10"
+        )
+
+        for (label in stepLabels) {
+            Log.d("Executor", "[▶️] Step 실행: $label")
+            val coord = CoordinateManager.get(label).firstOrNull() ?: continue
             click.performClick(coord)
-            delay(500)
+            delay(600)
         }
 
-        // 2️⃣ 복사 대상 클릭 및 OCR 읽기
-        val copyTarget = CoordinateManager.getCopyTarget()
-        val copyText = if (copyTarget != null) {
-            click.performClick(copyTarget)
+        click.scrollUntilVisible("step11", "scrollArea")
+        delay(500)
+
+        val step12 = CoordinateManager.get("step12").firstOrNull()
+        if (step12 != null) {
+            Log.d("Executor", "[▶️] Step 실행: step12")
+            click.performClick(step12)
             delay(300)
-            click.readText(copyTarget)
-        } else {
-            Log.e("Executor", "[❌] 복사 대상이 없음.")
-            return
-        }
-        Log.d("Executor", "[📋] 복사된 텍스트: $copyText")
-
-        val value = copyText.toDoubleOrNull()
-        if (value == null) {
-            Log.e("Executor", "[❌] 복사된 값 숫자 변환 실패: $copyText")
-            return
         }
 
-        // 3️⃣ 계산 수행 (+0.001)
-        val result = value + 0.001
-        val resultText = "%.6f".format(result)
-        Log.d("Executor", "[➕] 계산 결과: $resultText")
-
-        // 4️⃣ 붙여넣기 대상 클릭 + 입력
-        val pasteTarget = CoordinateManager.getPasteTarget()
-        if (pasteTarget != null) {
-            click.clearAndInput(pasteTarget.label, resultText)
-            Log.d("Executor", "[📥] 입력 완료: $resultText")
-        } else {
-            Log.e("Executor", "[❌] 붙여넣기 대상이 없음.")
+        val step13 = CoordinateManager.get("step13").firstOrNull() ?: run {
+            Log.e("Executor", "[❌] step13 좌표가 없습니다.")
             return
         }
+        Log.d("Executor", "[▶️] Step 실행: step13")
+        click.performClick(step13)
+        delay(300)
+        val valueText = click.readText(step13)
+        val value = valueText.toDoubleOrNull() ?: return
+        val resultText = "%.6f".format(value + 0.001)
 
+        val step14 = CoordinateManager.get("step14").firstOrNull()
+        if (step14 != null) {
+            Log.d("Executor", "[▶️] Step 실행: step14")
+            click.performClick(step14)
+            delay(300)
+        }
+
+        val pasteTarget = CoordinateManager.get("step20").firstOrNull() ?: return
+        Log.d("Executor", "[▶️] Step 실행: step20 (입력)")
+        click.clearAndInput(pasteTarget.label, resultText)
         delay(500)
 
-        // 5️⃣ 최종 클릭 루틴
-        val finalSequence = CoordinateManager.getFinalClickCoordinates()
-        for ((i, coord) in finalSequence.withIndex()) {
-            Log.d("Executor", "[✅] 최종 클릭 ${i + 1}: ${coord.label}")
+        val finalSteps = listOf("step15","step16","step17")
+        for (label in finalSteps) {
+            Log.d("Executor", "[▶️] Step 실행: $label")
+            val coord = CoordinateManager.get(label).firstOrNull() ?: continue
             click.performClick(coord)
-            delay(500)
+            delay(600)
         }
 
-        Log.d("Executor", "[🏁] 루틴 완료.")
+        Log.d("Executor", "[▶️] Step 실행: step18 (스크롤)")
+        click.scrollUntilVisible("step18", "scrollArea")
+
+        Log.d("Executor", "[▶️] Step 실행: step19")
+        click.performClick(CoordinateManager.get("step19").firstOrNull() ?: return)
+
+        val qtyTarget = CoordinateManager.get("step22").firstOrNull() ?: return
+        val balanceLabel = "step21"
+        val targetLabel = "step21Check"
+
+        var inputValue = resultText.toDoubleOrNull() ?: return
+        repeat(10) {
+            Log.d("Executor", "[🔁] Step 실행: step21 (비교 시도) $it")
+            click.clearAndInput(pasteTarget.label, "%.6f".format(inputValue))
+            delay(500)
+            val matched = click.isValueMatched(balanceLabel, targetLabel)
+            if (matched) return@repeat else inputValue += 0.001
+        }
+
+        Log.d("Executor", "[▶️] Step 실행: step22")
+        click.performClick(qtyTarget)
+
+        Log.d("Executor", "[▶️] Step 실행: step23 (스크롤)")
+        click.scrollUntilVisible("step23", "scrollArea")
+
+        val endSteps = listOf("step24","step25","step26")
+        for (label in endSteps) {
+            Log.d("Executor", "[▶️] Step 실행: $label")
+            val coord = CoordinateManager.get(label).firstOrNull() ?: continue
+            click.performClick(coord)
+            delay(600)
+        }
+
+        Log.d("Executor", "[🏁] 루틴 종료. Trigger 대기")
     }
 }
