@@ -1,87 +1,56 @@
-// [1] app/src/main/java/com/example/bitconintauto/util/ScreenCaptureHelper.kt
-
 package com.example.bitconintauto.util
 
-import android.app.Activity
 import android.content.Context
-import android.content.Intent
 import android.graphics.Bitmap
-import android.graphics.PixelFormat
-import android.hardware.display.DisplayManager
-import android.hardware.display.VirtualDisplay
 import android.media.ImageReader
 import android.media.projection.MediaProjection
-import android.media.projection.MediaProjectionManager
 import android.os.Handler
-import android.os.Looper
-import android.util.DisplayMetrics
-import android.util.Log
+import android.os.HandlerThread
 import android.view.Surface
 
 object ScreenCaptureHelper {
-    private const val VIRTUAL_DISPLAY_NAME = "ScreenCapture"
-    private const val VIRTUAL_DISPLAY_FLAGS = DisplayManager.VIRTUAL_DISPLAY_FLAG_OWN_CONTENT_ONLY or
-            DisplayManager.VIRTUAL_DISPLAY_FLAG_PUBLIC
 
     private var mediaProjection: MediaProjection? = null
+    private lateinit var context: Context
     private var imageReader: ImageReader? = null
-    private var virtualDisplay: VirtualDisplay? = null
-    private lateinit var metrics: DisplayMetrics
+    private var handler: Handler? = null
 
-    fun init(mediaProjection: MediaProjection, context: Context) {
-        this.mediaProjection = mediaProjection
-        this.metrics = context.resources.displayMetrics
+    fun init(projection: MediaProjection, ctx: Context) {
+        mediaProjection = projection
+        context = ctx
 
-        imageReader = ImageReader.newInstance(
-            metrics.widthPixels,
-            metrics.heightPixels,
-            PixelFormat.RGBA_8888,
-            2
-        )
+        val width = 540
+        val height = 960
+        val dpi = 240
 
-        virtualDisplay = mediaProjection.createVirtualDisplay(
-            VIRTUAL_DISPLAY_NAME,
-            metrics.widthPixels,
-            metrics.heightPixels,
-            metrics.densityDpi,
-            VIRTUAL_DISPLAY_FLAGS,
-            imageReader?.surface,
-            null,
-            Handler(Looper.getMainLooper())
+        imageReader = ImageReader.newInstance(width, height, 0x1, 2)
+        val handlerThread = HandlerThread("ScreenCaptureThread").apply { start() }
+        handler = Handler(handlerThread.looper)
+
+        mediaProjection?.createVirtualDisplay(
+            "CaptureDisplay",
+            width, height, dpi,
+            0, imageReader!!.surface,
+            null, handler
         )
     }
 
     fun capture(callback: (Bitmap?) -> Unit) {
-        val reader = imageReader ?: run {
-            callback(null)
-            return
-        }
-
-        val image = reader.acquireLatestImage() ?: run {
-            callback(null)
-            return
-        }
+        val image = imageReader?.acquireLatestImage() ?: return callback(null)
 
         val planes = image.planes
         val buffer = planes[0].buffer
         val pixelStride = planes[0].pixelStride
         val rowStride = planes[0].rowStride
-        val rowPadding = rowStride - pixelStride * metrics.widthPixels
+        val rowPadding = rowStride - pixelStride * image.width
 
         val bitmap = Bitmap.createBitmap(
-            metrics.widthPixels + rowPadding / pixelStride,
-            metrics.heightPixels,
-            Bitmap.Config.ARGB_8888
+            image.width + rowPadding / pixelStride,
+            image.height, Bitmap.Config.ARGB_8888
         )
         bitmap.copyPixelsFromBuffer(buffer)
         image.close()
 
         callback(bitmap)
-    }
-
-    fun release() {
-        virtualDisplay?.release()
-        imageReader?.close()
-        mediaProjection?.stop()
     }
 }

@@ -1,5 +1,3 @@
-// [6] app/src/main/java/com/example/bitconintauto/ui/OCRDebugOverlay.kt
-
 package com.example.bitconintauto.ui
 
 import android.content.Context
@@ -14,34 +12,50 @@ import com.example.bitconintauto.R
 
 class OCRDebugOverlay(private val context: Context) {
     private var overlayView: View? = null
-    private val windowManager = context.getSystemService(Context.WINDOW_SERVICE) as WindowManager
+    private var windowManager: WindowManager? = null
 
     fun show(rect: Rect, text: String) {
-        dismiss()
+        if (overlayView != null) {
+            update(rect, text)
+            return
+        }
 
-        val inflater = LayoutInflater.from(context)
-        overlayView = inflater.inflate(R.layout.debug_overlay, null)
-        val tv = overlayView!!.findViewById<TextView>(R.id.debug_text)
+        windowManager = context.getSystemService(Context.WINDOW_SERVICE) as WindowManager
+        overlayView = LayoutInflater.from(context).inflate(R.layout.overlay_ocr_debug, null)
+        val tv = overlayView!!.findViewById<TextView>(R.id.tv_debug)
         tv.text = text
 
         val params = WindowManager.LayoutParams(
             rect.width(),
             rect.height(),
             WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY,
-            WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE or WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS,
+            WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE or WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE,
             PixelFormat.TRANSLUCENT
-        ).apply {
-            gravity = Gravity.TOP or Gravity.START
-            x = rect.left
-            y = rect.top
-        }
+        )
+        params.x = rect.left
+        params.y = rect.top
+        params.gravity = Gravity.TOP or Gravity.START
 
-        windowManager.addView(overlayView, params)
+        windowManager!!.addView(overlayView, params)
+    }
+
+    fun update(rect: Rect, text: String) {
+        if (overlayView == null) return
+
+        val tv = overlayView!!.findViewById<TextView>(R.id.tv_debug)
+        tv.text = text
+
+        val params = overlayView!!.layoutParams as WindowManager.LayoutParams
+        params.width = rect.width()
+        params.height = rect.height()
+        params.x = rect.left
+        params.y = rect.top
+        windowManager?.updateViewLayout(overlayView, params)
     }
 
     fun dismiss() {
-        overlayView?.let {
-            windowManager.removeView(it)
+        if (overlayView != null) {
+            windowManager?.removeView(overlayView)
             overlayView = null
         }
     }

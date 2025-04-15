@@ -33,6 +33,11 @@ class MyAccessibilityService : AccessibilityService() {
     override fun onServiceConnected() {
         super.onServiceConnected()
         instance = this  // ✅ 자동화 루틴 호출에 필수
+        // ✅ 누락된 연결 설정
+        com.example.bitconintauto.util.PreferenceHelper.accessibilityService = this
+
+        Log.d("MyAccessibilityService", "✅ onServiceConnected 호출됨!")
+
         showOverlay("서비스 시작됨")
         handler.post(runnable)
 

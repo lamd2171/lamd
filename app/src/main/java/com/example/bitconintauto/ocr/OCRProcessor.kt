@@ -1,33 +1,40 @@
-// [3] app/src/main/java/com/example/bitconintauto/ocr/OCRProcessor.kt
-
 package com.example.bitconintauto.ocr
 
 import android.content.Context
 import android.graphics.Bitmap
 import android.util.Log
-import com.googlecode.tesseract.android.TessBaseAPI
+import com.google.mlkit.vision.common.InputImage
+import com.google.mlkit.vision.text.TextRecognition
+import com.google.mlkit.vision.text.korean.KoreanTextRecognizerOptions
 
 class OCRProcessor {
-    private var tessBaseAPI: TessBaseAPI? = null
+
+    private val recognizer = TextRecognition.getClient(KoreanTextRecognizerOptions.Builder().build())
 
     fun init(context: Context) {
-        tessBaseAPI = TessBaseAPI().apply {
-            init("/sdcard/tesseract/", "eng")
-            setPageSegMode(TessBaseAPI.PageSegMode.PSM_SINGLE_BLOCK)
-        }
+        // 필요 시 초기화용 (지금은 사용 안 함)
     }
 
     fun getText(bitmap: Bitmap): String {
-        return try {
-            tessBaseAPI?.setImage(bitmap)
-            tessBaseAPI?.utF8Text ?: ""
-        } catch (e: Exception) {
-            Log.e("OCRProcessor", "OCR 실패: ${e.message}")
-            ""
+        var resultText = ""
+
+        val image = InputImage.fromBitmap(bitmap, 0)
+        val task = recognizer.process(image)
+            .addOnSuccessListener { result ->
+                resultText = result.text
+            }
+            .addOnFailureListener { e ->
+                Log.e("OCRProcessor", "OCR 실패", e)
+            }
+
+        while (!task.isComplete) {
+            Thread.sleep(10)
         }
+
+        return resultText
     }
 
     fun release() {
-        tessBaseAPI?.end()
+        recognizer.close()
     }
 }
