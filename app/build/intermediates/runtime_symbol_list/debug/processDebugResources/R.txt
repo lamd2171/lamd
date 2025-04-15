@@ -2960,7 +2960,7 @@ int id customPanel 0x7f08008e
 int id cut 0x7f08008f
 int id dataBinding 0x7f080090
 int id date_picker_actions 0x7f080091
-int id debug_overlay_text 0x7f080092
+int id debug_text 0x7f080092
 int id decelerate 0x7f080093
 int id decelerateAndComplete 0x7f080094
 int id decor_content_parent 0x7f080095

@@ -68,8 +68,15 @@ class ClickSimulator(val service: AccessibilityService) {
         repeat(6) {
             val coord = CoordinateManager.get(targetLabel).firstOrNull()
             if (coord != null) {
-                val bmp = ScreenCaptureHelper.captureRegion(coord)
-                val result = OCRProcessor().getText(bmp)
+                var result = ""
+                ScreenCaptureHelper.capture { bmp ->
+                    if (bmp != null) {
+                        val region = OCRCaptureUtils.captureRegion(bmp, coord)
+                        result = OCRProcessor().getText(region)
+                    }
+                }
+                Thread.sleep(300)
+
                 Log.d("ScrollCheck", "[🔍] $targetLabel OCR → $result")
                 if (keyword == null || result.contains(keyword, true)) {
                     Log.d("ScrollCheck", "[✅] 타겟 발견: $targetLabel ($result)")

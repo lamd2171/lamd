@@ -2961,7 +2961,7 @@ id customPanel
 id cut
 id dataBinding
 id date_picker_actions
-id debug_overlay_text
+id debug_text
 id decelerate
 id decelerateAndComplete
 id decor_content_parent

@@ -17,6 +17,8 @@ import androidx.appcompat.app.AppCompatActivity
 import com.example.bitconintauto.service.ExecutorManager
 import com.example.bitconintauto.util.PreferenceHelper
 
+import com.example.bitconintauto.util.MediaProjectionStarter
+
 class MainActivity : AppCompatActivity() {
     private lateinit var btnStartOverlay: Button
     private lateinit var btnOpenSettings: Button

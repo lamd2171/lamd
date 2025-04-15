@@ -1,9 +1,9 @@
 -- Merging decision tree log ---
 manifest
-ADDED from C:\Users\abc\AndroidStudioProjects\bitconintauto\app\src\main\AndroidManifest.xml:2:1-41:12
-INJECTED from C:\Users\abc\AndroidStudioProjects\bitconintauto\app\src\main\AndroidManifest.xml:2:1-41:12
-INJECTED from C:\Users\abc\AndroidStudioProjects\bitconintauto\app\src\main\AndroidManifest.xml:2:1-41:12
-INJECTED from C:\Users\abc\AndroidStudioProjects\bitconintauto\app\src\main\AndroidManifest.xml:2:1-41:12
+ADDED from C:\Users\abc\AndroidStudioProjects\bitconintauto\app\src\main\AndroidManifest.xml:2:1-36:12
+INJECTED from C:\Users\abc\AndroidStudioProjects\bitconintauto\app\src\main\AndroidManifest.xml:2:1-36:12
+INJECTED from C:\Users\abc\AndroidStudioProjects\bitconintauto\app\src\main\AndroidManifest.xml:2:1-36:12
+INJECTED from C:\Users\abc\AndroidStudioProjects\bitconintauto\app\src\main\AndroidManifest.xml:2:1-36:12
 MERGED from [androidx.databinding:databinding-adapters:8.9.1] C:\Users\abc\.gradle\caches\8.11.1\transforms\df830709a7aff42a342d69364d1f7fdc\transformed\databinding-adapters-8.9.1\AndroidManifest.xml:2:1-7:12
 MERGED from [androidx.databinding:databinding-ktx:8.9.1] C:\Users\abc\.gradle\caches\8.11.1\transforms\e4f7e68d2a86b7ba6ef3a162a0106415\transformed\databinding-ktx-8.9.1\AndroidManifest.xml:2:1-7:12
 MERGED from [androidx.databinding:databinding-runtime:8.9.1] C:\Users\abc\.gradle\caches\8.11.1\transforms\5d44974b27ab3d824d9670a8331ff3ca\transformed\databinding-runtime-8.9.1\AndroidManifest.xml:2:1-7:12
@@ -64,17 +64,21 @@ MERGED from [com.github.rmtheis:tess-two:9.1.0] C:\Users\abc\.gradle\caches\8.11
 		INJECTED from C:\Users\abc\AndroidStudioProjects\bitconintauto\app\src\main\AndroidManifest.xml
 	xmlns:android
 		ADDED from C:\Users\abc\AndroidStudioProjects\bitconintauto\app\src\main\AndroidManifest.xml:2:11-69
-uses-permission#android.permission.FOREGROUND_SERVICE
-ADDED from C:\Users\abc\AndroidStudioProjects\bitconintauto\app\src\main\AndroidManifest.xml:4:5-76
-	android:name
-		ADDED from C:\Users\abc\AndroidStudioProjects\bitconintauto\app\src\main\AndroidManifest.xml:4:22-74
 uses-permission#android.permission.SYSTEM_ALERT_WINDOW
 ADDED from C:\Users\abc\AndroidStudioProjects\bitconintauto\app\src\main\AndroidManifest.xml:5:5-77
 	android:name
 		ADDED from C:\Users\abc\AndroidStudioProjects\bitconintauto\app\src\main\AndroidManifest.xml:5:22-75
+uses-permission#android.permission.FOREGROUND_SERVICE
+ADDED from C:\Users\abc\AndroidStudioProjects\bitconintauto\app\src\main\AndroidManifest.xml:6:5-76
+	android:name
+		ADDED from C:\Users\abc\AndroidStudioProjects\bitconintauto\app\src\main\AndroidManifest.xml:6:22-74
+uses-permission#android.permission.INTERNET
+ADDED from C:\Users\abc\AndroidStudioProjects\bitconintauto\app\src\main\AndroidManifest.xml:7:5-66
+	android:name
+		ADDED from C:\Users\abc\AndroidStudioProjects\bitconintauto\app\src\main\AndroidManifest.xml:7:22-64
 application
-ADDED from C:\Users\abc\AndroidStudioProjects\bitconintauto\app\src\main\AndroidManifest.xml:6:5-39:19
-INJECTED from C:\Users\abc\AndroidStudioProjects\bitconintauto\app\src\main\AndroidManifest.xml:6:5-39:19
+ADDED from C:\Users\abc\AndroidStudioProjects\bitconintauto\app\src\main\AndroidManifest.xml:9:5-35:19
+INJECTED from C:\Users\abc\AndroidStudioProjects\bitconintauto\app\src\main\AndroidManifest.xml:9:5-35:19
 MERGED from [com.google.android.material:material:1.8.0] C:\Users\abc\.gradle\caches\8.11.1\transforms\147b4d7679b3e26758c647fa319f996c\transformed\material-1.8.0\AndroidManifest.xml:24:5-20
 MERGED from [com.google.android.material:material:1.8.0] C:\Users\abc\.gradle\caches\8.11.1\transforms\147b4d7679b3e26758c647fa319f996c\transformed\material-1.8.0\AndroidManifest.xml:24:5-20
 MERGED from [androidx.constraintlayout:constraintlayout:2.1.4] C:\Users\abc\.gradle\caches\8.11.1\transforms\f5ec9c9b106d44805a68f1cbb04ea218\transformed\constraintlayout-2.1.4\AndroidManifest.xml:9:5-20
@@ -95,58 +99,50 @@ MERGED from [androidx.versionedparcelable:versionedparcelable:1.1.1] C:\Users\ab
 		INJECTED from C:\Users\abc\AndroidStudioProjects\bitconintauto\app\src\main\AndroidManifest.xml
 	android:appComponentFactory
 		ADDED from [androidx.core:core:1.9.0] C:\Users\abc\.gradle\caches\8.11.1\transforms\26f9571648bb9834bd5227c218a770a1\transformed\core-1.9.0\AndroidManifest.xml:28:18-86
-	android:supportsRtl
-		ADDED from C:\Users\abc\AndroidStudioProjects\bitconintauto\app\src\main\AndroidManifest.xml:11:9-35
 	android:label
-		ADDED from C:\Users\abc\AndroidStudioProjects\bitconintauto\app\src\main\AndroidManifest.xml:9:9-41
-	android:roundIcon
-		ADDED from C:\Users\abc\AndroidStudioProjects\bitconintauto\app\src\main\AndroidManifest.xml:10:9-54
+		ADDED from C:\Users\abc\AndroidStudioProjects\bitconintauto\app\src\main\AndroidManifest.xml:11:9-39
 	android:icon
-		ADDED from C:\Users\abc\AndroidStudioProjects\bitconintauto\app\src\main\AndroidManifest.xml:8:9-43
+		ADDED from C:\Users\abc\AndroidStudioProjects\bitconintauto\app\src\main\AndroidManifest.xml:12:9-43
 	android:allowBackup
-		ADDED from C:\Users\abc\AndroidStudioProjects\bitconintauto\app\src\main\AndroidManifest.xml:7:9-35
+		ADDED from C:\Users\abc\AndroidStudioProjects\bitconintauto\app\src\main\AndroidManifest.xml:10:9-35
 	android:theme
-		ADDED from C:\Users\abc\AndroidStudioProjects\bitconintauto\app\src\main\AndroidManifest.xml:12:9-51
-activity#com.example.bitconintauto.MainActivity
-ADDED from C:\Users\abc\AndroidStudioProjects\bitconintauto\app\src\main\AndroidManifest.xml:15:9-21:20
-	android:exported
-		ADDED from C:\Users\abc\AndroidStudioProjects\bitconintauto\app\src\main\AndroidManifest.xml:16:13-36
-	android:name
-		ADDED from C:\Users\abc\AndroidStudioProjects\bitconintauto\app\src\main\AndroidManifest.xml:15:19-47
-intent-filter#action:name:android.intent.action.MAIN+category:name:android.intent.category.LAUNCHER
-ADDED from C:\Users\abc\AndroidStudioProjects\bitconintauto\app\src\main\AndroidManifest.xml:17:13-20:29
-action#android.intent.action.MAIN
-ADDED from C:\Users\abc\AndroidStudioProjects\bitconintauto\app\src\main\AndroidManifest.xml:18:17-69
-	android:name
-		ADDED from C:\Users\abc\AndroidStudioProjects\bitconintauto\app\src\main\AndroidManifest.xml:18:25-66
-category#android.intent.category.LAUNCHER
-ADDED from C:\Users\abc\AndroidStudioProjects\bitconintauto\app\src\main\AndroidManifest.xml:19:17-77
-	android:name
-		ADDED from C:\Users\abc\AndroidStudioProjects\bitconintauto\app\src\main\AndroidManifest.xml:19:27-74
-activity#com.example.bitconintauto.ui.CoordinateListActivity
-ADDED from C:\Users\abc\AndroidStudioProjects\bitconintauto\app\src\main\AndroidManifest.xml:24:9-63
-	android:name
-		ADDED from C:\Users\abc\AndroidStudioProjects\bitconintauto\app\src\main\AndroidManifest.xml:24:19-60
+		ADDED from C:\Users\abc\AndroidStudioProjects\bitconintauto\app\src\main\AndroidManifest.xml:13:9-65
 service#com.example.bitconintauto.service.MyAccessibilityService
-ADDED from C:\Users\abc\AndroidStudioProjects\bitconintauto\app\src\main\AndroidManifest.xml:27:9-37:19
+ADDED from C:\Users\abc\AndroidStudioProjects\bitconintauto\app\src\main\AndroidManifest.xml:15:9-25:19
 	android:exported
-		ADDED from C:\Users\abc\AndroidStudioProjects\bitconintauto\app\src\main\AndroidManifest.xml:30:13-37
+		ADDED from C:\Users\abc\AndroidStudioProjects\bitconintauto\app\src\main\AndroidManifest.xml:18:13-37
 	android:permission
-		ADDED from C:\Users\abc\AndroidStudioProjects\bitconintauto\app\src\main\AndroidManifest.xml:29:13-79
+		ADDED from C:\Users\abc\AndroidStudioProjects\bitconintauto\app\src\main\AndroidManifest.xml:17:13-79
 	android:name
-		ADDED from C:\Users\abc\AndroidStudioProjects\bitconintauto\app\src\main\AndroidManifest.xml:28:13-59
+		ADDED from C:\Users\abc\AndroidStudioProjects\bitconintauto\app\src\main\AndroidManifest.xml:16:13-59
 intent-filter#action:name:android.accessibilityservice.AccessibilityService
-ADDED from C:\Users\abc\AndroidStudioProjects\bitconintauto\app\src\main\AndroidManifest.xml:31:13-33:29
+ADDED from C:\Users\abc\AndroidStudioProjects\bitconintauto\app\src\main\AndroidManifest.xml:19:13-21:29
 action#android.accessibilityservice.AccessibilityService
-ADDED from C:\Users\abc\AndroidStudioProjects\bitconintauto\app\src\main\AndroidManifest.xml:32:17-92
+ADDED from C:\Users\abc\AndroidStudioProjects\bitconintauto\app\src\main\AndroidManifest.xml:20:17-92
 	android:name
-		ADDED from C:\Users\abc\AndroidStudioProjects\bitconintauto\app\src\main\AndroidManifest.xml:32:25-89
+		ADDED from C:\Users\abc\AndroidStudioProjects\bitconintauto\app\src\main\AndroidManifest.xml:20:25-89
 meta-data#android.accessibilityservice
-ADDED from C:\Users\abc\AndroidStudioProjects\bitconintauto\app\src\main\AndroidManifest.xml:34:13-36:72
+ADDED from C:\Users\abc\AndroidStudioProjects\bitconintauto\app\src\main\AndroidManifest.xml:22:13-24:72
 	android:resource
-		ADDED from C:\Users\abc\AndroidStudioProjects\bitconintauto\app\src\main\AndroidManifest.xml:36:17-69
+		ADDED from C:\Users\abc\AndroidStudioProjects\bitconintauto\app\src\main\AndroidManifest.xml:24:17-69
 	android:name
-		ADDED from C:\Users\abc\AndroidStudioProjects\bitconintauto\app\src\main\AndroidManifest.xml:35:17-60
+		ADDED from C:\Users\abc\AndroidStudioProjects\bitconintauto\app\src\main\AndroidManifest.xml:23:17-60
+activity#com.example.bitconintauto.MainActivity
+ADDED from C:\Users\abc\AndroidStudioProjects\bitconintauto\app\src\main\AndroidManifest.xml:27:9-33:20
+	android:exported
+		ADDED from C:\Users\abc\AndroidStudioProjects\bitconintauto\app\src\main\AndroidManifest.xml:28:13-36
+	android:name
+		ADDED from C:\Users\abc\AndroidStudioProjects\bitconintauto\app\src\main\AndroidManifest.xml:27:19-47
+intent-filter#action:name:android.intent.action.MAIN+category:name:android.intent.category.LAUNCHER
+ADDED from C:\Users\abc\AndroidStudioProjects\bitconintauto\app\src\main\AndroidManifest.xml:29:13-32:29
+action#android.intent.action.MAIN
+ADDED from C:\Users\abc\AndroidStudioProjects\bitconintauto\app\src\main\AndroidManifest.xml:30:17-69
+	android:name
+		ADDED from C:\Users\abc\AndroidStudioProjects\bitconintauto\app\src\main\AndroidManifest.xml:30:25-66
+category#android.intent.category.LAUNCHER
+ADDED from C:\Users\abc\AndroidStudioProjects\bitconintauto\app\src\main\AndroidManifest.xml:31:17-77
+	android:name
+		ADDED from C:\Users\abc\AndroidStudioProjects\bitconintauto\app\src\main\AndroidManifest.xml:31:27-74
 uses-sdk
 INJECTED from C:\Users\abc\AndroidStudioProjects\bitconintauto\app\src\main\AndroidManifest.xml reason: use-sdk injection requested
 INJECTED from C:\Users\abc\AndroidStudioProjects\bitconintauto\app\src\main\AndroidManifest.xml

@@ -28,7 +28,7 @@ id btn_open_settings
 id btn_start_overlay
 id btn_toggle
 id checkboxDontShowAgain
-id debug_overlay_text
+id debug_text
 id editValue
 id etExpectedValue
 id etHeight
