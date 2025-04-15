@@ -1,8 +1,13 @@
+// [12] app/src/main/java/com/example/bitconintauto/MainActivity.kt
+
 package com.example.bitconintauto
 
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
+import android.media.projection.MediaProjectionManager
+import android.net.Uri
+import android.os.Build
 import android.os.Bundle
 import android.provider.Settings
 import android.widget.Button
@@ -13,10 +18,12 @@ import com.example.bitconintauto.service.ExecutorManager
 import com.example.bitconintauto.util.PreferenceHelper
 
 class MainActivity : AppCompatActivity() {
-
     private lateinit var btnStartOverlay: Button
     private lateinit var btnOpenSettings: Button
     private lateinit var tvStatus: TextView
+
+    private val REQUEST_OVERLAY_PERMISSION = 1001
+    private val REQUEST_MEDIA_PROJECTION = 1002
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -35,14 +42,43 @@ class MainActivity : AppCompatActivity() {
         }
 
         btnStartOverlay.setOnClickListener {
+            if (!Settings.canDrawOverlays(this)) {
+                requestOverlayPermission()
+                return@setOnClickListener
+            }
+
             if (!isAccessibilityServiceEnabled(this)) {
                 Toast.makeText(this, "접근성 서비스를 먼저 켜주세요", Toast.LENGTH_SHORT).show()
                 startActivity(Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS))
                 return@setOnClickListener
             }
 
-            ExecutorManager.start(PreferenceHelper.accessibilityService!!)
-            Toast.makeText(this, "오버레이 및 자동화 실행 시작", Toast.LENGTH_SHORT).show()
+            val mediaProjectionManager = getSystemService(Context.MEDIA_PROJECTION_SERVICE) as MediaProjectionManager
+            val captureIntent = mediaProjectionManager.createScreenCaptureIntent()
+            startActivityForResult(captureIntent, REQUEST_MEDIA_PROJECTION)
+        }
+    }
+
+    private fun requestOverlayPermission() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            val intent = Intent(
+                Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
+                Uri.parse("package:$packageName")
+            )
+            startActivityForResult(intent, REQUEST_OVERLAY_PERMISSION)
+        }
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if (requestCode == REQUEST_OVERLAY_PERMISSION) {
+            if (Settings.canDrawOverlays(this)) {
+                Toast.makeText(this, "오버레이 권한이 허용되었습니다.", Toast.LENGTH_SHORT).show()
+            } else {
+                Toast.makeText(this, "오버레이 권한이 필요합니다.", Toast.LENGTH_SHORT).show()
+            }
+        } else if (requestCode == REQUEST_MEDIA_PROJECTION && resultCode == Activity.RESULT_OK && data != null) {
+            MediaProjectionStarter.handlePermissionResult(this, resultCode, data)
         }
     }
 

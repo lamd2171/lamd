@@ -1,9 +1,20 @@
-<?xml version="1.0" encoding="utf-8"?>
-<TextView xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/debug_overlay_text"
+// [19] app/src/main/res/layout/debug_overlay.xml
+
+    <?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
-    android:background="#AA000000"
-    android:textColor="#FFFFFF"
-    android:textSize="14sp"
-    android:padding="8dp" />
+    android:background="#99000000"
+    android:padding="4dp">
+
+    <TextView
+        android:id="@+id/debug_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textColor="#00FF00"
+        android:textSize="12sp"
+        android:text="OCR 결과"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentStart="true" />
+
+</RelativeLayout>

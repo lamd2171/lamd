@@ -1,29 +1,19 @@
-<?xml version="1.0" encoding="utf-8"?>
+// [17] app/src/main/AndroidManifest.xml
+
+    <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.example.bitconintauto">
-    <uses-permission android:name="android.permission.FOREGROUND_SERVICE"/>
+
     <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW"/>
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE"/>
+    <uses-permission android:name="android.permission.INTERNET"/>
+
     <application
         android:allowBackup="true"
+        android:label="bitconint auto"
         android:icon="@mipmap/ic_launcher"
-        android:label="@string/app_name"
-        android:roundIcon="@mipmap/ic_launcher_round"
-        android:supportsRtl="true"
-        android:theme="@style/Theme.BitconintAuto">
+        android:theme="@style/Theme.AppCompat.Light.NoActionBar">
 
-        <!-- ✅ 메인 액티비티 -->
-        <activity android:name=".MainActivity"
-            android:exported="true">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-        </activity>
-
-        <!-- ✅ 좌표 리스트 보기 액티비티 -->
-        <activity android:name=".ui.CoordinateListActivity" />
-
-        <!-- ✅ 접근성 서비스 등록 -->
         <service
             android:name=".service.MyAccessibilityService"
             android:permission="android.permission.BIND_ACCESSIBILITY_SERVICE"
@@ -36,6 +26,13 @@
                 android:resource="@xml/accessibility_service_config" />
         </service>
 
-    </application>
+        <activity android:name=".MainActivity"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
 
+    </application>
 </manifest>

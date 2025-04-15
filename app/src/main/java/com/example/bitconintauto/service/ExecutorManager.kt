@@ -1,4 +1,4 @@
-// ✅ ExecutorManager.kt - 트리거 인식 → OCR 기반 step2~step26 자동화 수행
+// [15] app/src/main/java/com/example/bitconintauto/service/ExecutorManager.kt
 
 package com.example.bitconintauto.service
 
@@ -25,13 +25,9 @@ object ExecutorManager {
         isRunning = true
         Toast.makeText(service, "✅ 자동화 시작됨", Toast.LENGTH_SHORT).show()
 
-        CoordinateManager.set(
-            "trigger", Coordinate(
-                x = 45, y = 240, width = 350, height = 120, label = "trigger"
-            )
-        )
+        CoordinateManager.set("trigger", Coordinate(45, 240, 350, 120, "trigger"))
 
-        ocrProcessor = OCRProcessor().apply { init(service) }
+        ocrProcessor = OCRProcessor().apply { init(service.applicationContext) }
         debugOverlay = OCRDebugOverlay(service.applicationContext)
         val click = ClickSimulator(service)
 
@@ -39,10 +35,17 @@ object ExecutorManager {
             while (isRunning) {
                 delay(2000)
                 val trigger = CoordinateManager.getPrimaryCoordinate() ?: continue
-                val bitmap = OCRCaptureUtils.capture(service, trigger) ?: continue
-                val text = ocrProcessor?.getText(bitmap)?.trim() ?: continue
-                val triggerValue = text.toDoubleOrNull()?.toInt() ?: 0
 
+                var text = ""
+                ScreenCaptureHelper.capture { fullBitmap ->
+                    if (fullBitmap != null) {
+                        val targetBitmap = OCRCaptureUtils.captureRegion(fullBitmap, trigger)
+                        text = ocrProcessor?.getText(targetBitmap)?.trim() ?: ""
+                    }
+                }
+                delay(300)
+
+                val triggerValue = text.toDoubleOrNull()?.toInt() ?: 0
                 withContext(Dispatchers.Main) {
                     val status = if (triggerValue >= 1) "✅ 조건 충족" else "⏸ 조건 미달"
                     debugOverlay?.show(trigger.toRect(), "trigger\n$text\n$status")
@@ -60,6 +63,7 @@ object ExecutorManager {
         isRunning = false
         job?.cancel()
         debugOverlay?.dismiss()
+        ocrProcessor?.release()
     }
 
     fun getIsRunning(): Boolean = isRunning
@@ -67,7 +71,7 @@ object ExecutorManager {
     private suspend fun executeStepFlow(click: ClickSimulator) {
         delay(500)
 
-        val ocrSteps = mapOf(
+        val stepMap = mapOf(
             "step2" to "Send",
             "step3" to "Address Book",
             "step4" to "User",
@@ -79,68 +83,36 @@ object ExecutorManager {
             "step10" to "My BTCT"
         )
 
-        for ((label, keyword) in ocrSteps) {
+        for ((label, keyword) in stepMap) {
             val coord = CoordinateManager.get(label).firstOrNull() ?: continue
-            val bmp = OCRCaptureUtils.capture(click.service, coord) ?: continue
-            val ocrText = OCRProcessor().getText(bmp).trim()
-
-            Log.d("Executor", "[🔍 OCR Step] $label → \"$ocrText\" vs \"$keyword\"")
-            if (ocrText.contains(keyword, true)) {
+            val result = click.readText(coord)
+            Log.d("Executor", "[🔍 OCR Step] $label → \"$result\" vs \"$keyword\"")
+            if (result.contains(keyword, true)) {
                 click.performClick(coord)
-                Log.d("Executor", "[✅ 클릭] $label ($keyword)")
                 delay(700)
-            } else {
-                Log.w("Executor", "[❌ 미일치] $label (텍스트: $ocrText)")
             }
         }
 
         click.scrollUntilVisible("step11", "scrollArea")
         delay(500)
 
-        val step12 = CoordinateManager.get("step12").firstOrNull()
-        step12?.let {
-            click.performClick(it)
-            delay(300)
-        }
-
-        val step13 = CoordinateManager.get("step13").firstOrNull() ?: return
-        click.performClick(step13)
+        val copyCoord = CoordinateManager.get("step13").firstOrNull() ?: return
+        click.performClick(copyCoord)
         delay(300)
-        val valueText = click.readText(step13)
+        val valueText = click.readText(copyCoord)
         val value = valueText.toDoubleOrNull() ?: return
         val resultText = "%.6f".format(value + 0.001)
 
-        val step14 = CoordinateManager.get("step14").firstOrNull()
-        step14?.let {
-            click.performClick(it)
-            delay(300)
-        }
-
-        listOf("step15", "step16", "step17").forEach { label ->
-            CoordinateManager.get(label).firstOrNull()?.let {
-                click.performClick(it)
-                delay(500)
-            }
-        }
-
-        click.scrollUntilVisible("step18", "scrollArea")
-        delay(500)
-
-        val step19 = CoordinateManager.get("step19").firstOrNull()
-        step19?.let {
-            click.performClick(it)
-            delay(300)
-        }
-
-        val pasteTarget = CoordinateManager.get("step20").firstOrNull() ?: return
-        click.clearAndInput(pasteTarget.label, resultText)
+        val pasteCoord = CoordinateManager.get("step20").firstOrNull() ?: return
+        click.clearAndInput(pasteCoord, resultText)
         delay(500)
 
         val balanceLabel = "step21"
         val targetLabel = "step21Check"
         var inputValue = resultText.toDoubleOrNull() ?: return
+
         repeat(10) {
-            click.clearAndInput(pasteTarget.label, "%.6f".format(inputValue))
+            click.clearAndInput(pasteCoord, "%.6f".format(inputValue))
             delay(500)
             if (click.isValueMatched(balanceLabel, targetLabel)) return@repeat
             inputValue += 0.001

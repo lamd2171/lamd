@@ -2916,8 +2916,8 @@ id bounceStart
 id btnDelete
 id btn_close_guide
 id btn_next
-id btn_start
-id btn_stop
+id btn_open_settings
+id btn_start_overlay
 id btn_toggle
 id buttonPanel
 id cache_measures
@@ -3183,6 +3183,7 @@ id rightToLeft
 id right_icon
 id right_side
 id root
+id rootLayout
 id rounded
 id row_index_key
 id save_non_transition_alpha
@@ -3313,6 +3314,7 @@ id tutorial_message
 id tutorial_text
 id tvDetails
 id tvLabel
+id tv_status
 id unchecked
 id uniform
 id unlabeled

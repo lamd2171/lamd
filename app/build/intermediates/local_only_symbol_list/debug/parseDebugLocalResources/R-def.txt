@@ -24,8 +24,8 @@ drawable status_indicator_background
 id btnDelete
 id btn_close_guide
 id btn_next
-id btn_start
-id btn_stop
+id btn_open_settings
+id btn_start_overlay
 id btn_toggle
 id checkboxDontShowAgain
 id debug_overlay_text
@@ -40,12 +40,14 @@ id guide_text
 id overlayGuideRoot
 id recyclerView
 id root
+id rootLayout
 id status_text
 id tutorial_container
 id tutorial_message
 id tutorial_text
 id tvDetails
 id tvLabel
+id tv_status
 layout activity_coordinate_list
 layout activity_main
 layout automation_status_indicator
