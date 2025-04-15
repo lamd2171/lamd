@@ -28,8 +28,6 @@ id btn_start
 id btn_stop
 id btn_toggle
 id checkboxDontShowAgain
-id container
-id debug_text
 id editValue
 id etExpectedValue
 id etHeight

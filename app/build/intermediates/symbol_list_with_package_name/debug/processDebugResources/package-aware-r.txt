@@ -3011,7 +3011,6 @@ id cut
 id dark
 id dataBinding
 id date_picker_actions
-id debug_text
 id decelerate
 id decelerateAndComplete
 id decor_content_parent

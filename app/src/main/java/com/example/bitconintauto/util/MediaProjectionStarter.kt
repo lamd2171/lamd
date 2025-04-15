@@ -1,29 +1,40 @@
-package com.example.bitconintauto.util
+package com.example.bitconintauto.ocr
 
-import android.app.Activity
-import android.content.Intent
-import android.media.projection.MediaProjectionManager
-import android.widget.TextView
-import com.example.bitconintauto.service.ExecutorManager
-import android.accessibilityservice.AccessibilityService
+import android.content.Context
+import android.graphics.Bitmap
+import android.util.Log
+import com.google.mlkit.vision.common.InputImage
+import com.google.mlkit.vision.text.TextRecognition
+import com.google.mlkit.vision.text.korean.KoreanTextRecognizerOptions
 
-object MediaProjectionStarter {
-    fun requestCapturePermission(activity: Activity, launcher: androidx.activity.result.ActivityResultLauncher<Intent>) {
-        val mpm = activity.getSystemService(Activity.MEDIA_PROJECTION_SERVICE) as MediaProjectionManager
-        val captureIntent = mpm.createScreenCaptureIntent()
-        launcher.launch(captureIntent)
+class OCRProcessor {
+
+    private val recognizer = TextRecognition.getClient(KoreanTextRecognizerOptions.Builder().build())
+
+    fun init(context: Context) {
+        // 필요 시 초기화용 (지금은 사용 안 함)
     }
 
-    fun handlePermissionResult(activity: Activity, resultCode: Int, data: Intent, tvStatus: TextView) {
-        val mpm = activity.getSystemService(Activity.MEDIA_PROJECTION_SERVICE) as MediaProjectionManager
-        val projection = mpm.getMediaProjection(resultCode, data)
-        ScreenCaptureHelper.init(projection, activity.applicationContext)
+    fun getText(bitmap: Bitmap): String {
+        var resultText = ""
 
-        val service = PreferenceHelper.accessibilityService
-        if (service != null) {
-            ExecutorManager.start(service, tvStatus)
-        } else {
-            tvStatus.text = "❌ 접근성 서비스가 연결되지 않았습니다"
+        val image = InputImage.fromBitmap(bitmap, 0)
+        val task = recognizer.process(image)
+            .addOnSuccessListener { result ->
+                resultText = result.text
+            }
+            .addOnFailureListener { e ->
+                Log.e("OCRProcessor", "OCR 실패", e)
+            }
+
+        while (!task.isComplete) {
+            Thread.sleep(10)
         }
+
+        return resultText
+    }
+
+    fun release() {
+        recognizer.close()
     }
 }

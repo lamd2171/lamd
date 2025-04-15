@@ -30,7 +30,7 @@
         android:theme="@style/Theme.AppCompat.Light.NoActionBar" >
         <activity
             android:name="com.example.bitconintauto.MainActivity"
-            android:exported="true" >
+            android:exported="true" > <!-- ✅ 이 줄 추가 -->
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
