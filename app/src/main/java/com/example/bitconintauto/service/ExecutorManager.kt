@@ -4,51 +4,47 @@ import android.accessibilityservice.AccessibilityService
 import android.graphics.Rect
 import android.util.Log
 import android.widget.TextView
+import com.example.bitconintauto.model.Coordinate
 import com.example.bitconintauto.ocr.OCRProcessor
-import com.example.bitconintauto.ui.OCRDebugOverlay
-import com.example.bitconintauto.util.PreferenceHelper
-import com.example.bitconintauto.util.ScreenCaptureHelper
+import com.example.bitconintauto.ui.OverlayView
+import com.example.bitconintauto.util.*
 import kotlinx.coroutines.*
 
 object ExecutorManager {
-
     private var isRunning = false
     private var job: Job? = null
-    private var ocrProcessor: OCRProcessor? = null
-    private var debugOverlay: OCRDebugOverlay? = null
 
-    fun start(service: AccessibilityService, tvStatus: TextView) {
+    fun start(service: AccessibilityService, overlayView: TextView) {
         if (isRunning) return
         isRunning = true
 
-        ocrProcessor = OCRProcessor().apply { init(service.applicationContext) }
-        debugOverlay = OCRDebugOverlay(service.applicationContext)
+        val ocr = OCRProcessor()
+        val clicker = ClickSimulator(service)
+        val triggerCoord = Coordinate(45, 240, 350, 120, "trigger")
 
         job = CoroutineScope(Dispatchers.Default).launch {
             while (isRunning) {
-                delay(2000)
+                delay(1500)
 
-                var text = ""
-                val triggerRect = Rect(45, 240, 395, 360)  // 좌표 영역: (x=45, y=240, w=350, h=120)
+                ScreenCaptureHelper.capture { bmp ->
+                    if (bmp != null) {
+                        val region = OCRCaptureUtils.captureRegion(bmp, triggerCoord)
+                        val value = ocr.getText(region)
+                        val valueInt = value.trim().toDoubleOrNull()?.toInt() ?: 0
 
-                ScreenCaptureHelper.capture { fullBitmap ->
-                    if (fullBitmap != null) {
-                        val cropped = android.graphics.Bitmap.createBitmap(fullBitmap, triggerRect.left, triggerRect.top, triggerRect.width(), triggerRect.height())
-                        text = ocrProcessor?.getText(cropped)?.trim() ?: ""
+                        CoroutineScope(Dispatchers.Main).launch {
+                            overlayView.text = "Trigger → $valueInt"
+                        }
+
+                        if (valueInt >= 1) {
+                            Log.d("Executor", "✅ Trigger 감지 → $valueInt")
+
+                            CoroutineScope(Dispatchers.Default).launch {
+                                executeRoutine(clicker, ocr, overlayView)
+                            }
+                        }
                     }
                 }
-
-                delay(300)
-
-                val triggerValue = text.toDoubleOrNull()?.toInt() ?: 0
-                val isValid = triggerValue >= 1
-
-                withContext(Dispatchers.Main) {
-                    tvStatus.text = if (isValid) "✅ 트리거 감지됨: $text" else "⏸ 감지값: $text"
-                    debugOverlay?.show(triggerRect, "trigger\n$text\n${if (isValid) "OK" else "FAIL"}")
-                }
-
-                Log.d("ExecutorManager", "[Trigger OCR] 결과: $text → ${if (isValid) "작동" else "대기"}")
             }
         }
     }
@@ -56,7 +52,70 @@ object ExecutorManager {
     fun stop() {
         isRunning = false
         job?.cancel()
-        debugOverlay?.dismiss()
-        ocrProcessor?.release()
+    }
+
+    private suspend fun executeRoutine(clicker: ClickSimulator, ocr: OCRProcessor, overlayView: TextView) {
+        delay(600)
+
+        val steps = listOf(
+            Pair("step2", "Send"),
+            Pair("step3", "Address Book"),
+            Pair("step4", "User"),
+            Pair("step5", "Next"),
+            Pair("step6", "Max"),
+            Pair("step7", "Next"),
+            Pair("step8", "Send"),
+            Pair("step9", "BTCT Status"),
+            Pair("step10", "My BTCT")
+        )
+
+        for ((label, keyword) in steps) {
+            val coord = CoordinateManager.get(label).firstOrNull() ?: continue
+            val text = clicker.readText(coord)
+            if (text.contains(keyword, true)) {
+                clicker.performClick(coord)
+                delay(600)
+            }
+        }
+
+        clicker.scrollUntilVisible("step11", "scrollArea")
+        delay(500)
+
+        val copyCoord = CoordinateManager.get("step13").firstOrNull() ?: return
+        clicker.performClick(copyCoord)
+        delay(300)
+
+        val valueText = clicker.readText(copyCoord)
+        val value = valueText.toDoubleOrNull() ?: return
+        val result = "%.6f".format(value + 0.001)
+
+        val pasteCoord = CoordinateManager.get("step20").firstOrNull() ?: return
+        clicker.clearAndInput(pasteCoord, result)
+        delay(500)
+
+        val balance = "step21"
+        val target = "step21Check"
+        var inputValue = result.toDoubleOrNull() ?: return
+
+        repeat(10) {
+            clicker.clearAndInput(pasteCoord, "%.6f".format(inputValue))
+            delay(400)
+            if (clicker.isValueMatched(balance, target)) return@repeat
+            inputValue += 0.001
+        }
+
+        clicker.performClick(CoordinateManager.get("step22").firstOrNull() ?: return)
+        delay(500)
+
+        clicker.scrollUntilVisible("step23", "scrollArea")
+        delay(400)
+
+        listOf("step24", "step25", "step26").forEach {
+            val coord = CoordinateManager.get(it).firstOrNull() ?: return@forEach
+            clicker.performClick(coord)
+            delay(500)
+        }
+
+        Log.d("Executor", "✅ 루틴 종료")
     }
 }

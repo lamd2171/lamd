@@ -10,9 +10,6 @@ object OCRCaptureUtils {
         val width = coord.width
         val height = coord.height
 
-        val safeWidth = if (x + width > bitmap.width) bitmap.width - x else width
-        val safeHeight = if (y + height > bitmap.height) bitmap.height - y else height
-
-        return Bitmap.createBitmap(bitmap, x, y, safeWidth, safeHeight)
+        return Bitmap.createBitmap(bitmap, x, y, width, height)
     }
 }

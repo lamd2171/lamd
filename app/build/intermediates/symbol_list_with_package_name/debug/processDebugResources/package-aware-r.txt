@@ -3123,6 +3123,7 @@ id linear
 id listMode
 id list_item
 id m3_side_sheet
+id mainLayout
 id marquee
 id masked
 id match_constraint
@@ -3630,8 +3631,6 @@ string abc_toolbar_collapse_description
 string accessibility_description
 string androidx_startup
 string app_name
-string app_running
-string app_stopped
 string appbar_scrolling_view_behavior
 string bottom_sheet_behavior
 string bottomsheet_action_collapse
@@ -3675,7 +3674,6 @@ string fab_transformation_scrim_behavior
 string fab_transformation_sheet_behavior
 string hide_bottom_view_on_scroll_behavior
 string icon_content_description
-string input
 string item_view_role_description
 string m3_sys_motion_easing_emphasized
 string m3_sys_motion_easing_emphasized_accelerate
@@ -3777,16 +3775,13 @@ string path_password_eye
 string path_password_eye_mask_strike_through
 string path_password_eye_mask_visible
 string path_password_strike_through
-string reset
 string search_menu_title
 string searchbar_scrolling_view_behavior
 string searchview_clear_text_content_description
 string searchview_navigation_content_description
 string side_sheet_accessibility_pane_title
 string side_sheet_behavior
-string start
 string status_bar_notification_info_overflow
-string stop
 style AlertDialog_AppCompat
 style AlertDialog_AppCompat_Light
 style Animation_AppCompat_Dialog

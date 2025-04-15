@@ -1,15 +1,15 @@
 package com.example.bitconintauto.util
 
+import android.accessibilityservice.AccessibilityService
 import android.content.Context
-import android.content.SharedPreferences
-import android.preference.PreferenceManager
-import android.view.accessibility.AccessibilityService
 
 object PreferenceHelper {
-    private lateinit var prefs: SharedPreferences
     var accessibilityService: AccessibilityService? = null
+    private lateinit var context: Context
 
     fun init(context: Context) {
-        prefs = PreferenceManager.getDefaultSharedPreferences(context)
+        this.context = context
     }
+
+    fun getContext(): Context = context
 }

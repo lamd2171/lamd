@@ -2,41 +2,46 @@ package com.example.bitconintauto.util
 
 import android.content.Context
 import android.graphics.Bitmap
+import android.graphics.PixelFormat
+import android.hardware.display.DisplayManager
+import android.hardware.display.VirtualDisplay
 import android.media.ImageReader
 import android.media.projection.MediaProjection
 import android.os.Handler
-import android.os.HandlerThread
-import android.view.Surface
+import android.os.Looper
+import android.util.DisplayMetrics
+import android.view.WindowManager
 
 object ScreenCaptureHelper {
-
-    private var mediaProjection: MediaProjection? = null
+    private var projection: MediaProjection? = null
+    private lateinit var imageReader: ImageReader
+    private lateinit var virtualDisplay: VirtualDisplay
     private lateinit var context: Context
-    private var imageReader: ImageReader? = null
-    private var handler: Handler? = null
 
-    fun init(projection: MediaProjection, ctx: Context) {
-        mediaProjection = projection
+    fun init(mediaProjection: MediaProjection, ctx: Context) {
+        projection = mediaProjection
         context = ctx
 
-        val width = 540
-        val height = 960
-        val dpi = 240
+        val metrics = DisplayMetrics()
+        val wm = ctx.getSystemService(Context.WINDOW_SERVICE) as WindowManager
+        wm.defaultDisplay.getRealMetrics(metrics)
 
-        imageReader = ImageReader.newInstance(width, height, 0x1, 2)
-        val handlerThread = HandlerThread("ScreenCaptureThread").apply { start() }
-        handler = Handler(handlerThread.looper)
+        imageReader = ImageReader.newInstance(metrics.widthPixels, metrics.heightPixels, PixelFormat.RGBA_8888, 2)
 
-        mediaProjection?.createVirtualDisplay(
-            "CaptureDisplay",
-            width, height, dpi,
-            0, imageReader!!.surface,
-            null, handler
+        virtualDisplay = projection!!.createVirtualDisplay(
+            "ScreenCapture",
+            metrics.widthPixels,
+            metrics.heightPixels,
+            metrics.densityDpi,
+            DisplayManager.VIRTUAL_DISPLAY_FLAG_AUTO_MIRROR,
+            imageReader.surface,
+            null,
+            Handler(Looper.getMainLooper())
         )
     }
 
     fun capture(callback: (Bitmap?) -> Unit) {
-        val image = imageReader?.acquireLatestImage() ?: return callback(null)
+        val image = imageReader.acquireLatestImage() ?: return callback(null)
 
         val planes = image.planes
         val buffer = planes[0].buffer
@@ -46,7 +51,8 @@ object ScreenCaptureHelper {
 
         val bitmap = Bitmap.createBitmap(
             image.width + rowPadding / pixelStride,
-            image.height, Bitmap.Config.ARGB_8888
+            image.height,
+            Bitmap.Config.ARGB_8888
         )
         bitmap.copyPixelsFromBuffer(buffer)
         image.close()

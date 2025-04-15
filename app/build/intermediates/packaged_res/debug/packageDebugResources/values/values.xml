@@ -14,14 +14,8 @@
     <dimen name="padding_small">8dp</dimen>
     <dimen name="text_size_large">18sp</dimen>
     <dimen name="text_size_normal">14sp</dimen>
-    <string name="accessibility_description">자동 클릭 기능을 위한 접근성 서비스입니다.</string>
-    <string name="app_name">BitconintAuto</string>
-    <string name="app_running">실행 중</string>
-    <string name="app_stopped">중지됨</string>
-    <string name="input">값 입력</string>
-    <string name="reset">초기화</string>
-    <string name="start">시작</string>
-    <string name="stop">중지</string>
+    <string name="accessibility_description">비트코인 자동화 접근성 서비스</string>
+    <string name="app_name">Bitconint Auto</string>
     <style name="Theme.BitconintAuto" parent="Theme.MaterialComponents.DayNight.DarkActionBar">
         
         <item name="colorPrimary">@color/purple_500</item>

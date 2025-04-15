@@ -1,7 +1,7 @@
 package com.example.bitconintauto.util
 
 import android.accessibilityservice.AccessibilityService
-import android.graphics.Bitmap   // 이 라인 추가
+import android.graphics.Bitmap
 import android.graphics.Path
 import android.os.Build
 import android.util.Log
@@ -24,16 +24,12 @@ class ClickSimulator(private val service: AccessibilityService) {
 
     fun readText(coord: Coordinate): String {
         var result = ""
-        ScreenCaptureHelper.capture { fullBitmap ->
-            if (fullBitmap != null) {
-                val region = OCRCaptureUtils.captureRegion(fullBitmap, coord)
-                // 로그로 region 크기 확인하기
-                Log.d("Capture Debug", "Captured Region: width=${region.width}, height=${region.height}")
+        ScreenCaptureHelper.capture { bmp ->
+            if (bmp != null) {
+                val region = OCRCaptureUtils.captureRegion(bmp, coord)
                 result = OCRProcessor().getText(region)
             }
         }
-        // 로그 추가하여 OCR 결과 출력
-        Log.d("OCR Debug", "[OCR 결과] ${coord.label} → $result")
         Thread.sleep(300)
         return result
     }
@@ -76,15 +72,8 @@ class ClickSimulator(private val service: AccessibilityService) {
                         bmp = OCRCaptureUtils.captureRegion(fullBitmap, coord)
                     }
                 }
-                // OCR 결과 출력
-                val result = if (bmp != null) {
-                    OCRProcessor().getText(bmp)
-                } else {
-                    ""
-                }
-                Log.d("OCR Debug", "[OCR] $targetLabel → $result")
+                val result = OCRProcessor().getText(bmp)
                 if (keyword == null || result.contains(keyword, true)) {
-                    Log.d("ScrollCheck", "✅ 타겟 발견 ($result)")
                     return
                 }
             }
@@ -105,7 +94,6 @@ class ClickSimulator(private val service: AccessibilityService) {
                 .build()
 
             service.dispatchGesture(gesture, null, null)
-            Log.d("ClickSimulator", "[스크롤] ($startX, $startY) → ($endX, $endY)")
         }
     }
 }

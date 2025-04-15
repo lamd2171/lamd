@@ -36,6 +36,7 @@ id etWidth
 id first_click_guide
 id guideText
 id guide_text
+id mainLayout
 id overlayGuideRoot
 id recyclerView
 id root
@@ -69,12 +70,6 @@ raw notify_sound
 raw success_sound
 string accessibility_description
 string app_name
-string app_running
-string app_stopped
-string input
-string reset
-string start
-string stop
 style Theme.BitconintAuto
 style Theme.BitconintAuto.NoActionBar
 xml accessibility_service_config
