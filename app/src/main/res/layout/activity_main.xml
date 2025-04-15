@@ -28,8 +28,17 @@
         android:id="@+id/btn_start_overlay"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="오버레이 및 자동화 시작"
+        android:text="오버레이 시작"
         android:layout_below="@id/btn_open_settings"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="20dp" />
+
+    <Button
+        android:id="@+id/btn_stop"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="자동화 종료"
+        android:layout_below="@id/btn_start_overlay"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="20dp" />
 </RelativeLayout>
