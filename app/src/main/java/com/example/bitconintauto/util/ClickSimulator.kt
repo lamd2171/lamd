@@ -2,17 +2,17 @@ package com.example.bitconintauto.util
 
 import android.accessibilityservice.AccessibilityService
 import android.graphics.Path
-import android.graphics.Rect
 import android.os.Build
 import android.util.Log
+import androidx.annotation.RequiresApi
 import com.example.bitconintauto.model.Coordinate
 import com.example.bitconintauto.ocr.OCRProcessor
-import kotlinx.coroutines.*
+import com.example.bitconintauto.util.CoordinateManager.get
 
 class ClickSimulator(val service: AccessibilityService) {
 
     fun performClick(label: String) {
-        val coord = CoordinateManager.get(label).firstOrNull() ?: return
+        val coord = get(label).firstOrNull() ?: return
         performClick(coord)
     }
 
@@ -20,66 +20,62 @@ class ClickSimulator(val service: AccessibilityService) {
         val x = coord.x + coord.width / 2
         val y = coord.y + coord.height / 2
         AccessibilityTapper.simulateClick(service, x, y)
-        Log.d("ClickSimulator", "[👆 Click] (${coord.label}) at ($x,$y)")
     }
 
     fun clearAndInput(label: String, text: String) {
-        val coord = CoordinateManager.get(label).firstOrNull() ?: return
+        val coord = get(label).firstOrNull() ?: return
         clearAndInput(coord, text)
     }
 
     fun clearAndInput(coord: Coordinate, text: String) {
         performClick(coord)
-        Thread.sleep(200)
+        Thread.sleep(300)
         AccessibilityTextInput.sendText(service, text)
-        Log.d("ClickSimulator", "[✍ 입력] ${coord.label} → $text")
     }
 
     fun readText(coord: Coordinate): String {
-        val bitmap = OCRCaptureUtils.capture(service, coord) ?: return ""
-        val text = OCRProcessor().getText(bitmap)
-        Log.d("ClickSimulator", "[🔍 OCR] ${coord.label} → $text")
-        return text
+        val bmp = OCRCaptureUtils.capture(service, coord) ?: return ""
+        val result = OCRProcessor().getText(bmp)
+        Log.d("ClickSimulator", "[🧪 OCR 결과] ${coord.label} → $result")
+        return result
     }
 
     fun isValueMatched(label1: String, label2: String): Boolean {
-        val coord1 = CoordinateManager.get(label1).firstOrNull() ?: return false
-        val coord2 = CoordinateManager.get(label2).firstOrNull() ?: return false
+        val v1 = get(label1).firstOrNull()?.let { coord ->
+            OCRCaptureUtils.capture(service, coord)?.let { bmp -> OCRProcessor().getText(bmp) }?.toDoubleOrNull()
+        } ?: return false
 
-        val bmp1 = OCRCaptureUtils.capture(service, coord1)
-        val bmp2 = OCRCaptureUtils.capture(service, coord2)
-        val v1 = bmp1?.let { OCRProcessor().getText(it) }?.toDoubleOrNull()
-        val v2 = bmp2?.let { OCRProcessor().getText(it) }?.toDoubleOrNull()
+        val v2 = get(label2).firstOrNull()?.let { coord ->
+            OCRCaptureUtils.capture(service, coord)?.let { bmp -> OCRProcessor().getText(bmp) }?.toDoubleOrNull()
+        } ?: return false
 
-        Log.d("ClickSimulator", "[⚖ 비교] $v1 vs $v2")
-        return v1 != null && v2 != null && v1 == v2
+        return v1 == v2
     }
 
     fun scrollToBottom(label: String) {
-        val coord = CoordinateManager.get(label).firstOrNull() ?: return
+        val coord = get(label).firstOrNull() ?: return
         val startX = coord.x + coord.width / 2
         val startY = coord.y + coord.height - 10
         val endX = startX
         val endY = coord.y + 10
-
         simulateSwipe(startX, startY, endX, endY)
     }
 
-    fun scrollUntilVisible(targetLabel: String, scrollAreaLabel: String) {
-        repeat(10) {
-            val coord = CoordinateManager.get(targetLabel).firstOrNull()
+    fun scrollUntilVisible(targetLabel: String, scrollAreaLabel: String, keyword: String? = null) {
+        repeat(6) {
+            val coord = get(targetLabel).firstOrNull()
             if (coord != null) {
-                val bitmap = OCRCaptureUtils.capture(service, coord) ?: return
-                val ocrText = OCRProcessor().getText(bitmap)
-                if (ocrText.contains("Sellable", true)) {
-                    Log.d("ClickSimulator", "[✅ 텍스트 발견] $ocrText")
+                val bmp = OCRCaptureUtils.capture(service, coord) ?: return@repeat
+                val result = OCRProcessor().getText(bmp)
+                Log.d("ScrollCheck", "[🔍] $targetLabel OCR → $result")
+                if (keyword == null || result.contains(keyword, true)) {
+                    Log.d("ScrollCheck", "[✅] 타겟 발견: $targetLabel ($result)")
                     return
                 }
             }
             scrollToBottom(scrollAreaLabel)
-            Thread.sleep(500)
+            Thread.sleep(600)
         }
-        Log.w("ClickSimulator", "[❌ 텍스트 미발견] $targetLabel")
     }
 
     private fun simulateSwipe(startX: Int, startY: Int, endX: Int, endY: Int) {
@@ -94,7 +90,7 @@ class ClickSimulator(val service: AccessibilityService) {
                 .build()
 
             service.dispatchGesture(gesture, null, null)
-            Log.d("ClickSimulator", "[🖐 Scroll] $startX,$startY → $endX,$endY")
+            Log.d("ClickSimulator", "[🖐] 스크롤: ($startX, $startY) → ($endX, $endY)")
         }
     }
 }

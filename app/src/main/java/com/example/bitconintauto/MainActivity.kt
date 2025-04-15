@@ -1,97 +1,54 @@
+// MainActivity.kt
 package com.example.bitconintauto
-
-import android.content.Intent
-import android.net.Uri
-import android.os.Bundle
-import android.provider.Settings
-import android.widget.Button
-import android.widget.TextView
-import android.widget.Toast
-import androidx.appcompat.app.AppCompatActivity
-import com.example.bitconintauto.service.MyAccessibilityService
-import com.example.bitconintauto.ui.FloatingController
 
 import android.app.Activity
 import android.content.Context
-import android.media.projection.MediaProjection
+import android.content.Intent
 import android.media.projection.MediaProjectionManager
-
-private lateinit var mediaProjectionManager: MediaProjectionManager
-private var mediaProjection: MediaProjection? = null
-private val REQUEST_SCREEN_CAPTURE = 1001
+import android.os.Bundle
+import android.widget.Button
+import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
+import com.example.bitconintauto.service.ExecutorManager
+import com.example.bitconintauto.util.OCRCaptureUtils
 
 class MainActivity : AppCompatActivity() {
 
-    private lateinit var controller: FloatingController
-    private var isOverlayShown = false
+    private val REQUEST_MEDIA_PROJECTION = 1001
+    private var mediaProjectionManager: MediaProjectionManager? = null
+    private lateinit var btnStart: Button
+    private lateinit var btnStop: Button
 
-    override fun onResume() {
-        super.onResume()
-        val tvStatus = findViewById<TextView>(R.id.tv_status)
-        tvStatus.text = if (MyAccessibilityService.instance != null) {
-            "접근성 서비스: 활성화됨"
-        } else {
-            "접근성 서비스: 비활성화됨"
-        }
-    }
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
+        btnStart = findViewById(R.id.btn_start)
+        btnStop = findViewById(R.id.btn_stop)
 
+        mediaProjectionManager = getSystemService(Context.MEDIA_PROJECTION_SERVICE) as MediaProjectionManager
 
-        // UI 연결
-        val tvStatus = findViewById<TextView>(R.id.tv_status)
-        val btnOpenSettings = findViewById<Button>(R.id.btn_open_settings)
-        val btnStartOverlay = findViewById<Button>(R.id.btn_start_overlay)
-
-
-
-        // 접근성 설정 화면으로 이동
-        btnOpenSettings.setOnClickListener {
-            val intent = Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS)
-            startActivity(intent)
+        btnStart.setOnClickListener {
+            val intent = mediaProjectionManager?.createScreenCaptureIntent()
+            startActivityForResult(intent, REQUEST_MEDIA_PROJECTION)
         }
 
-        // 오버레이 띄우기
-        btnStartOverlay.setOnClickListener {
-            if (!Settings.canDrawOverlays(this)) {
-                Toast.makeText(this, "오버레이 권한이 필요합니다.", Toast.LENGTH_SHORT).show()
-                val intent = Intent(
-                    Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
-                    Uri.parse("package:$packageName")
-                )
-                startActivity(intent)
-                return@setOnClickListener
-            }
-
-            if (!isOverlayShown) {
-                controller = FloatingController(this)
-                controller.show()
-                isOverlayShown = true
-            }
-            mediaProjectionManager = getSystemService(Context.MEDIA_PROJECTION_SERVICE) as MediaProjectionManager
-            val captureIntent = mediaProjectionManager.createScreenCaptureIntent()
-            startActivityForResult(captureIntent, REQUEST_SCREEN_CAPTURE)
+        btnStop.setOnClickListener {
+            ExecutorManager.stop()
+            Toast.makeText(this, "자동화 중지됨", Toast.LENGTH_SHORT).show()
         }
     }
 
-    override fun onDestroy() {
-        if (isOverlayShown) {
-            controller.dismiss()
-        }
-        super.onDestroy()
-    }
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
-        if (requestCode == REQUEST_SCREEN_CAPTURE && resultCode == Activity.RESULT_OK && data != null) {
-            mediaProjection = mediaProjectionManager.getMediaProjection(resultCode, data)
-            if (mediaProjection != null) {
-                // OCRCaptureUtils 에 전달
-                com.example.bitconintauto.util.OCRCaptureUtils.setMediaProjection(mediaProjection!!)
-                Toast.makeText(this, "화면 캡처 권한 허용됨", Toast.LENGTH_SHORT).show()
+        if (requestCode == REQUEST_MEDIA_PROJECTION && resultCode == Activity.RESULT_OK && data != null) {
+            val projection = mediaProjectionManager?.getMediaProjection(resultCode, data)
+            if (projection != null) {
+                OCRCaptureUtils.setMediaProjection(projection)
+                ExecutorManager.start(applicationContext)
+            } else {
+                Toast.makeText(this, "미디어 프로젝션 실패", Toast.LENGTH_SHORT).show()
             }
         }
     }
-
 }
