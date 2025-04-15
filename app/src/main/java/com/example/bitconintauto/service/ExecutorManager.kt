@@ -1,8 +1,9 @@
 package com.example.bitconintauto.service
 
 import android.accessibilityservice.AccessibilityService
-import android.util.Log
+import android.util.Log // 여기에 추가
 import android.widget.Toast
+import android.widget.TextView
 import com.example.bitconintauto.ocr.OCRProcessor
 import com.example.bitconintauto.ui.OCRDebugOverlay
 import com.example.bitconintauto.util.*
@@ -15,14 +16,14 @@ object ExecutorManager {
     private var ocrProcessor: OCRProcessor? = null
     private var debugOverlay: OCRDebugOverlay? = null
 
-    fun start(service: AccessibilityService) {
+    fun start(service: AccessibilityService, tvStatus: TextView) {
         if (isRunning) {
             Toast.makeText(service, "이미 실행 중입니다", Toast.LENGTH_SHORT).show()
             return
         }
 
         isRunning = true
-        Toast.makeText(service, "✅ 자동화 시작됨", Toast.LENGTH_SHORT).show()
+        tvStatus.text = "✅ 자동화 시작됨"
 
         CoordinateManager.set("trigger", Coordinate(45, 240, 350, 120, "trigger"))
         ocrProcessor = OCRProcessor().apply { init(service.applicationContext) }
@@ -48,6 +49,7 @@ object ExecutorManager {
                         CoroutineScope(Dispatchers.Main).launch {
                             val status = if (triggerValue >= 1) "✅ 조건 충족" else "⏸ 조건 미달"
                             debugOverlay?.show(trigger.toRect(), "trigger\n$rawText\n$status")
+                            tvStatus.text = "트리거 상태: $status"
 
                             if (triggerValue >= 1) {
                                 Log.d("Executor", "[✅ Trigger 감지: $rawText → $triggerValue] 루틴 실행")

@@ -1,44 +1,37 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/rootLayout"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#111111">
+    android:orientation="vertical"
+    android:padding="16dp">
 
-    <TextView
-        android:id="@+id/tv_status"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="접근성 서비스 상태 확인 중..."
-        android:textColor="#FFFFFF"
-        android:textSize="16sp"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="50dp" />
-
+    <!-- 자동화 시작 버튼 -->
     <Button
-        android:id="@+id/btn_open_settings"
+        android:id="@+id/btn_start"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="접근성 설정 열기"
-        android:layout_below="@id/tv_status"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="20dp" />
+        android:text="Start Automation" />
 
-    <Button
-        android:id="@+id/btn_start_overlay"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="오버레이 시작"
-        android:layout_below="@id/btn_open_settings"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="20dp" />
-
+    <!-- 자동화 중지 버튼 -->
     <Button
         android:id="@+id/btn_stop"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="자동화 종료"
-        android:layout_below="@id/btn_start_overlay"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="20dp" />
-</RelativeLayout>
+        android:text="Stop Automation" />
+
+    <!-- 오버레이 UI가 표시될 영역 -->
+    <FrameLayout
+        android:id="@+id/overlay_container"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentStart="true"/>
+
+    <!-- 오버레이 디버그 메시지를 표시할 텍스트뷰 -->
+    <TextView
+        android:id="@+id/tvStatus"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Status"
+        android:layout_marginTop="20dp"/>
+</LinearLayout>

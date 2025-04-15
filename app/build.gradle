@@ -60,3 +60,8 @@ dependencies {
     implementation "androidx.annotation:annotation:1.6.0"
     implementation 'com.google.code.gson:gson:2.10.1'
 }
+
+dependencies {
+    implementation 'androidx.activity:activity-ktx:1.4.0'  // 최신 버전 확인 후 적용
+    // 여기에 다른 의존성도 추가되어 있을 거야
+}
