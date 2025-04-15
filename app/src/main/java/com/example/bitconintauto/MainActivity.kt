@@ -1,54 +1,66 @@
-// MainActivity.kt
 package com.example.bitconintauto
 
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
-import android.media.projection.MediaProjectionManager
 import android.os.Bundle
+import android.provider.Settings
 import android.widget.Button
+import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.example.bitconintauto.service.ExecutorManager
-import com.example.bitconintauto.util.OCRCaptureUtils
+import com.example.bitconintauto.util.PreferenceHelper
 
 class MainActivity : AppCompatActivity() {
 
-    private val REQUEST_MEDIA_PROJECTION = 1001
-    private var mediaProjectionManager: MediaProjectionManager? = null
-    private lateinit var btnStart: Button
-    private lateinit var btnStop: Button
+    private lateinit var btnStartOverlay: Button
+    private lateinit var btnOpenSettings: Button
+    private lateinit var tvStatus: TextView
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        btnStart = findViewById(R.id.btn_start)
-        btnStop = findViewById(R.id.btn_stop)
+        PreferenceHelper.init(applicationContext)
 
-        mediaProjectionManager = getSystemService(Context.MEDIA_PROJECTION_SERVICE) as MediaProjectionManager
+        tvStatus = findViewById(R.id.tv_status)
+        btnStartOverlay = findViewById(R.id.btn_start_overlay)
+        btnOpenSettings = findViewById(R.id.btn_open_settings)
 
-        btnStart.setOnClickListener {
-            val intent = mediaProjectionManager?.createScreenCaptureIntent()
-            startActivityForResult(intent, REQUEST_MEDIA_PROJECTION)
+        updateServiceStatus()
+
+        btnOpenSettings.setOnClickListener {
+            startActivity(Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS))
         }
 
-        btnStop.setOnClickListener {
-            ExecutorManager.stop()
-            Toast.makeText(this, "자동화 중지됨", Toast.LENGTH_SHORT).show()
+        btnStartOverlay.setOnClickListener {
+            if (!isAccessibilityServiceEnabled(this)) {
+                Toast.makeText(this, "접근성 서비스를 먼저 켜주세요", Toast.LENGTH_SHORT).show()
+                startActivity(Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS))
+                return@setOnClickListener
+            }
+
+            ExecutorManager.start(PreferenceHelper.accessibilityService!!)
+            Toast.makeText(this, "오버레이 및 자동화 실행 시작", Toast.LENGTH_SHORT).show()
         }
     }
 
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-        if (requestCode == REQUEST_MEDIA_PROJECTION && resultCode == Activity.RESULT_OK && data != null) {
-            val projection = mediaProjectionManager?.getMediaProjection(resultCode, data)
-            if (projection != null) {
-                OCRCaptureUtils.setMediaProjection(projection)
-                ExecutorManager.start(applicationContext)
-            } else {
-                Toast.makeText(this, "미디어 프로젝션 실패", Toast.LENGTH_SHORT).show()
-            }
+    private fun updateServiceStatus() {
+        val isEnabled = isAccessibilityServiceEnabled(this)
+        tvStatus.text = if (isEnabled) {
+            "접근성 서비스 활성화됨"
+        } else {
+            "접근성 서비스 꺼짐"
         }
+    }
+
+    private fun isAccessibilityServiceEnabled(context: Context): Boolean {
+        return PreferenceHelper.accessibilityService != null
+    }
+
+    override fun onDestroy() {
+        ExecutorManager.stop()
+        super.onDestroy()
     }
 }

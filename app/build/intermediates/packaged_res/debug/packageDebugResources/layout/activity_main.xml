@@ -1,35 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/rootLayout"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#111111">
-
-    <TextView
-        android:id="@+id/tv_status"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="접근성 서비스 상태 확인 중..."
-        android:textColor="#FFFFFF"
-        android:textSize="16sp"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="50dp" />
+    android:padding="24dp"
+    android:gravity="center">
 
     <Button
-        android:id="@+id/btn_open_settings"
+        android:id="@+id/btn_start"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="접근성 설정 열기"
-        android:layout_below="@id/tv_status"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="20dp" />
+        android:text="자동화 시작" />
 
     <Button
-        android:id="@+id/btn_start_overlay"
+        android:id="@+id/btn_stop"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="오버레이 시작"
-        android:layout_below="@id/btn_open_settings"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="20dp" />
-</RelativeLayout>
+        android:text="자동화 중지"
+        android:layout_marginTop="16dp" />
+
+</LinearLayout>

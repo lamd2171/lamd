@@ -9,6 +9,7 @@ import com.example.bitconintauto.ocr.OCRProcessor
 import com.example.bitconintauto.ui.OCRDebugOverlay
 import com.example.bitconintauto.util.*
 import kotlinx.coroutines.*
+import com.example.bitconintauto.model.Coordinate
 
 object ExecutorManager {
     private var isRunning = false
