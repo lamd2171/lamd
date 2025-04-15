@@ -1,6 +1,5 @@
 package com.example.bitconintauto
 
-import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import android.provider.Settings
@@ -9,53 +8,54 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.example.bitconintauto.service.ExecutorManager
-import com.example.bitconintauto.util.MediaProjectionStarter
-import com.example.bitconintauto.util.PreferenceHelper
+import com.example.bitconintauto.util.*
 
 class MainActivity : AppCompatActivity() {
 
     private lateinit var btnStart: Button
     private lateinit var btnStop: Button
-    private lateinit var tvStatus: TextView
-
-    private val resultLauncher = registerForActivityResult(
-        androidx.activity.result.contract.ActivityResultContracts.StartActivityForResult()
-    ) { result ->
-        if (result.resultCode == Activity.RESULT_OK && result.data != null) {
-            MediaProjectionStarter.handlePermissionResult(this, result.resultCode, result.data!!, tvStatus)
-        } else {
-            Toast.makeText(this, "화면 캡처 권한이 필요합니다.", Toast.LENGTH_SHORT).show()
-        }
-    }
+    private lateinit var tvStatus: TextView  // 상태를 표시할 TextView
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        PreferenceHelper.init(applicationContext)
-
         btnStart = findViewById(R.id.btn_start)
         btnStop = findViewById(R.id.btn_stop)
-        tvStatus = findViewById(R.id.tvStatus)
+        tvStatus = findViewById(R.id.tvStatus)  // TextView 연결
+
+        // 오버레이 권한이 없으면 설정으로 유도
+        if (!Settings.canDrawOverlays(this)) {
+            val intent = Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION)
+            startActivity(intent)
+            Toast.makeText(this, "오버레이 권한을 허용해주세요.", Toast.LENGTH_LONG).show()
+        }
 
         btnStart.setOnClickListener {
-            val service = PreferenceHelper.accessibilityService
-            if (service == null) {
-                Toast.makeText(this, "접근성 서비스를 먼저 활성화해야 합니다", Toast.LENGTH_SHORT).show()
-                return@setOnClickListener
+            if (Settings.canDrawOverlays(this)) {
+                val service = PreferenceHelper.accessibilityService
+                if (service is android.accessibilityservice.AccessibilityService) {
+                    ExecutorManager.start(service, tvStatus)
+                }
+                if (service != null) {
+                    ExecutorManager.start(service, tvStatus)
+                } else {
+                    Toast.makeText(this, "접근성 서비스를 먼저 켜주세요.", Toast.LENGTH_LONG).show()
+                    startActivity(Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS))
+                }
+            } else {
+                Toast.makeText(this, "오버레이 권한이 필요합니다.", Toast.LENGTH_SHORT).show()
             }
-
-            if (!Settings.canDrawOverlays(this)) {
-                val intent = Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION)
-                startActivity(intent)
-                return@setOnClickListener
-            }
-
-            MediaProjectionStarter.requestCapturePermission(this, resultLauncher)
         }
 
         btnStop.setOnClickListener {
             ExecutorManager.stop()
         }
+    }
+
+    // 로그를 화면에 출력하는 함수
+    private fun logToScreen(message: String) {
+        val currentText = tvStatus.text.toString()
+        tvStatus.text = "$currentText\n$message"
     }
 }

@@ -51,7 +51,7 @@
 31-->C:\Users\abc\AndroidStudioProjects\bitconintauto\app\src\main\AndroidManifest.xml:13:9-20:20
 32            android:name="com.example.bitconintauto.MainActivity"
 32-->C:\Users\abc\AndroidStudioProjects\bitconintauto\app\src\main\AndroidManifest.xml:14:13-41
-33            android:exported="true" > <!-- ✅ 이 줄 추가 -->
+33            android:exported="true" >
 33-->C:\Users\abc\AndroidStudioProjects\bitconintauto\app\src\main\AndroidManifest.xml:15:13-36
 34            <intent-filter>
 34-->C:\Users\abc\AndroidStudioProjects\bitconintauto\app\src\main\AndroidManifest.xml:16:13-19:29

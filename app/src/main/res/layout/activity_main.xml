@@ -1,29 +1,41 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/container"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
     android:padding="24dp"
-    android:gravity="center">
+    android:gravity="center"
+    android:orientation="vertical">
 
     <Button
         android:id="@+id/btn_start"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Start Automation" />
+        android:text="START" />
 
     <Button
         android:id="@+id/btn_stop"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
-        android:text="Stop Automation" />
+        android:text="STOP"
+        android:layout_marginTop="12dp" />
 
     <TextView
         android:id="@+id/tvStatus"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="상태: 대기 중"
+        android:text="대기 중..."
+        android:layout_marginTop="24dp"
+        android:textSize="16sp" />
+
+    <TextView
+        android:id="@+id/logTextView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
         android:textSize="16sp"
-        android:layout_marginTop="32dp" />
+        android:scrollbars="vertical"
+        android:layout_alignParentTop="true"
+        android:layout_marginTop="10dp"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp" />
 </LinearLayout>

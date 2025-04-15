@@ -1,15 +1,14 @@
-// [16] app/src/main/java/com/example/bitconintauto/util/ClickSimulator.kt
-
 package com.example.bitconintauto.util
 
 import android.accessibilityservice.AccessibilityService
+import android.graphics.Bitmap   // 이 라인 추가
 import android.graphics.Path
 import android.os.Build
 import android.util.Log
 import com.example.bitconintauto.model.Coordinate
 import com.example.bitconintauto.ocr.OCRProcessor
 
-class ClickSimulator(val service: AccessibilityService) {
+class ClickSimulator(private val service: AccessibilityService) {
 
     fun performClick(coord: Coordinate) {
         val x = coord.x + coord.width / 2
@@ -28,11 +27,14 @@ class ClickSimulator(val service: AccessibilityService) {
         ScreenCaptureHelper.capture { fullBitmap ->
             if (fullBitmap != null) {
                 val region = OCRCaptureUtils.captureRegion(fullBitmap, coord)
+                // 로그로 region 크기 확인하기
+                Log.d("Capture Debug", "Captured Region: width=${region.width}, height=${region.height}")
                 result = OCRProcessor().getText(region)
             }
         }
+        // 로그 추가하여 OCR 결과 출력
+        Log.d("OCR Debug", "[OCR 결과] ${coord.label} → $result")
         Thread.sleep(300)
-        Log.d("ClickSimulator", "[🧪 OCR 결과] ${coord.label} → $result")
         return result
     }
 
@@ -68,18 +70,21 @@ class ClickSimulator(val service: AccessibilityService) {
         repeat(6) {
             val coord = CoordinateManager.get(targetLabel).firstOrNull()
             if (coord != null) {
-                var result = ""
-                ScreenCaptureHelper.capture { bmp ->
-                    if (bmp != null) {
-                        val region = OCRCaptureUtils.captureRegion(bmp, coord)
-                        result = OCRProcessor().getText(region)
+                var bmp: Bitmap? = null
+                ScreenCaptureHelper.capture { fullBitmap ->
+                    if (fullBitmap != null) {
+                        bmp = OCRCaptureUtils.captureRegion(fullBitmap, coord)
                     }
                 }
-                Thread.sleep(300)
-
-                Log.d("ScrollCheck", "[🔍] $targetLabel OCR → $result")
+                // OCR 결과 출력
+                val result = if (bmp != null) {
+                    OCRProcessor().getText(bmp)
+                } else {
+                    ""
+                }
+                Log.d("OCR Debug", "[OCR] $targetLabel → $result")
                 if (keyword == null || result.contains(keyword, true)) {
-                    Log.d("ScrollCheck", "[✅] 타겟 발견: $targetLabel ($result)")
+                    Log.d("ScrollCheck", "✅ 타겟 발견 ($result)")
                     return
                 }
             }
@@ -100,7 +105,7 @@ class ClickSimulator(val service: AccessibilityService) {
                 .build()
 
             service.dispatchGesture(gesture, null, null)
-            Log.d("ClickSimulator", "[🖐] 스크롤: ($startX, $startY) → ($endX, $endY)")
+            Log.d("ClickSimulator", "[스크롤] ($startX, $startY) → ($endX, $endY)")
         }
     }
 }
