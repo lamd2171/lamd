@@ -1,62 +1,57 @@
 package com.example.bitconintauto.util
 
-import android.content.Context
 import android.graphics.Bitmap
-import android.graphics.PixelFormat
 import android.hardware.display.DisplayManager
 import android.hardware.display.VirtualDisplay
 import android.media.ImageReader
 import android.media.projection.MediaProjection
 import android.os.Handler
 import android.os.Looper
-import android.util.DisplayMetrics
 import android.view.WindowManager
+import java.nio.ByteBuffer
 
 object ScreenCaptureHelper {
-    private var projection: MediaProjection? = null
-    private lateinit var imageReader: ImageReader
-    private lateinit var virtualDisplay: VirtualDisplay
-    private lateinit var context: Context
+    private var mediaProjection: MediaProjection? = null
+    private var imageReader: ImageReader? = null
+    private var virtualDisplay: VirtualDisplay? = null
 
-    fun init(mediaProjection: MediaProjection, ctx: Context) {
-        projection = mediaProjection
-        context = ctx
+    fun init(projection: MediaProjection, context: android.content.Context) {
+        val windowManager = context.getSystemService(Context.WINDOW_SERVICE) as WindowManager
+        val display = windowManager.defaultDisplay
+        val width = display.width
+        val height = display.height
 
-        val metrics = DisplayMetrics()
-        val wm = ctx.getSystemService(Context.WINDOW_SERVICE) as WindowManager
-        wm.defaultDisplay.getRealMetrics(metrics)
-
-        imageReader = ImageReader.newInstance(metrics.widthPixels, metrics.heightPixels, PixelFormat.RGBA_8888, 2)
-
-        virtualDisplay = projection!!.createVirtualDisplay(
+        imageReader = ImageReader.newInstance(width, height, 0x1, 2)
+        virtualDisplay = projection.createVirtualDisplay(
             "ScreenCapture",
-            metrics.widthPixels,
-            metrics.heightPixels,
-            metrics.densityDpi,
+            width, height, context.resources.displayMetrics.densityDpi,
             DisplayManager.VIRTUAL_DISPLAY_FLAG_AUTO_MIRROR,
-            imageReader.surface,
-            null,
-            Handler(Looper.getMainLooper())
+            imageReader?.surface, null, null
         )
+        mediaProjection = projection
     }
 
     fun capture(callback: (Bitmap?) -> Unit) {
-        val image = imageReader.acquireLatestImage() ?: return callback(null)
-
-        val planes = image.planes
-        val buffer = planes[0].buffer
-        val pixelStride = planes[0].pixelStride
-        val rowStride = planes[0].rowStride
-        val rowPadding = rowStride - pixelStride * image.width
-
-        val bitmap = Bitmap.createBitmap(
-            image.width + rowPadding / pixelStride,
-            image.height,
-            Bitmap.Config.ARGB_8888
-        )
-        bitmap.copyPixelsFromBuffer(buffer)
-        image.close()
-
-        callback(bitmap)
+        val handler = Handler(Looper.getMainLooper())
+        handler.postDelayed({
+            val image = imageReader?.acquireLatestImage()
+            if (image != null) {
+                val width = image.width
+                val height = image.height
+                val plane = image.planes[0]
+                val buffer: ByteBuffer = plane.buffer
+                val pixelStride: Int = plane.pixelStride
+                val rowStride: Int = plane.rowStride
+                val rowPadding = rowStride - pixelStride * width
+                val bitmap = Bitmap.createBitmap(
+                    width + rowPadding / pixelStride, height, Bitmap.Config.ARGB_8888
+                )
+                bitmap.copyPixelsFromBuffer(buffer)
+                image.close()
+                callback(bitmap)
+            } else {
+                callback(null)
+            }
+        }, 300)
     }
 }

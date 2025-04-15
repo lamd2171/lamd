@@ -7,17 +7,17 @@ import android.graphics.Paint
 import android.view.View
 
 class OverlayView(context: Context) : View(context) {
+
     private val paint = Paint()
-    private var text = ""
+    private var text: String = ""
 
     init {
         paint.color = Color.GREEN
-        paint.textSize = 48f
-        paint.isAntiAlias = true
+        paint.textSize = 50f
     }
 
-    fun setText(text: String) {
-        this.text = text
+    fun updateText(newText: String) {
+        text = newText
         invalidate()
     }
 

@@ -5,7 +5,6 @@ import android.view.accessibility.AccessibilityEvent
 import com.example.bitconintauto.util.PreferenceHelper
 
 class MyAccessibilityService : AccessibilityService() {
-
     override fun onServiceConnected() {
         super.onServiceConnected()
         PreferenceHelper.accessibilityService = this

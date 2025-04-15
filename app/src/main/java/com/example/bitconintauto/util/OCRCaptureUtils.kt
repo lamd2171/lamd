@@ -1,6 +1,7 @@
 package com.example.bitconintauto.util
 
 import android.graphics.Bitmap
+import android.graphics.Rect
 import com.example.bitconintauto.model.Coordinate
 
 object OCRCaptureUtils {
