@@ -10,7 +10,6 @@ import android.os.Looper
 import android.util.Log
 import android.view.WindowManager
 import com.example.bitconintauto.BitconintAutoApp
-import com.example.bitconintauto.ui.OverlayView
 
 object ScreenCaptureHelper {
 
@@ -23,8 +22,7 @@ object ScreenCaptureHelper {
         val resultData = PreferenceHelper.resultData
         val manager = context.getSystemService(android.content.Context.MEDIA_PROJECTION_SERVICE) as android.media.projection.MediaProjectionManager
         mediaProjection = manager.getMediaProjection(resultCode, resultData!!)
-        Log.d("ScreenCapture", "setUpProjection() 완료")
-        OverlayView.updateDebugText("미디어 프로젝션 준비 완료")
+        Log.d("ScreenCapture", "setUpProjection() 호출됨 → mediaProjection 초기화 완료")
     }
 
     fun captureSync(): Bitmap? {
@@ -34,11 +32,12 @@ object ScreenCaptureHelper {
         val width = display.width
         val height = display.height
 
+        Log.d("ScreenCapture", "디스플레이 해상도: ${width}x${height}")
+
         imageReader = ImageReader.newInstance(width, height, 0x1, 2)
 
         if (mediaProjection == null) {
-            Log.e("ScreenCapture", "mediaProjection is NULL!")
-            OverlayView.updateDebugText("캡처 실패: mediaProjection == null")
+            Log.e("ScreenCapture", "mediaProjection is NULL! 권한 초기화 확인 필요")
             return null
         }
 
@@ -49,12 +48,13 @@ object ScreenCaptureHelper {
             imageReader?.surface, null, Handler(Looper.getMainLooper())
         )
 
+        Log.d("ScreenCapture", "VirtualDisplay 생성 완료")
+
         Thread.sleep(300)
 
         val image = imageReader?.acquireLatestImage()
         if (image == null) {
-            Log.e("ScreenCapture", "acquireLatestImage() → NULL")
-            OverlayView.updateDebugText("캡처 실패: 이미지 null")
+            Log.e("ScreenCapture", "acquireLatestImage() → NULL 반환됨")
             return null
         }
 
@@ -73,11 +73,9 @@ object ScreenCaptureHelper {
             bitmap.copyPixelsFromBuffer(buffer)
 
             Log.d("ScreenCapture", "Bitmap 캡처 성공")
-            OverlayView.updateDebugText("Bitmap 캡처 성공")
             return bitmap
         } catch (e: Exception) {
             Log.e("ScreenCapture", "Bitmap 생성 오류: ${e.message}")
-            OverlayView.updateDebugText("Bitmap 오류: ${e.message}")
             return null
         } finally {
             image.close()
