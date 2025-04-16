@@ -28,6 +28,7 @@
         android:debuggable="true"
         android:extractNativeLibs="false"
         android:label="bitconint auto"
+        android:testOnly="true"
         android:theme="@style/Theme.AppCompat.Light.NoActionBar" >
         <activity
             android:name="com.example.bitconintauto.MainActivity"
