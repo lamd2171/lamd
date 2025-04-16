@@ -3,18 +3,27 @@ package com.example.bitconintauto.util
 import com.example.bitconintauto.model.Coordinate
 
 object CoordinateManager {
-    private val map = mutableMapOf<String, MutableList<Coordinate>>()
 
-    fun set(label: String, coord: Coordinate) {
-        map.getOrPut(label) { mutableListOf() }.clear()
-        map[label]?.add(coord)
+    private val coordinateMap: MutableMap<String, MutableList<Coordinate>> = mutableMapOf()
+
+    fun register(label: String, coord: Coordinate) {
+        val list = coordinateMap.getOrPut(label) { mutableListOf() }
+        list.add(coord)
     }
 
     fun get(label: String): List<Coordinate> {
-        return map[label] ?: emptyList()
+        return coordinateMap[label] ?: emptyList()
     }
 
-    fun getPrimaryCoordinate(): Coordinate? {
-        return map["trigger"]?.firstOrNull()
+    fun clear(label: String) {
+        coordinateMap[label]?.clear()
+    }
+
+    fun clearAll() {
+        coordinateMap.clear()
+    }
+
+    fun getAll(): Map<String, List<Coordinate>> {
+        return coordinateMap
     }
 }

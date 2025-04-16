@@ -1,14 +1,19 @@
 package com.example.bitconintauto.util
 
-import android.content.Context
-import android.content.SharedPreferences
 import android.accessibilityservice.AccessibilityService
+import android.content.Context
+import android.content.Intent
 
 object PreferenceHelper {
-    private lateinit var prefs: SharedPreferences
+    lateinit var context: Context
     var accessibilityService: AccessibilityService? = null
 
-    fun init(context: Context) {
-        prefs = context.getSharedPreferences("bitconint_prefs", Context.MODE_PRIVATE)
+    var resultCode: Int = 0
+    var resultData: Intent? = null
+
+    var debugMode: Boolean = true
+
+    fun init(ctx: Context) {
+        context = ctx
     }
 }

@@ -1,56 +1,63 @@
 package com.example.bitconintauto.ui
 
 import android.content.Context
-import android.graphics.Canvas
-import android.graphics.Color
-import android.graphics.Paint
-import android.util.AttributeSet
-import android.view.View
+import android.graphics.*
+import android.view.*
+import android.widget.TextView
+import com.example.bitconintauto.R
 import com.example.bitconintauto.model.Coordinate
 
-class OverlayView @JvmOverloads constructor(
-    context: Context,
-    attrs: AttributeSet? = null
-) : View(context, attrs) {
+object OverlayView {
+    private var overlayView: View? = null
+    private var textView: TextView? = null
+    private var debugCanvas: OverlayDebugCanvas? = null
 
-    private val paint = Paint().apply {
-        color = Color.RED
-        style = Paint.Style.STROKE
-        strokeWidth = 5f
-    }
+    fun show(context: Context) {
+        if (overlayView != null) return
 
-    private val textPaint = Paint().apply {
-        color = Color.WHITE
-        textSize = 40f
-    }
+        val inflater = LayoutInflater.from(context)
+        overlayView = inflater.inflate(R.layout.overlay_view, null)
+        textView = overlayView?.findViewById(R.id.txt_overlay)
 
-    private var currentRect: Coordinate? = null
-    private var displayText: String = ""
+        debugCanvas = OverlayDebugCanvas(context)
 
-    fun showOverlayAt(coordinate: Coordinate) {
-        currentRect = coordinate
-        invalidate()
+        val wm = context.getSystemService(Context.WINDOW_SERVICE) as WindowManager
+
+        val paramsText = WindowManager.LayoutParams(
+            WindowManager.LayoutParams.WRAP_CONTENT,
+            WindowManager.LayoutParams.WRAP_CONTENT,
+            WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY,
+            WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE,
+            PixelFormat.TRANSLUCENT
+        )
+        paramsText.gravity = Gravity.TOP or Gravity.START
+        paramsText.x = 30
+        paramsText.y = 100
+        wm.addView(overlayView, paramsText)
+
+        val paramsCanvas = WindowManager.LayoutParams(
+            WindowManager.LayoutParams.MATCH_PARENT,
+            WindowManager.LayoutParams.MATCH_PARENT,
+            WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY,
+            WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE or WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE,
+            PixelFormat.TRANSLUCENT
+        )
+        wm.addView(debugCanvas, paramsCanvas)
     }
 
     fun updateText(text: String) {
-        displayText = text
-        invalidate()
+        textView?.text = text
     }
 
-    override fun onDraw(canvas: Canvas) {
-        super.onDraw(canvas)
-        currentRect?.let { coord ->
-            canvas.drawRect(
-                coord.x.toFloat(),
-                coord.y.toFloat(),
-                (coord.x + coord.width).toFloat(),
-                (coord.y + coord.height).toFloat(),
-                paint
-            )
-        }
+    fun drawDebugBox(coord: Coordinate, text: String) {
+        debugCanvas?.drawBox(coord, text)
+    }
 
-        if (displayText.isNotBlank()) {
-            canvas.drawText(displayText, 50f, 100f, textPaint)
-        }
+    fun remove(context: Context) {
+        val wm = context.getSystemService(Context.WINDOW_SERVICE) as WindowManager
+        overlayView?.let { wm.removeView(it) }
+        debugCanvas?.let { wm.removeView(it) }
+        overlayView = null
+        debugCanvas = null
     }
 }
