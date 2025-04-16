@@ -46,6 +46,7 @@ id tutorial_text
 id tvDetails
 id tvLabel
 id tv_debug
+id txt_debug
 id txt_overlay
 layout activity_coordinate_list
 layout activity_main

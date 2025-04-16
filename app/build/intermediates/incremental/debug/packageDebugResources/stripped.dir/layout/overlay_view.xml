@@ -3,7 +3,8 @@
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     android:background="#AA000000"
-    android:padding="8dp">
+    android:padding="8dp"
+    android:orientation="vertical">
 
     <TextView
         android:id="@+id/txt_overlay"
@@ -12,4 +13,12 @@
         android:text="Trigger → -"
         android:textColor="#FFFFFF"
         android:textSize="16sp" />
+
+    <TextView
+        android:id="@+id/txt_debug"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Debug → -"
+        android:textColor="#00FFFF"
+        android:textSize="14sp" />
 </LinearLayout>
