@@ -2965,8 +2965,6 @@ id bounceStart
 id btnDelete
 id btn_close_guide
 id btn_next
-id btn_start
-id btn_stop
 id btn_toggle
 id buttonPanel
 id cache_measures
@@ -3011,6 +3009,7 @@ id cut
 id dark
 id dataBinding
 id date_picker_actions
+id debug_box
 id decelerate
 id decelerateAndComplete
 id decor_content_parent
@@ -3208,6 +3207,7 @@ id onInterceptTouchReturnSwipe
 id outline
 id outward
 id overlayGuideRoot
+id overlay_root
 id overshoot
 id packed
 id parallax
@@ -3237,6 +3237,7 @@ id rightToLeft
 id right_icon
 id right_side
 id root
+id root_layout
 id rounded
 id row_index_key
 id save_non_transition_alpha
@@ -3307,10 +3308,12 @@ id start
 id startHorizontal
 id startToEnd
 id startVertical
+id start_button
 id staticLayout
 id staticPostLayout
 id status_text
 id stop
+id stop_button
 id stretch
 id submenuarrow
 id submit_area
@@ -3369,7 +3372,7 @@ id tvDetails
 id tvLabel
 id tv_debug
 id txt_debug
-id txt_overlay
+id txt_main
 id unchecked
 id uniform
 id unlabeled

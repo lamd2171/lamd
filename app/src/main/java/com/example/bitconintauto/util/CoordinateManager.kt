@@ -11,6 +11,10 @@ object CoordinateManager {
         list.add(coord)
     }
 
+    fun getAllCoordinates(): List<Coordinate> {
+        return coordinateMap.values.flatten()
+    }
+
     fun get(label: String): List<Coordinate> {
         return coordinateMap[label] ?: emptyList()
     }

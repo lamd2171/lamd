@@ -6,11 +6,14 @@
 
     <uses-sdk
         android:minSdkVersion="24"
-        android:targetSdkVersion="34" />
+        android:targetSdkVersion="33" />
 
     <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_MEDIA_PROJECTION" />
+    <uses-permission android:name="android.permission.CAPTURE_VIDEO_OUTPUT" />
 
     <permission
         android:name="com.example.bitconintauto.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION"
@@ -40,6 +43,10 @@
             </intent-filter>
         </activity>
 
+        <service
+            android:name="com.example.bitconintauto.service.CaptureForegroundService"
+            android:exported="false"
+            android:foregroundServiceType="mediaProjection" />
         <service
             android:name="com.example.bitconintauto.service.MyAccessibilityService"
             android:exported="true"

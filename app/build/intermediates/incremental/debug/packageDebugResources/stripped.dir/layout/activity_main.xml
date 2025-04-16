@@ -1,19 +1,20 @@
-<?xml version="1.0" encoding="utf-8"?>
+<!-- res/layout/activity_main.xml -->
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/root_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:padding="24dp">
+    android:padding="16dp">
 
     <Button
-        android:id="@+id/btn_start"
+        android:id="@+id/start_button"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="자동 시작" />
+        android:text="Start" />
 
     <Button
-        android:id="@+id/btn_stop"
+        android:id="@+id/stop_button"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="중지" />
+        android:text="Stop" />
 </LinearLayout>

@@ -4,12 +4,15 @@ import android.app.Application
 import android.content.Context
 
 class BitconintAutoApp : Application() {
+
     override fun onCreate() {
         super.onCreate()
-        appContext = applicationContext
+        instance = this
     }
 
     companion object {
-        lateinit var appContext: Context
+        private var instance: BitconintAutoApp? = null
+        val context: Context
+            get() = instance!!.applicationContext
     }
 }
