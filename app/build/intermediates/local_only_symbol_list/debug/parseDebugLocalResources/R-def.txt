@@ -36,7 +36,7 @@ id etWidth
 id first_click_guide
 id guideText
 id guide_text
-id mainLayout
+id layout_root
 id overlayGuideRoot
 id recyclerView
 id root

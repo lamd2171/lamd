@@ -2,7 +2,6 @@ package com.example.bitconintauto.service
 
 import android.accessibilityservice.AccessibilityService
 import android.util.Log
-import android.widget.TextView
 import com.example.bitconintauto.model.Coordinate
 import com.example.bitconintauto.ocr.OCRProcessor
 import com.example.bitconintauto.ui.OverlayView
@@ -13,9 +12,12 @@ object ExecutorManager {
     private var job: Job? = null
     private var isRunning = false
 
-    fun start(service: AccessibilityService, overlayView: TextView) {
+    private lateinit var overlayView: OverlayView
+
+    fun start(service: AccessibilityService, overlay: OverlayView) {
         if (isRunning) return
         isRunning = true
+        overlayView = overlay
 
         val ocr = OCRProcessor()
         val clicker = ClickSimulator(service)
@@ -31,13 +33,15 @@ object ExecutorManager {
                         val value = ocr.getText(region)
                         val valueInt = value.trim().toDoubleOrNull()?.toInt() ?: 0
 
-                        CoroutineScope(Dispatchers.Main).launch {
-                            overlayView.text = "Trigger → $valueInt"
-                        }
+                        // 트리거 숫자 확인 로그 및 UI 업데이트
+                        Log.d("Executor", "Trigger OCR → $valueInt")
+                        overlayView.updateText("Trigger → $valueInt")
 
                         if (valueInt >= 1) {
                             Log.d("Executor", "✅ Trigger 감지 → $valueInt")
-                            executeRoutine(clicker, ocr, overlayView)
+                            overlayView.showOverlayAt(triggerCoord)
+                            overlayView.updateText("Trigger → $valueInt")  // 오버레이 표시
+                            executeRoutine(clicker, ocr)
                         }
                     }
                 }
@@ -45,8 +49,10 @@ object ExecutorManager {
         }
     }
 
-    private fun executeRoutine(clicker: ClickSimulator, ocr: OCRProcessor, overlayView: TextView) {
+    private fun executeRoutine(clicker: ClickSimulator, ocr: OCRProcessor) {
         CoroutineScope(Dispatchers.Default).launch {
+            Log.d("Executor", "▶ 루틴 시작")
+
             val labelList = listOf(
                 "step2" to "Send", "step3" to "Address Book", "step4" to "User", "step5" to "Next",
                 "step6" to "Max", "step7" to "Next", "step8" to "Send", "step9" to "BTCT Status"
@@ -55,7 +61,8 @@ object ExecutorManager {
             for ((label, keyword) in labelList) {
                 val coord = CoordinateManager.get(label).firstOrNull() ?: continue
                 val result = clicker.readText(coord)
-                if (result.contains(keyword, true)) {
+                Log.d("Executor", "$label 읽은값 → $result")
+                if (result.isNotBlank() && result.contains(keyword, true)) {
                     clicker.performClick(coord)
                     delay(700)
                 }
@@ -101,9 +108,9 @@ object ExecutorManager {
                 }
             }
 
-            CoroutineScope(Dispatchers.Main).launch {
-                overlayView.text = "✅ 루틴 종료 → Trigger 대기"
-            }
+            // 루틴 완료 표시
+            overlayView.updateText("✅ 루틴 종료 → Trigger 대기")
+            Log.d("Executor", "✅ 루틴 종료")
         }
     }
 

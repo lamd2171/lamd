@@ -9,6 +9,7 @@ import android.os.Handler
 import android.os.Looper
 import android.view.WindowManager
 import java.nio.ByteBuffer
+import android.content.Context
 
 object ScreenCaptureHelper {
     private var mediaProjection: MediaProjection? = null
@@ -53,5 +54,26 @@ object ScreenCaptureHelper {
                 callback(null)
             }
         }, 300)
+    }
+
+    // captureSync() 추가: 화면 캡처를 동기적으로 처리하는 메서드
+    fun captureSync(): Bitmap? {
+        val image = imageReader?.acquireLatestImage()
+        image?.let {
+            val width = it.width
+            val height = it.height
+            val plane = it.planes[0]
+            val buffer: ByteBuffer = plane.buffer
+            val pixelStride: Int = plane.pixelStride
+            val rowStride: Int = plane.rowStride
+            val rowPadding = rowStride - pixelStride * width
+            val bitmap = Bitmap.createBitmap(
+                width + rowPadding / pixelStride, height, Bitmap.Config.ARGB_8888
+            )
+            bitmap.copyPixelsFromBuffer(buffer)
+            it.close()
+            return bitmap
+        }
+        return null
     }
 }
