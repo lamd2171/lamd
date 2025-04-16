@@ -3,13 +3,12 @@ package com.example.bitconintauto.util
 import android.accessibilityservice.AccessibilityService
 import android.util.Log
 import com.example.bitconintauto.model.Coordinate
-import com.example.bitconintauto.ocr.OCRProcessor
 
 class ClickSimulator(private val service: AccessibilityService) {
 
-    private val ocrProcessor = OCRProcessor()
-
+    // 클릭 처리
     fun performClick(coordinate: Coordinate) {
+        // 정확한 GLOBAL_ACTION_CLICK 참조
         service.performGlobalAction(AccessibilityService.GLOBAL_ACTION_CLICK)
         Log.d("ClickSimulator", "Clicked → ${coordinate.label}")
     }

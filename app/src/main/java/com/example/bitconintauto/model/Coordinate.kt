@@ -1,4 +1,3 @@
-
 package com.example.bitconintauto.model
 
 data class Coordinate(
@@ -7,8 +6,8 @@ data class Coordinate(
     val width: Int = 100,
     val height: Int = 60,
     val label: String = ""
-    val expectedValue: String = "" // 이 부분이 있어야 함
+    val expectedValue: String = ""  // 추가
 ) {
-    fun centerX() = x + width / 2
-    fun centerY() = y + height / 2
+    fun centerX(): Int = x + width / 2
+    fun centerY(): Int = y + height / 2
 }
