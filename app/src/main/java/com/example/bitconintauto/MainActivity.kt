@@ -1,13 +1,15 @@
 package com.example.bitconintauto
 
+import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
-import android.view.View
+import android.provider.Settings
 import android.widget.Button
-import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.example.bitconintauto.service.ExecutorManager
+import com.example.bitconintauto.service.MyAccessibilityService
+import com.example.bitconintauto.ui.OverlayView
 import com.example.bitconintauto.util.PermissionUtils
 import com.example.bitconintauto.util.PreferenceHelper
 import com.example.bitconintauto.util.ScreenCaptureHelper
@@ -16,52 +18,41 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var btnStart: Button
     private lateinit var btnStop: Button
-    private lateinit var tvStatus: TextView  // tvStatus TextView 추가
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        // UI 초기화
+        PreferenceHelper.init(applicationContext)
+
         btnStart = findViewById(R.id.btn_start)
         btnStop = findViewById(R.id.btn_stop)
-        tvStatus = findViewById(R.id.tvStatus)  // tvStatus 참조
 
-        // 시작 버튼 클릭 시
         btnStart.setOnClickListener {
-            if (!PermissionUtils.checkAndRequestOverlayPermission(this)) {
+            if (!PermissionUtils.checkAndRequestOverlayPermission(this)) return@setOnClickListener
+            if (!PermissionUtils.checkAndRequestMediaProjectionPermission(this)) return@setOnClickListener
+            if (!PermissionUtils.isAccessibilityServiceEnabled(this, MyAccessibilityService::class.java)) {
+                startActivity(Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS))
+                Toast.makeText(this, "접근성 권한을 활성화해주세요", Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
 
-            if (!PermissionUtils.checkAndRequestMediaProjectionPermission(this)) {
-                return@setOnClickListener
-            }
-
-            // 권한 요청 후 자동화 시작
-            ExecutorManager.start(applicationContext, tvStatus)
-
-            tvStatus.text = "자동화 시작 중..." // 상태 업데이트
-            Toast.makeText(this, "자동화가 시작되었습니다.", Toast.LENGTH_SHORT).show()
+            OverlayView.show(this)
+            ExecutorManager.start(this)
         }
 
-        // 정지 버튼 클릭 시
         btnStop.setOnClickListener {
             ExecutorManager.stop()
-            tvStatus.text = "자동화 중지됨"  // 상태 업데이트
-            Toast.makeText(this, "자동화가 중지되었습니다.", Toast.LENGTH_SHORT).show()
+            OverlayView.remove(this)
         }
     }
 
-    // 권한 요청 후 결과 처리
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
-        if (requestCode == 1001) {
+        if (requestCode == 1001 && resultCode == Activity.RESULT_OK) {
             PermissionUtils.setMediaProjectionPermissionResult(resultCode, data)
-            if (resultCode == RESULT_OK) {
-                tvStatus.text = "권한 허용됨"
-            } else {
-                tvStatus.text = "권한 거부됨"
-            }
+            ScreenCaptureHelper.setUpProjection(this)
+            Toast.makeText(this, "화면 캡처 권한 설정 완료", Toast.LENGTH_SHORT).show()
         }
     }
 }

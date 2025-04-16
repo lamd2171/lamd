@@ -5,9 +5,9 @@ data class Coordinate(
     val y: Int,
     val width: Int = 100,
     val height: Int = 60,
-    val label: String = ""
-    val expectedValue: String = ""  // 추가
+    val label: String = "",
+    val expectedValue: String = ""
 ) {
-    fun centerX(): Int = x + width / 2
-    fun centerY(): Int = y + height / 2
+    fun centerX() = x + width / 2
+    fun centerY() = y + height / 2
 }

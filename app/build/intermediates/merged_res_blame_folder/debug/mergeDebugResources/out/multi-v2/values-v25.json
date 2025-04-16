@@ -1,0 +1,20 @@
+{
+    "logs": [
+        {
+            "outputFile": "com.example.bitconintauto.app-mergeDebugResources-38:/values-v25/values-v25.xml",
+            "map": [
+                {
+                    "source": "C:\\Users\\abc\\.gradle\\caches\\8.11.1\\transforms\\322170f274441f083f49e3b638141f7c\\transformed\\appcompat-1.6.1\\res\\values-v25\\values-v25.xml",
+                    "from": {
+                        "startLines": "2,3,4,6",
+                        "startColumns": "4,4,4,4",
+                        "startOffsets": "55,126,209,308",
+                        "endLines": "2,3,5,7",
+                        "endColumns": "70,82,12,12",
+                        "endOffsets": "121,204,303,414"
+                    }
+                }
+            ]
+        }
+    ]
+}

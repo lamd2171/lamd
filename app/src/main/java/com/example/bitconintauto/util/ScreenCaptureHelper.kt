@@ -16,15 +16,15 @@ object ScreenCaptureHelper {
     private var virtualDisplay: VirtualDisplay? = null
     private var imageReader: ImageReader? = null
 
-    fun setUpProjection(context: Context) {
+    fun setUpProjection(context: android.content.Context) {
         val resultCode = PreferenceHelper.resultCode
         val resultData = PreferenceHelper.resultData
-        val manager = context.getSystemService(Context.MEDIA_PROJECTION_SERVICE) as android.media.projection.MediaProjectionManager
+        val manager = context.getSystemService(android.content.Context.MEDIA_PROJECTION_SERVICE) as android.media.projection.MediaProjectionManager
         mediaProjection = manager.getMediaProjection(resultCode, resultData!!)
     }
 
     fun captureSync(): Bitmap? {
-        val context = BitconintAutoApp.appContext // 직접 접근하는 방식으로 수정
+        val context = BitconintAutoApp.appContext
         val wm = context.getSystemService(WindowManager::class.java)
         val display = wm.defaultDisplay
         val width = display.width

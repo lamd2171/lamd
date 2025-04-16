@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:padding="24dp"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <TextView
+        android:id="@+id/tutorial_message"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="앱의 사용법을 간단히 안내해드릴게요.\n좌표를 등록하고 자동화를 실행해보세요."
+        android:textSize="16sp"
+        android:textColor="#000000"
+        android:paddingBottom="16dp" />
+
+    <CheckBox
+        android:id="@+id/checkboxDontShowAgain"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="다시 보지 않기" />
+</LinearLayout>
