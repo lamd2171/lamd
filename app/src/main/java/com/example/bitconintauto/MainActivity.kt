@@ -31,7 +31,7 @@ class MainActivity : AppCompatActivity() {
         btnStart.setOnClickListener {
             if (!PermissionUtils.checkAndRequestOverlayPermission(this)) return@setOnClickListener
             if (!PermissionUtils.checkAndRequestMediaProjectionPermission(this)) return@setOnClickListener
-            if (!PermissionUtils.isAccessibilityServiceEnabled(this, MyAccessibilityService::class.java)) {
+            if (!PermissionUtils.isAccessibilityServiceEnabled(applicationContext, MyAccessibilityService::class.java)) {
                 startActivity(Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS))
                 Toast.makeText(this, "접근성 권한을 활성화해주세요", Toast.LENGTH_SHORT).show()
                 return@setOnClickListener

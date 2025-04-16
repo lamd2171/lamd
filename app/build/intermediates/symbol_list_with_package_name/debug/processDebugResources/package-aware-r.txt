@@ -3367,7 +3367,6 @@ id tutorial_message
 id tutorial_text
 id tvDetails
 id tvLabel
-id tvStatus
 id tv_debug
 id txt_overlay
 id unchecked

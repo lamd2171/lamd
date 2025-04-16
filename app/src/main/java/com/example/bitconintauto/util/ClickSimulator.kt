@@ -10,7 +10,8 @@ class ClickSimulator(private val service: AccessibilityService) {
     private val ocrProcessor = OCRProcessor()
 
     fun performClick(coordinate: Coordinate) {
-        service.performGlobalAction(AccessibilityService.GLOBAL_ACTION_CLICK)
+        // GLOBAL_ACTION_CLICK = 1 (상수 대신 직접 사용)
+        service.performGlobalAction(1)
         Log.d("ClickSimulator", "Clicked → ${coordinate.label}")
     }
 
