@@ -15,8 +15,8 @@ import android.os.Looper
 import android.util.DisplayMetrics
 import android.util.Log
 import android.view.WindowManager
-import android.hardware.display.MediaProjection
-import android.hardware.display.MediaProjectionManager
+import android.media.projection.MediaProjectionManager
+import android.media.projection.MediaProjection
 
 object ScreenCaptureHelper {
 

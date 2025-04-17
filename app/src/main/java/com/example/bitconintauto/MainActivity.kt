@@ -78,7 +78,14 @@ class MainActivity : AppCompatActivity() {
 
             // 루틴 시작
             overlayView.show()
-            executorManager.start(this, overlayView)
+
+            val service = MyAccessibilityService.instance
+            if (service != null) {
+                executorManager.start(this, overlayView, service)
+            } else {
+                Toast.makeText(this, "접근성 서비스가 아직 활성화되지 않았습니다.", Toast.LENGTH_SHORT).show()
+            }
+
         } else {
             Toast.makeText(this, "MediaProjection 권한이 필요합니다.", Toast.LENGTH_SHORT).show()
         }
