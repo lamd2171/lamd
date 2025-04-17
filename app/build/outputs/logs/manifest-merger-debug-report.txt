@@ -186,6 +186,26 @@ category#android.intent.category.LAUNCHER
 ADDED from C:\Users\abc\AndroidStudioProjects\bitconintauto\app\src\main\AndroidManifest.xml:28:17-77
 	android:name
 		ADDED from C:\Users\abc\AndroidStudioProjects\bitconintauto\app\src\main\AndroidManifest.xml:28:27-74
+service#com.example.bitconintauto.service.MyAccessibilityService
+ADDED from C:\Users\abc\AndroidStudioProjects\bitconintauto\app\src\main\AndroidManifest.xml:34:9-45:19
+	android:exported
+		ADDED from C:\Users\abc\AndroidStudioProjects\bitconintauto\app\src\main\AndroidManifest.xml:37:13-37
+	android:permission
+		ADDED from C:\Users\abc\AndroidStudioProjects\bitconintauto\app\src\main\AndroidManifest.xml:36:13-79
+	android:name
+		ADDED from C:\Users\abc\AndroidStudioProjects\bitconintauto\app\src\main\AndroidManifest.xml:35:13-59
+intent-filter#action:name:android.accessibilityservice.AccessibilityService
+ADDED from C:\Users\abc\AndroidStudioProjects\bitconintauto\app\src\main\AndroidManifest.xml:38:13-40:29
+action#android.accessibilityservice.AccessibilityService
+ADDED from C:\Users\abc\AndroidStudioProjects\bitconintauto\app\src\main\AndroidManifest.xml:39:17-92
+	android:name
+		ADDED from C:\Users\abc\AndroidStudioProjects\bitconintauto\app\src\main\AndroidManifest.xml:39:25-89
+meta-data#android.accessibilityservice
+ADDED from C:\Users\abc\AndroidStudioProjects\bitconintauto\app\src\main\AndroidManifest.xml:42:13-44:72
+	android:resource
+		ADDED from C:\Users\abc\AndroidStudioProjects\bitconintauto\app\src\main\AndroidManifest.xml:44:17-69
+	android:name
+		ADDED from C:\Users\abc\AndroidStudioProjects\bitconintauto\app\src\main\AndroidManifest.xml:43:17-60
 uses-sdk
 INJECTED from C:\Users\abc\AndroidStudioProjects\bitconintauto\app\src\main\AndroidManifest.xml reason: use-sdk injection requested
 INJECTED from C:\Users\abc\AndroidStudioProjects\bitconintauto\app\src\main\AndroidManifest.xml

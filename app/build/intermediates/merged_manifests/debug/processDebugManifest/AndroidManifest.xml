@@ -33,6 +33,7 @@
         android:label="bitconint auto"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
+        android:testOnly="true"
         android:theme="@style/Theme.BitconintAuto" >
 
         <!-- ✅ MainActivity 등록 -->
@@ -47,11 +48,11 @@
         </activity>
 
         <!-- ✅ 접근성 서비스 (필요 시 활성화용, 현재는 사용 안함) -->
-        <!--
+
         <service
-            android:name=".service.MyAccessibilityService"
-            android:permission="android.permission.BIND_ACCESSIBILITY_SERVICE"
-            android:exported="false">
+            android:name="com.example.bitconintauto.service.MyAccessibilityService"
+            android:exported="false"
+            android:permission="android.permission.BIND_ACCESSIBILITY_SERVICE" >
             <intent-filter>
                 <action android:name="android.accessibilityservice.AccessibilityService" />
             </intent-filter>
@@ -60,8 +61,6 @@
                 android:name="android.accessibilityservice"
                 android:resource="@xml/accessibility_service_config" />
         </service>
-        -->
-
         <service
             android:name="com.google.mlkit.common.internal.MlKitComponentDiscoveryService"
             android:directBootAware="true"

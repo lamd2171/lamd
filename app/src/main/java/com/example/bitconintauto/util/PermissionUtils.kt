@@ -12,10 +12,19 @@ import android.widget.Toast
 import android.net.Uri
 import android.os.Environment
 import android.provider.MediaStore
+import android.media.projection.MediaProjection
+import android.util.Log
+private lateinit var appContext: Context
+
+private var mediaProjection: MediaProjection? = null
+
 
 object PermissionUtils {
     private var resultCode: Int = -1
     private var dataIntent: Intent? = null
+    fun init(context: Context) {
+        appContext = context.applicationContext
+    }
 
     fun checkOverlayPermission(context: Context): Boolean {
         return Settings.canDrawOverlays(context)
@@ -58,8 +67,15 @@ object PermissionUtils {
     fun setMediaProjectionPermissionResult(result: Int, intent: Intent?) {
         resultCode = result
         dataIntent = intent
+
+        val manager = getProjectionManager(appContext)
+        mediaProjection = manager.getMediaProjection(resultCode, dataIntent!!)
+        Log.d("PermissionUtils", "✅ MediaProjection 객체 저장됨")
     }
 
+    fun getMediaProjection(): MediaProjection? {
+        return mediaProjection
+    }
     fun getMediaProjectionPermissionData(): Intent? {
         return dataIntent
     }

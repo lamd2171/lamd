@@ -15,6 +15,11 @@ object OCRCaptureUtils {
      */
     fun extractValue(context: Context, rect: Rect): String {
         if (tessManager == null) tessManager = TesseractManager(context)
+        val mediaProjection = PermissionUtils.getMediaProjection()
+        if (mediaProjection == null) {
+            Log.e("ScreenCaptureHelper", "❌ MediaProjection이 null임")
+            return ""
+        }
         val bitmap: Bitmap? = captureScreen(context, rect)
 
         return if (bitmap != null) {

@@ -29,8 +29,10 @@ class MainActivity : AppCompatActivity() {
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
+
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+        PermissionUtils.init(applicationContext)
 
         // SharedPreference 초기화
         PreferenceHelper.init(applicationContext)
@@ -81,7 +83,7 @@ class MainActivity : AppCompatActivity() {
 
             val service = MyAccessibilityService.instance
             if (service != null) {
-                executorManager.start(this, overlayView, service)
+                executorManager.captureAndTriggerIfNeeded(this, overlayView, service)
             } else {
                 Toast.makeText(this, "접근성 서비스가 아직 활성화되지 않았습니다.", Toast.LENGTH_SHORT).show()
             }

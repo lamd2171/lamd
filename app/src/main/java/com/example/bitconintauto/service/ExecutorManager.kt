@@ -14,6 +14,31 @@ import kotlinx.coroutines.*
 
 class ExecutorManager {
 
+    fun captureAndTriggerIfNeeded(context: Context, overlayView: OverlayView, service: AccessibilityService) {
+        CoroutineScope(Dispatchers.Default).launch {
+            // 🔶 트리거 사각형 고정: (x=200, y=300) ~ (x=400, y=350)
+            val triggerRect = Rect(200, 300, 400, 350)
+
+            val text = OCRCaptureUtils.extractValue(context, triggerRect)
+            Log.d("Trigger", "🎯 OCR 트리거 텍스트: $text")
+
+            withContext(Dispatchers.Main) {
+                overlayView.updateDebugText("Trigger: $text")
+                overlayView.drawDebugBox(triggerRect)
+            }
+
+            // 🔶 조건: 숫자 ≥ 1일 때 자동화 루틴 시작
+            val value = text.toDoubleOrNull() ?: 0.0
+            if (value >= 1.0) {
+                Log.d("Trigger", "✅ 트리거 감지됨, 루틴 시작")
+                start(context, overlayView, service)
+            } else {
+                Log.d("Trigger", "⛔ 트리거 조건 미충족")
+            }
+        }
+    }
+
+
     private var job: Job? = null
 
     /**
