@@ -16,7 +16,7 @@ import android.media.projection.MediaProjection
 import android.util.Log
 private lateinit var appContext: Context
 
-private var mediaProjection: MediaProjection? = null
+var mediaProjection: MediaProjection? = null
 
 
 object PermissionUtils {
@@ -79,6 +79,7 @@ object PermissionUtils {
     fun getMediaProjectionPermissionData(): Intent? {
         return dataIntent
     }
+
 
     fun getMediaProjectionPermissionResultCode(): Int {
         return resultCode

@@ -10,6 +10,8 @@ import android.os.IBinder
 import android.util.Log
 import androidx.core.app.NotificationCompat
 import com.example.bitconintauto.R
+import android.app.Activity
+import com.example.bitconintauto.util.PermissionUtils
 
 class ForegroundProjectionService : Service() {
 
@@ -32,8 +34,19 @@ class ForegroundProjectionService : Service() {
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         // 이 서비스는 단순히 MediaProjection 권한 보장을 위한 용도임
+        val resultCode = intent?.getIntExtra("code", -1) ?: -1
+        val resultData = intent?.getParcelableExtra<Intent>("data")
+
+        if (resultCode == Activity.RESULT_OK && resultData != null) {
+            PermissionUtils.setMediaProjectionPermissionResult(resultCode, resultData)
+            Log.d("ForegroundService", "✅ MediaProjection 저장 완료")
+        } else {
+            Log.e("ForegroundService", "❌ MediaProjection 초기화 실패: 인텐트 없음")
+        }
+
         return START_NOT_STICKY
     }
+
 
     override fun onDestroy() {
         super.onDestroy()

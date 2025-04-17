@@ -20,7 +20,7 @@ import android.media.projection.MediaProjection
 
 object ScreenCaptureHelper {
 
-    private var mediaProjection: MediaProjection? = null
+     private var mediaProjection: MediaProjection? = null
     private var screenDensity = 1
     private var screenWidth = 1
     private var screenHeight = 1
@@ -39,28 +39,32 @@ object ScreenCaptureHelper {
         mediaProjection = projection
     }
 
-    fun captureScreen(context: Context, rect: Rect): Bitmap? {
-        if (mediaProjection == null) {
+    // ✅ 여기 추가!
+    fun getMediaProjection(): MediaProjection? {
+        return PermissionUtils.getMediaProjection()
+    }
+
+    fun captureScreen(context: Context, captureRect: Rect): Bitmap? {
+        val projection =  mediaProjection
+        if (projection == null) {
             Log.e("ScreenCaptureHelper", "❌ MediaProjection이 null임")
             return null
         }
 
-        val width = rect.width()
-        val height = rect.height()
-        val imageReader = ImageReader.newInstance(width, height, PixelFormat.RGBA_8888, 2)
+        val imageReader = ImageReader.newInstance(captureRect.width(), captureRect.height(), PixelFormat.RGBA_8888, 2)
 
-        val virtualDisplay = mediaProjection?.createVirtualDisplay(
+        val virtualDisplay = projection.createVirtualDisplay(
             "ScreenCapture",
-            width,
-            height,
-            screenDensity,
-            DisplayManager.VIRTUAL_DISPLAY_FLAG_AUTO_MIRROR,
+            captureRect.width(),
+            captureRect.height(),
+            context.resources.displayMetrics.densityDpi,
+            DisplayManager.VIRTUAL_DISPLAY_FLAG_OWN_CONTENT_ONLY or DisplayManager.VIRTUAL_DISPLAY_FLAG_PUBLIC,
             imageReader.surface,
             null,
             null
         )
 
-        Thread.sleep(200) // 캡처 안정화 지연
+        Thread.sleep(300) // 캡처 안정성 확보용
 
         val image = imageReader.acquireLatestImage()
         if (image != null) {
@@ -68,24 +72,23 @@ object ScreenCaptureHelper {
             val buffer = planes[0].buffer
             val pixelStride = planes[0].pixelStride
             val rowStride = planes[0].rowStride
-            val rowPadding = rowStride - pixelStride * width
-
+            val rowPadding = rowStride - pixelStride * captureRect.width()
             val bitmap = Bitmap.createBitmap(
-                width + rowPadding / pixelStride,
-                height,
+                captureRect.width() + rowPadding / pixelStride,
+                captureRect.height(),
                 Bitmap.Config.ARGB_8888
             )
             bitmap.copyPixelsFromBuffer(buffer)
             image.close()
             imageReader.close()
-            virtualDisplay?.release()
-            return Bitmap.createBitmap(bitmap, 0, 0, width, height)
-        } else {
-            Log.e("ScreenCaptureHelper", "❌ 캡처 실패: image == null")
+            virtualDisplay.release()
+            return Bitmap.createBitmap(bitmap, 0, 0, captureRect.width(), captureRect.height())
         }
 
+        Log.e("ScreenCaptureHelper", "❌ 캡처 실패: bitmap == null")
         imageReader.close()
-        virtualDisplay?.release()
+        virtualDisplay.release()
         return null
     }
+
 }
