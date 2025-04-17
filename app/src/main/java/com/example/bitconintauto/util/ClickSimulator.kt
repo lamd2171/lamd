@@ -1,66 +1,55 @@
-// app/src/main/java/com/example/bitconintauto/util/ClickSimulator.kt
 package com.example.bitconintauto.util
 
 import android.accessibilityservice.AccessibilityService
 import android.graphics.Path
-import android.os.SystemClock
+import android.graphics.Rect
+import android.os.Build
 import android.util.Log
-import android.view.accessibility.AccessibilityEvent
-import android.graphics.Bitmap
-import com.example.bitconintauto.model.Coordinate
-import com.example.bitconintauto.ocr.OCRProcessor
-import android.accessibilityservice.GestureDescription
+import android.view.accessibility.AccessibilityNodeInfo
+import android.view.accessibility.GestureDescription
+import kotlinx.coroutines.*
 
-class ClickSimulator(private val service: AccessibilityService) {
+/**
+ * 클릭 및 스크롤 시뮬레이션 유틸리티 클래스
+ */
+object ClickSimulator {
+    private const val TAG = "ClickSimulator"
 
-    private val ocrProcessor = OCRProcessor()
+    /**
+     * 지정한 위치를 클릭
+     */
+    fun click(service: AccessibilityService, x: Int, y: Int) {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N) return
 
-    fun performClick(coord: Coordinate) {
-        val path = Path().apply {
-            moveTo((coord.x + coord.width / 2).toFloat(), (coord.y + coord.height / 2).toFloat())
-        }
-
+        val path = Path().apply { moveTo(x.toFloat(), y.toFloat()) }
         val gesture = GestureDescription.Builder()
             .addStroke(GestureDescription.StrokeDescription(path, 0, 100))
             .build()
 
-        service.dispatchGesture(gesture, null, null)
-
-        Log.d("ClickSimulator", "Clicked: ${coord.label}")
+        val result = service.dispatchGesture(gesture, null, null)
+        Log.d(TAG, "✅ 클릭 이벤트 ($x, $y): $result")
     }
 
-    fun readText(coord: Coordinate): String {
-        val bmp = ScreenCaptureHelper.captureSync() ?: return ""
-        val region = OCRCaptureUtils.captureRegion(bmp, coord)
-        return ocrProcessor.getText(region ?: return "")
-    }
+    /**
+     * 지정한 범위 내를 아래로 스크롤
+     */
+    fun scroll(service: AccessibilityService, rect: Rect) {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N) return
 
-    fun clearAndInput(coord: Coordinate, text: String) {
-        performClick(coord)
-        SystemClock.sleep(300)
-        InputHelper.inputText(service.rootInActiveWindow, text)
-    }
+        val startX = rect.centerX().toFloat()
+        val startY = rect.bottom.toFloat() - 10f
+        val endY = rect.top.toFloat() + 10f
 
-    fun isValueMatched(label1: String, label2: String): Boolean {
-        val coord1 = CoordinateManager.get(label1).firstOrNull() ?: return false
-        val coord2 = CoordinateManager.get(label2).firstOrNull() ?: return false
-
-        val bmp = ScreenCaptureHelper.captureSync() ?: return false
-        val text1 = ocrProcessor.getText(OCRCaptureUtils.captureRegion(bmp, coord1) ?: return false)
-        val text2 = ocrProcessor.getText(OCRCaptureUtils.captureRegion(bmp, coord2) ?: return false)
-
-        return text1.trim() == text2.trim()
-    }
-
-    fun scrollUntilVisible(targetLabel: String, scrollAreaLabel: String) {
-        val target = CoordinateManager.get(targetLabel).firstOrNull() ?: return
-        val area = CoordinateManager.get(scrollAreaLabel).firstOrNull() ?: return
-
-        repeat(5) {
-            val text = readText(target)
-            if (text.isNotBlank()) return
-            performClick(area)
-            SystemClock.sleep(500)
+        val path = Path().apply {
+            moveTo(startX, startY)
+            lineTo(startX, endY)
         }
+
+        val gesture = GestureDescription.Builder()
+            .addStroke(GestureDescription.StrokeDescription(path, 0, 300))
+            .build()
+
+        val result = service.dispatchGesture(gesture, null, null)
+        Log.d(TAG, "✅ 스크롤 이벤트 ($startX, $startY → $endY): $result")
     }
 }

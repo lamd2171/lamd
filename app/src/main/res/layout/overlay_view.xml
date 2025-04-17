@@ -1,35 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/overlay_root"
+    android:id="@+id/overlay_container"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:background="@android:color/transparent">
+    android:layout_height="match_parent">
 
+    <!-- OCR 결과 디버깅 텍스트 -->
     <TextView
-        android:id="@+id/txt_main"
+        android:id="@+id/debug_text"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_margin="16dp"
-        android:text="Overlay"
-        android:textSize="16sp"
-        android:textColor="#000000" />
+        android:text="Debug Text"
+        android:textColor="#FFFFFF"
+        android:background="#80000000"
+        android:padding="6dp"
+        android:textSize="12sp"
+        android:layout_margin="10dp" />
 
-    <TextView
-        android:id="@+id/txt_debug"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="40dp"
-        android:layout_marginStart="16dp"
-        android:text="Debug"
-        android:textSize="14sp"
-        android:textColor="#00FF00" />
-
-    <View
-        android:id="@+id/debug_box"
-        android:layout_width="100dp"
-        android:layout_height="100dp"
-        android:layout_marginTop="80dp"
-        android:layout_marginStart="16dp"
-        android:background="#44FF0000"
-        android:visibility="gone" />
 </FrameLayout>

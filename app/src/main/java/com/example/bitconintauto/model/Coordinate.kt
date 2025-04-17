@@ -1,13 +1,26 @@
 package com.example.bitconintauto.model
 
+/**
+ * 자동화에 사용되는 좌표 정보 클래스
+ *
+ * @param x 좌표의 x값
+ * @param y 좌표의 y값
+ * @param width OCR 인식 영역의 가로 길이
+ * @param height OCR 인식 영역의 세로 길이
+ * @param label 좌표에 대한 설명 (예: "트리거", "주소 클릭")
+ * @param expectedValue OCR로 인식되길 기대하는 값
+ * @param comparator 비교 연산자 (예: "==", ">=", "<=" 등)
+ * @param type 좌표의 역할 (PRIMARY, CLICK, COPY, 등)
+ * @param step 자동화 루틴 순서 (PRIMARY가 아닌 경우에만 사용)
+ */
 data class Coordinate(
     val x: Int,
     val y: Int,
     val width: Int = 100,
-    val height: Int = 60,
+    val height: Int = 50,
     val label: String = "",
-    val expectedValue: String = ""
-) {
-    fun centerX() = x + width / 2
-    fun centerY() = y + height / 2
-}
+    val expectedValue: String = "",
+    val comparator: String = "==",
+    val type: CoordinateType = CoordinateType.PRIMARY,
+    val step: Int = -1
+)

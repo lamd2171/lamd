@@ -1,93 +1,78 @@
-// app/src/main/java/com/example/bitconintauto/ui/OverlayView.kt
 package com.example.bitconintauto.ui
 
 import android.content.Context
-import android.graphics.Color
-import android.util.AttributeSet
-import android.view.LayoutInflater
+import android.graphics.*
 import android.view.View
 import android.view.WindowManager
-import android.widget.FrameLayout
-import android.widget.TextView
-import com.example.bitconintauto.R
 import com.example.bitconintauto.model.Coordinate
-import android.view.Gravity
+import com.example.bitconintauto.model.CoordinateType
 
-class OverlayView @JvmOverloads constructor(
-    context: Context,
-    attrs: AttributeSet? = null
-) : FrameLayout(context, attrs) {
+/**
+ * 화면 오버레이에 좌표 박스, 라벨, 디버깅 텍스트 등을 출력하는 View
+ */
+class OverlayView(context: Context) : View(context) {
 
-    private val windowManager = context.getSystemService(Context.WINDOW_SERVICE) as WindowManager
-    private val view: View = LayoutInflater.from(context).inflate(R.layout.overlay_view, this, true)
-
-    private val txtMain: TextView = view.findViewById(R.id.txt_main)
-    private val txtDebug: TextView = view.findViewById(R.id.txt_debug)
-    private val boxView: View = view.findViewById(R.id.debug_box)
-
-    init {
-        txtMain.setTextColor(Color.YELLOW)
-        txtDebug.setTextColor(Color.GREEN)
+    private val coordinates = mutableListOf<Coordinate>()
+    private var debugRect: Rect? = null
+    private var debugText: String = ""
+    private val paintBox = Paint().apply {
+        color = Color.GREEN
+        style = Paint.Style.STROKE
+        strokeWidth = 3f
+    }
+    private val paintText = Paint().apply {
+        color = Color.YELLOW
+        textSize = 36f
+        style = Paint.Style.FILL
     }
 
-    fun updateText(text: String) {
-        txtMain.text = text
+    /**
+     * 좌표 목록 업데이트
+     */
+    fun updateCoordinates(newList: List<Coordinate>) {
+        coordinates.clear()
+        coordinates.addAll(newList)
+        invalidate()
     }
 
+    /**
+     * 디버그 박스 영역 업데이트 (OCR 인식 영역 시각화)
+     */
+    fun drawDebugBox(rect: Rect) {
+        debugRect = rect
+        invalidate()
+    }
+
+    /**
+     * 디버그 텍스트 업데이트 (OCR 결과 표시)
+     */
     fun updateDebugText(text: String) {
-        txtDebug.text = text
+        debugText = text
+        invalidate()
     }
 
-    fun drawDebugBox(coord: Coordinate, text: String = "") {
-        val params = boxView.layoutParams as MarginLayoutParams
-        params.width = coord.width
-        params.height = coord.height
-        params.leftMargin = coord.x
-        params.topMargin = coord.y
-        boxView.layoutParams = params
-        boxView.visibility = View.VISIBLE
-    }
+    /**
+     * 오버레이 화면에 시각적으로 그려질 요소들 정의
+     */
+    override fun onDraw(canvas: Canvas) {
+        super.onDraw(canvas)
 
-    fun clearDebugBox() {
-        boxView.visibility = View.GONE
-    }
-
-    companion object {
-        private var instance: OverlayView? = null
-
-        fun show(context: Context) {
-            if (instance == null) {
-                val overlay = OverlayView(context)
-
-                val params = WindowManager.LayoutParams(
-                    WindowManager.LayoutParams.WRAP_CONTENT,  // ✅ MATCH_PARENT 대신 WRAP_CONTENT
-                    WindowManager.LayoutParams.WRAP_CONTENT,
-                    WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY,
-                    WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE or  // ✅ 포커스 안 빼앗음
-                            WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN,
-                    android.graphics.PixelFormat.TRANSLUCENT
-                )
-
-                params.gravity = Gravity.TOP or Gravity.START
-                params.x = 100  // ✅ 좌상단에 고정 위치
-                params.y = 100
-
-                val wm = context.getSystemService(Context.WINDOW_SERVICE) as WindowManager
-                wm.addView(overlay, params)
-                instance = overlay
-            }
+        // 좌표 박스 및 라벨 출력
+        for (coord in coordinates) {
+            val box = Rect(coord.x, coord.y, coord.x + coord.width, coord.y + coord.height)
+            canvas.drawRect(box, paintBox)
+            canvas.drawText(
+                "[${coord.label}] ${coord.expectedValue ?: ""}",
+                coord.x.toFloat(),
+                (coord.y - 8).toFloat(),
+                paintText
+            )
         }
 
-        fun remove(context: Context) {
-            instance?.let {
-                val wm = context.getSystemService(Context.WINDOW_SERVICE) as WindowManager
-                wm.removeView(it)
-                instance = null
-            }
-        }
-
-        fun getInstance(): OverlayView? {
-            return instance
+        // 디버그 OCR 박스 출력
+        debugRect?.let {
+            canvas.drawRect(it, paintBox)
+            canvas.drawText("OCR: $debugText", it.left.toFloat(), it.bottom + 30f, paintText)
         }
     }
 }

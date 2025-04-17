@@ -32,7 +32,9 @@ object PermissionUtils {
             projectionManager.getMediaProjection(resultCode, resultData!!)
         } else null
     }
-
+    fun getProjectionManager(context: Context): MediaProjectionManager? {
+        return context.getSystemService(Context.MEDIA_PROJECTION_SERVICE) as? MediaProjectionManager
+    }
     fun checkOverlayPermission(context: Context): Boolean {
         return Settings.canDrawOverlays(context)
     }
