@@ -8,11 +8,14 @@ import android.util.Log
 import android.widget.Button
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
 import com.example.bitconintauto.service.ExecutorManager
+import com.example.bitconintauto.service.ForegroundProjectionService
 import com.example.bitconintauto.ui.OverlayView
 import com.example.bitconintauto.util.PermissionUtils
 import com.example.bitconintauto.util.PreferenceHelper
 import com.example.bitconintauto.service.MyAccessibilityService
+import com.example.bitconintauto.util.ScreenCaptureHelper
 
 
 class MainActivity : AppCompatActivity() {
@@ -76,10 +79,23 @@ class MainActivity : AppCompatActivity() {
 
         if (requestCode == REQUEST_MEDIA_PROJECTION && resultCode == Activity.RESULT_OK && data != null) {
             Log.d("Main", "📸 MediaProjection 권한 획득")
-            PermissionUtils.setMediaProjectionPermissionResult(resultCode, data)
 
-            // 루틴 시작
-            overlayView.show()
+            // ✅ ForegroundService 먼저 실행 (실제로 projection 내부 처리 담당)
+            val serviceIntent = Intent(this, ForegroundProjectionService::class.java).apply {
+                putExtra("code", resultCode)
+                putExtra("data", data)
+            }
+            ContextCompat.startForegroundService(this, serviceIntent)
+
+            // ✅ setMediaProjectionPermissionResult는 ForegroundService 내부에서만 호출되어야 함
+            // PermissionUtils.setMediaProjectionPermissionResult(resultCode, data) ← 절대 호출 X ❌
+            // ScreenCaptureHelper.setMediaProjection(...) ← 이것도 호출하지 마 ❌
+
+            // 오버레이가 이미 붙어있을 수 있으므로 중복 방지
+            // 수정 코드 ✅
+            if (!overlayView.isAttached) {
+                overlayView.show()
+            }
 
             val service = MyAccessibilityService.instance
             if (service != null) {
@@ -92,4 +108,6 @@ class MainActivity : AppCompatActivity() {
             Toast.makeText(this, "MediaProjection 권한이 필요합니다.", Toast.LENGTH_SHORT).show()
         }
     }
+
+
 }

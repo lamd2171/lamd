@@ -1,9 +1,9 @@
 -- Merging decision tree log ---
 manifest
-ADDED from C:\Users\abc\AndroidStudioProjects\bitconintauto\app\src\main\AndroidManifest.xml:1:1-49:12
-INJECTED from C:\Users\abc\AndroidStudioProjects\bitconintauto\app\src\main\AndroidManifest.xml:1:1-49:12
-INJECTED from C:\Users\abc\AndroidStudioProjects\bitconintauto\app\src\main\AndroidManifest.xml:1:1-49:12
-INJECTED from C:\Users\abc\AndroidStudioProjects\bitconintauto\app\src\main\AndroidManifest.xml:1:1-49:12
+ADDED from C:\Users\abc\AndroidStudioProjects\bitconintauto\app\src\main\AndroidManifest.xml:1:1-52:12
+INJECTED from C:\Users\abc\AndroidStudioProjects\bitconintauto\app\src\main\AndroidManifest.xml:1:1-52:12
+INJECTED from C:\Users\abc\AndroidStudioProjects\bitconintauto\app\src\main\AndroidManifest.xml:1:1-52:12
+INJECTED from C:\Users\abc\AndroidStudioProjects\bitconintauto\app\src\main\AndroidManifest.xml:1:1-52:12
 MERGED from [androidx.databinding:databinding-adapters:8.9.1] C:\Users\abc\.gradle\caches\8.11.1\transforms\df830709a7aff42a342d69364d1f7fdc\transformed\databinding-adapters-8.9.1\AndroidManifest.xml:2:1-7:12
 MERGED from [androidx.databinding:databinding-ktx:8.9.1] C:\Users\abc\.gradle\caches\8.11.1\transforms\e4f7e68d2a86b7ba6ef3a162a0106415\transformed\databinding-ktx-8.9.1\AndroidManifest.xml:2:1-7:12
 MERGED from [androidx.databinding:databinding-runtime:8.9.1] C:\Users\abc\.gradle\caches\8.11.1\transforms\5d44974b27ab3d824d9670a8331ff3ca\transformed\databinding-runtime-8.9.1\AndroidManifest.xml:2:1-7:12
@@ -118,8 +118,8 @@ MERGED from [com.google.android.datatransport:transport-runtime:2.2.6] C:\Users\
 	android:name
 		ADDED from C:\Users\abc\AndroidStudioProjects\bitconintauto\app\src\main\AndroidManifest.xml:12:22-76
 application
-ADDED from C:\Users\abc\AndroidStudioProjects\bitconintauto\app\src\main\AndroidManifest.xml:14:5-48:19
-INJECTED from C:\Users\abc\AndroidStudioProjects\bitconintauto\app\src\main\AndroidManifest.xml:14:5-48:19
+ADDED from C:\Users\abc\AndroidStudioProjects\bitconintauto\app\src\main\AndroidManifest.xml:14:5-51:19
+INJECTED from C:\Users\abc\AndroidStudioProjects\bitconintauto\app\src\main\AndroidManifest.xml:14:5-51:19
 MERGED from [com.google.android.material:material:1.8.0] C:\Users\abc\.gradle\caches\8.11.1\transforms\147b4d7679b3e26758c647fa319f996c\transformed\material-1.8.0\AndroidManifest.xml:24:5-20
 MERGED from [com.google.android.material:material:1.8.0] C:\Users\abc\.gradle\caches\8.11.1\transforms\147b4d7679b3e26758c647fa319f996c\transformed\material-1.8.0\AndroidManifest.xml:24:5-20
 MERGED from [androidx.constraintlayout:constraintlayout:2.1.4] C:\Users\abc\.gradle\caches\8.11.1\transforms\f5ec9c9b106d44805a68f1cbb04ea218\transformed\constraintlayout-2.1.4\AndroidManifest.xml:9:5-20
@@ -206,6 +206,14 @@ ADDED from C:\Users\abc\AndroidStudioProjects\bitconintauto\app\src\main\Android
 		ADDED from C:\Users\abc\AndroidStudioProjects\bitconintauto\app\src\main\AndroidManifest.xml:44:17-69
 	android:name
 		ADDED from C:\Users\abc\AndroidStudioProjects\bitconintauto\app\src\main\AndroidManifest.xml:43:17-60
+service#com.example.bitconintauto.service.ForegroundProjectionService
+ADDED from C:\Users\abc\AndroidStudioProjects\bitconintauto\app\src\main\AndroidManifest.xml:46:9-49:40
+	android:exported
+		ADDED from C:\Users\abc\AndroidStudioProjects\bitconintauto\app\src\main\AndroidManifest.xml:49:13-37
+	android:foregroundServiceType
+		ADDED from C:\Users\abc\AndroidStudioProjects\bitconintauto\app\src\main\AndroidManifest.xml:48:13-60
+	android:name
+		ADDED from C:\Users\abc\AndroidStudioProjects\bitconintauto\app\src\main\AndroidManifest.xml:47:13-64
 uses-sdk
 INJECTED from C:\Users\abc\AndroidStudioProjects\bitconintauto\app\src\main\AndroidManifest.xml reason: use-sdk injection requested
 INJECTED from C:\Users\abc\AndroidStudioProjects\bitconintauto\app\src\main\AndroidManifest.xml

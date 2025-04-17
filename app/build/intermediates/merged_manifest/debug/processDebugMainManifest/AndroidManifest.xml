@@ -62,6 +62,10 @@
                 android:resource="@xml/accessibility_service_config" />
         </service>
         <service
+            android:name="com.example.bitconintauto.service.ForegroundProjectionService"
+            android:exported="false"
+            android:foregroundServiceType="mediaProjection" />
+        <service
             android:name="com.google.mlkit.common.internal.MlKitComponentDiscoveryService"
             android:directBootAware="true"
             android:exported="false" >

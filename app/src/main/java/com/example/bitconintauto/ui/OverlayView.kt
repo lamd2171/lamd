@@ -26,6 +26,11 @@ class OverlayView(private val context: Context) {
 
     // 오버레이 추가
     fun show() {
+        if (overlayView.isAttachedToWindow) {
+            android.util.Log.w("OverlayView", "⚠️ 이미 오버레이가 붙어있음, show() 생략")
+            return
+        }
+
         val params = WindowManager.LayoutParams(
             WindowManager.LayoutParams.MATCH_PARENT,
             WindowManager.LayoutParams.MATCH_PARENT,
@@ -42,8 +47,19 @@ class OverlayView(private val context: Context) {
 
     // 오버레이 제거
     fun remove() {
-        windowManager.removeView(overlayView)
+        try {
+            if (overlayView.isAttachedToWindow) {
+                windowManager.removeView(overlayView)
+            } else {
+                // 로그로만 경고 남기고 무시
+                android.util.Log.w("OverlayView", "⚠️ View not attached, skip remove()")
+            }
+        } catch (e: Exception) {
+            android.util.Log.e("OverlayView", "❌ removeView 실패: ${e.message}")
+        }
     }
+    val isAttached: Boolean
+        get() = overlayView.isAttachedToWindow
 
     // 디버그 텍스트 업데이트
     fun updateDebugText(text: String) {
