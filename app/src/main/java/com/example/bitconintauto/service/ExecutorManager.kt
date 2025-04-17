@@ -1,92 +1,93 @@
 package com.example.bitconintauto.service
 
+import android.accessibilityservice.AccessibilityService
 import android.content.Context
-import android.graphics.Bitmap
 import android.graphics.Rect
-import android.os.Handler
-import android.os.Looper
 import android.util.Log
 import com.example.bitconintauto.model.Coordinate
 import com.example.bitconintauto.model.CoordinateType
 import com.example.bitconintauto.ui.OverlayView
-import com.example.bitconintauto.util.CoordinateManager
+import com.example.bitconintauto.util.ClickSimulator
 import com.example.bitconintauto.util.OCRCaptureUtils
-import com.example.bitconintauto.util.click
-import com.example.bitconintauto.util.extractValue
-import com.example.bitconintauto.util.isValueMatched
-import com.example.bitconintauto.util.scroll
+import com.example.bitconintauto.util.PreferenceHelper
+import kotlinx.coroutines.*
 
-class ExecutorManager(
-    private val context: Context,
-    private val overlayView: OverlayView
-) {
-    private val handler = Handler(Looper.getMainLooper())
-    private var isRunning = false
-    private val intervalMs = 1000L // 루프 간격
+class ExecutorManager {
 
-    fun start() {
-        if (isRunning) return
-        isRunning = true
-        Log.d("Executor", "▶▶ 루프 진입 시작됨")
-        loop()
-    }
+    private var job: Job? = null
 
-    fun stop() {
-        isRunning = false
-        handler.removeCallbacksAndMessages(null)
-        Log.d("Executor", "🛑 루프 종료됨")
-    }
+    /**
+     * 자동화 루틴을 시작하는 함수
+     * @param context 현재 Context
+     * @param overlayView 오버레이 디버깅 뷰
+     * @param service 접근성 서비스 인스턴스
+     */
+    fun start(
+        context: Context,
+        overlayView: OverlayView,
+        service: AccessibilityService
+    ) {
+        job = CoroutineScope(Dispatchers.Default).launch {
+            Log.d("Executor", "▶▶ 루프 진입 시작됨")
 
-    private fun loop() {
-        handler.postDelayed({
-            if (!isRunning) return@postDelayed
-
-            Log.d("Executor", "🌀 루프 실행 중")
-
-            val coordinates = CoordinateManager.getAllCoordinates()
-            val bitmap = OCRCaptureUtils.captureScreen(context)
-
-            if (bitmap == null) {
-                Log.d("Executor", "⚠️ 캡처 실패: bitmap == null")
-                loop()
-                return@postDelayed
+            val coordinates: List<Coordinate> = PreferenceHelper.getAllCoordinates()
+            if (coordinates.isEmpty()) {
+                Log.e("Executor", "❌ 등록된 좌표 없음")
+                return@launch
             }
 
-            coordinates.sortedBy { it.step }.forEach { coordinate ->
-                val area = Rect(
-                    coordinate.x,
-                    coordinate.y,
-                    coordinate.x + coordinate.width,
-                    coordinate.y + coordinate.height
-                )
+            while (isActive) {
+                Log.d("Executor", "🌀 루프 실행 중")
 
-                val value = extractValue(bitmap, area)
-                val label = coordinate.label
+                for ((step, coord) in coordinates.withIndex()) {
+                    val rect: Rect = coord.toRect() ?: continue
 
-                overlayView.drawDebugBox(area, label ?: "OCR", value)
+                    // OCR 대상 영역 캡처 및 텍스트 추출
+                    val ocrText: String = OCRCaptureUtils.extractValue(context, rect)
 
-                val match = isValueMatched(value, coordinate.expectedValue, coordinate.compareOperator)
+                    // 디버그 오버레이 출력
+                    withContext(Dispatchers.Main) {
+                        overlayView.updateDebugText("[$step] OCR: $ocrText")
+                        overlayView.drawDebugBox(rect)
+                    }
 
-                if (match) {
-                    when (coordinate.type) {
-                        CoordinateType.CLICK -> {
-                            click(context, coordinate.x, coordinate.y)
-                            Log.d("Executor", "🖱 클릭: ${coordinate.label}")
-                        }
+                    // OCR 조건 일치 여부 검사
+                    if (OCRCaptureUtils.isValueMatched(
+                            ocrText,
+                            coord.targetText,
+                            coord.compareOperator
+                        )
+                    ) {
+                        when (coord.type) {
+                            CoordinateType.CLICK -> {
+                                Log.d("Executor", "🖱️ Step $step 클릭 실행")
+                                ClickSimulator.click(service, rect)
+                            }
 
-                        CoordinateType.SCROLL -> {
-                            scroll(context, coordinate.x, coordinate.y)
-                            Log.d("Executor", "📜 스크롤: ${coordinate.label}")
-                        }
+                            CoordinateType.SCROLL -> {
+                                Log.d("Executor", "📜 Step $step 스크롤 실행")
+                                ClickSimulator.scroll(service, rect)
+                            }
 
-                        else -> {
-                            // PRIMARY 또는 COPY, PASTE 등은 추후 처리
+                            else -> {
+                                Log.w("Executor", "⚠️ Step $step 알 수 없는 타입")
+                            }
                         }
                     }
-                }
-            }
 
-            loop()
-        }, intervalMs)
+                    delay(800) // 각 스텝 간 딜레이
+                }
+
+                delay(1000) // 루프 반복 간 딜레이
+            }
+        }
+    }
+
+    /**
+     * 자동화 루틴을 중지시키는 함수
+     */
+    fun stop() {
+        job?.cancel()
+        Log.d("Executor", "⏹️ 루프 종료됨")
     }
 }

@@ -1,58 +1,53 @@
 package com.example.bitconintauto.util
 
+import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.Rect
 import android.util.Log
-import com.example.bitconintauto.service.CaptureForegroundService
-import com.googlecode.tesseract.android.TessBaseAPI
-import java.util.Locale
+import com.example.bitconintauto.ocr.TesseractManager
+import com.example.bitconintauto.util.ScreenCaptureHelper.captureScreen
 
-/**
- * OCR 및 화면 캡처 유틸리티 클래스
- */
 object OCRCaptureUtils {
-    private const val TAG = "OCR"
-    private var tessBaseAPI: TessBaseAPI? = null
+    private var tessManager: TesseractManager? = null
 
     /**
-     * Tesseract 엔진 초기화
+     * 주어진 영역을 캡처한 후 OCR로 텍스트를 추출한다.
      */
-    fun initTesseract(dataPath: String, lang: String = "eng") {
-        tessBaseAPI = TessBaseAPI().apply {
-            init(dataPath, lang)
+    fun extractValue(context: Context, rect: Rect): String {
+        if (tessManager == null) tessManager = TesseractManager(context)
+        val bitmap: Bitmap? = captureScreen(context, rect)
+
+        return if (bitmap != null) {
+            val ocrResult = tessManager?.getTextFromBitmap(bitmap)
+            Log.d("OCR", "🧠 OCR 추출 결과: $ocrResult")
+            ocrResult ?: ""
+        } else {
+            Log.e("OCR", "❌ 캡처 실패: bitmap == null")
+            ""
         }
-        Log.d(TAG, "✅ Tesseract 초기화 완료")
     }
 
     /**
-     * 특정 영역을 캡처하고 OCR 수행
+     * OCR 추출 텍스트가 기준 텍스트와 일치하는지 비교한다.
+     * @param ocrText 인식된 텍스트
+     * @param target 기준 텍스트
+     * @param operator 비교 방식: ==, >=, >, <=, <, !=
      */
-    fun captureAndRecognizeText(region: Rect): String {
-        Log.d(TAG, "📸 captureSync() 진입")
-        val bitmap = CaptureForegroundService.captureScreen(region)
-        if (bitmap == null) {
-            Log.d("Executor", "⚠️ 캡처 실패: bitmap == null")
-            return ""
+    fun isValueMatched(ocrText: String, target: String, operator: String): Boolean {
+        val ocrValue = ocrText.filter { it.isDigit() || it == '.' }.toDoubleOrNull() ?: return false
+        val targetValue = target.toDoubleOrNull() ?: return false
+
+        val result = when (operator) {
+            "==" -> ocrValue == targetValue
+            ">=" -> ocrValue >= targetValue
+            ">"  -> ocrValue > targetValue
+            "<=" -> ocrValue <= targetValue
+            "<"  -> ocrValue < targetValue
+            "!=" -> ocrValue != targetValue
+            else -> false
         }
 
-        tessBaseAPI?.setImage(bitmap)
-        val recognizedText = tessBaseAPI?.utF8Text ?: ""
-        return recognizedText.trim().replace("\n", "").replace(" ", "")
-    }
-
-    /**
-     * 텍스트에서 숫자 추출 (예: 잔액, 수량 등)
-     */
-    fun extractValue(text: String): Double? {
-        return text.filter { it.isDigit() || it == '.' }
-            .toDoubleOrNull()
-    }
-
-    /**
-     * 값 일치 여부 검사 (>= 조건 포함)
-     */
-    fun isValueMatched(actual: Double?, expected: Double?): Boolean {
-        if (actual == null || expected == null) return false
-        return actual >= expected
+        Log.d("OCR", "🔍 비교 결과: $ocrValue $operator $targetValue => $result")
+        return result
     }
 }

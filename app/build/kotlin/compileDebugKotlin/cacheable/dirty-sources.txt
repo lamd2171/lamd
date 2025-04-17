@@ -23,9 +23,11 @@ C:\Users\abc\AndroidStudioProjects\bitconintauto\app\src\main\java\com\example\b
 C:\Users\abc\AndroidStudioProjects\bitconintauto\app\src\main\java\com\example\bitconintauto\util\ConditionChecker.kt
 C:\Users\abc\AndroidStudioProjects\bitconintauto\app\src\main\java\com\example\bitconintauto\model\Coordinate.kt
 C:\Users\abc\AndroidStudioProjects\bitconintauto\app\src\main\java\com\example\bitconintauto\ui\CoordinateIndicatorView.kt
+C:\Users\abc\AndroidStudioProjects\bitconintauto\app\src\main\java\com\example\bitconintauto\ocr\TesseractManager.kt
 C:\Users\abc\AndroidStudioProjects\bitconintauto\app\src\main\java\com\example\bitconintauto\MyApplication.kt
 C:\Users\abc\AndroidStudioProjects\bitconintauto\app\src\main\java\com\example\bitconintauto\util\NumberDetector.kt
 C:\Users\abc\AndroidStudioProjects\bitconintauto\app\src\main\java\com\example\bitconintauto\util\OverlayViewManager.kt
+C:\Users\abc\AndroidStudioProjects\bitconintauto\app\src\main\java\com\example\bitconintauto\model\CoordinateType.kt
 C:\Users\abc\AndroidStudioProjects\bitconintauto\app\src\main\java\com\example\bitconintauto\util\AccessibilityTapper.kt
 C:\Users\abc\AndroidStudioProjects\bitconintauto\app\src\main\java\com\example\bitconintauto\util\Constants.kt
 C:\Users\abc\AndroidStudioProjects\bitconintauto\app\src\main\java\com\example\bitconintauto\util\PermissionUtils.kt

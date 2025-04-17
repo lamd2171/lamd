@@ -7,6 +7,7 @@ import android.view.accessibility.AccessibilityEvent
 class MyAccessibilityService : AccessibilityService() {
 
     override fun onServiceConnected() {
+        super.onServiceConnected()
         instance = this
     }
 
@@ -16,4 +17,5 @@ class MyAccessibilityService : AccessibilityService() {
     companion object {
         var instance: MyAccessibilityService? = null
     }
+
 }

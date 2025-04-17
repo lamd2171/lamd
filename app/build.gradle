@@ -48,8 +48,9 @@ android {
 }
 
 dependencies {
+    implementation files('C:/Users/abc/AppData/Local/Android/Sdk/platforms/android-34/android.jar')
     implementation 'com.github.rmtheis:tess-two:9.1.0'
-
+    implementation "androidx.annotation:annotation:1.7.0" // ✅ 여기 들어가야 함
     implementation "androidx.core:core-ktx:1.9.0"
     implementation "androidx.appcompat:appcompat:1.6.1"
     implementation "com.google.android.material:material:1.8.0"

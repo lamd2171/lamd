@@ -1,4 +1,4 @@
 <resources>
-    <string name="app_name">Bitconint Auto</string>
-    <string name="accessibility_description">비트코인 자동화 접근성 서비스</string>
+<string name="app_name">bitconintauto</string>
+<string name="accessibility_service_description">자동화 실행을 위한 접근성 서비스입니다.</string>
 </resources>

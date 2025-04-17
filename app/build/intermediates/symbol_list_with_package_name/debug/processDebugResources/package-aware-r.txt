@@ -2965,6 +2965,8 @@ id bounceStart
 id btnDelete
 id btn_close_guide
 id btn_next
+id btn_start
+id btn_stop
 id btn_toggle
 id buttonPanel
 id cache_measures
@@ -3009,7 +3011,8 @@ id cut
 id dark
 id dataBinding
 id date_picker_actions
-id debug_box
+id debugTextView
+id debug_text_view
 id decelerate
 id decelerateAndComplete
 id decor_content_parent
@@ -3207,7 +3210,7 @@ id onInterceptTouchReturnSwipe
 id outline
 id outward
 id overlayGuideRoot
-id overlay_root
+id overlay_container
 id overshoot
 id packed
 id parallax
@@ -3237,7 +3240,6 @@ id rightToLeft
 id right_icon
 id right_side
 id root
-id root_layout
 id rounded
 id row_index_key
 id save_non_transition_alpha
@@ -3308,12 +3310,10 @@ id start
 id startHorizontal
 id startToEnd
 id startVertical
-id start_button
 id staticLayout
 id staticPostLayout
 id status_text
 id stop
-id stop_button
 id stretch
 id submenuarrow
 id submit_area
@@ -3371,8 +3371,6 @@ id tutorial_text
 id tvDetails
 id tvLabel
 id tv_debug
-id txt_debug
-id txt_main
 id unchecked
 id uniform
 id unlabeled
@@ -3631,7 +3629,7 @@ string abc_searchview_description_voice
 string abc_shareactionprovider_share_with
 string abc_shareactionprovider_share_with_application
 string abc_toolbar_collapse_description
-string accessibility_description
+string accessibility_service_description
 string androidx_startup
 string app_name
 string appbar_scrolling_view_behavior

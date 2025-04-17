@@ -1,35 +1,30 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/overlay_root"
+    android:id="@+id/overlay_container"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@android:color/transparent">
+    android:background="#00FFFFFF"
+    android:clickable="false"
+    android:focusable="false">
 
+    <!-- 디버그 텍스트 박스 -->
     <TextView
-        android:id="@+id/txt_main"
+        android:id="@+id/debugTextView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_margin="16dp"
-        android:text="Overlay"
-        android:textSize="16sp"
-        android:textColor="#000000" />
+        android:layout_margin="8dp"
+        android:text="Debug Info"
+        android:textColor="#FF0000"
+        android:textSize="12sp"
+        android:background="#AAFFFFFF"
+        android:padding="4dp" />
 
     <TextView
-        android:id="@+id/txt_debug"
+        android:id="@+id/debug_text_view"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="40dp"
-        android:layout_marginStart="16dp"
-        android:text="Debug"
+        android:textColor="#FF0000"
         android:textSize="14sp"
-        android:textColor="#00FF00" />
+        android:layout_margin="10dp"/>
 
-    <View
-        android:id="@+id/debug_box"
-        android:layout_width="100dp"
-        android:layout_height="100dp"
-        android:layout_marginTop="80dp"
-        android:layout_marginStart="16dp"
-        android:background="#44FF0000"
-        android:visibility="gone" />
 </FrameLayout>

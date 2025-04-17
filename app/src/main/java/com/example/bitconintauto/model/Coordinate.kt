@@ -1,5 +1,7 @@
 package com.example.bitconintauto.model
 
+import android.graphics.Rect
+
 /**
  * 자동화에 사용되는 좌표 정보 클래스
  *
@@ -23,4 +25,23 @@ data class Coordinate(
     val comparator: String = "==",
     val type: CoordinateType = CoordinateType.PRIMARY,
     val step: Int = -1
-)
+) {
+    /**
+     * 좌표 + 크기를 기반으로 Rect 반환
+     */
+    fun toRect(): Rect {
+        return Rect(x, y, x + width, y + height)
+    }
+
+    /**
+     * OCR 비교 시 사용할 기준 텍스트
+     */
+    val targetText: String
+        get() = expectedValue
+
+    /**
+     * OCR 비교 시 사용할 연산자
+     */
+    val compareOperator: String
+        get() = comparator
+}
