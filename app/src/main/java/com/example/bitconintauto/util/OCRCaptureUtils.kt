@@ -73,6 +73,7 @@ object OCRCaptureUtils {
 
     // OCR 텍스트 추출
     fun extractTextFromBitmap(bitmap: Bitmap): String {
+        tessBaseAPI.pageSegMode = TessBaseAPI.PageSegMode.PSM_SINGLE_BLOCK
         return try {
             tessBaseAPI.setImage(bitmap)
             tessBaseAPI.utF8Text ?: ""

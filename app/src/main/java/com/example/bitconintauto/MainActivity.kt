@@ -52,10 +52,16 @@ class MainActivity : AppCompatActivity() {
             if (!overlayView.isAttached()) overlayView.show(this)
             executorManager.captureAndTriggerIfNeeded(this, overlayView, service)
         }
+        var isRequestInProgress = false  // 중복 요청 방지 변수
 
-        // Start 버튼 클릭 시 권한 확인 후 프로젝션 요청
         btnStart.setOnClickListener {
-            // Overlay 권한 확인
+            // 이미 요청이 진행 중이라면 클릭 방지
+            if (isRequestInProgress) return@setOnClickListener
+
+            isRequestInProgress = true
+            btnStart.isEnabled = false // 버튼 비활성화
+
+            // 권한 확인 및 요청 처리
             if (!PermissionUtils.checkOverlayPermission(this)) {
                 PermissionUtils.requestOverlayPermission(this, REQUEST_OVERLAY_PERMISSION)
                 return@setOnClickListener
@@ -70,7 +76,12 @@ class MainActivity : AppCompatActivity() {
 
             // MediaProjection 권한 요청
             PermissionUtils.requestMediaProjection(this, REQUEST_MEDIA_PROJECTION)
+
+            // 처리 완료 후 활성화
+            btnStart.isEnabled = true
+            isRequestInProgress = false  // 중복 요청 방지 해제
         }
+
 
         // Stop 버튼 클릭 시 실행 중인 자동화 루틴 중지
         btnStop.setOnClickListener {

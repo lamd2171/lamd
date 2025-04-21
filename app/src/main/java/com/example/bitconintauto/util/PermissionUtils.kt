@@ -120,10 +120,19 @@ object PermissionUtils {
         val savedCode = prefs.getInt("resultCode", -1)
         val uri = prefs.getString("intentUri", null)
 
-        if (savedCode != Activity.RESULT_OK || uri == null) return false
-        val intent = Intent.parseUri(uri, 0)
+        if (savedCode != Activity.RESULT_OK || uri == null) {
+            Log.e("PermissionUtils", "❌ 복원된 MediaProjection이 없습니다.")
+            return false
+        }
 
-        setMediaProjectionPermissionResult(savedCode, intent)
-        return true
+        try {
+            val intent = Intent.parseUri(uri, 0)  // URI 파싱
+            setMediaProjectionPermissionResult(savedCode, intent)
+            return true
+        } catch (e: Exception) {
+            Log.e("PermissionUtils", "❌ 복원된 URI 파싱 오류: ${e.message}")
+            return false
+        }
     }
+
 }

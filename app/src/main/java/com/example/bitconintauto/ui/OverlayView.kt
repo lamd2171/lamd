@@ -54,14 +54,18 @@ class OverlayView(context: Context) : View(context) {
     }
 
     fun updateDebugText(text: String) {
-        debugText = text
-        invalidate()
+        if (debugText != text) {  // 상태가 변경된 경우에만 invalidate 호출
+            debugText = text
+            invalidate()
+        }
     }
 
     fun drawDebugBox(rect: Rect) {
-        debugBox = rect
-        drawFullScreenOverlay = false
-        invalidate()
+        if (debugBox != rect) {  // 상태가 변경된 경우에만 invalidate 호출
+            debugBox = rect
+            drawFullScreenOverlay = false
+            invalidate()
+        }
     }
 
     fun drawFullScreenDebugOverlay() {

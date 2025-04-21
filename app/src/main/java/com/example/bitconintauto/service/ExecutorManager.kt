@@ -68,13 +68,13 @@ class ExecutorManager {
             if (value >= 1.0) {
                 Log.d("Trigger", "✅ PICN 왼쪽 숫자 조건 충족 ($value), Send 클릭 진행")
 
-                val sendRect = OCRCaptureUtils.findWordRectFromBitmap(bitmap, "| 8 Send")
+                val sendRect = OCRCaptureUtils.findWordRectFromBitmap(bitmap, "Send")  // 정확한 텍스트 추출
                 if (sendRect != null) {
                     Log.d("Executor", "📍 'Send' 추정 위치 클릭: $sendRect")
                     withContext(Dispatchers.Main) {
-                        overlayView.drawDebugBox(sendRect)
+                        overlayView.drawDebugBox(sendRect)  // 디버그 박스 그리기
                     }
-                    ClickSimulator.click(service, sendRect)
+                    ClickSimulator.click(service, sendRect)  // 클릭 수행
                     delay(1000)
                 } else {
                     Log.e("Executor", "❌ 'Send' 단어 좌표 분석 실패")
