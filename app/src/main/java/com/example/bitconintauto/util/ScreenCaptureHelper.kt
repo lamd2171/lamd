@@ -2,100 +2,107 @@ package com.example.bitconintauto.util
 
 import android.content.Context
 import android.graphics.Bitmap
-import android.graphics.PixelFormat
-import android.graphics.Rect
 import android.hardware.display.DisplayManager
+import android.hardware.display.VirtualDisplay
 import android.media.ImageReader
 import android.media.projection.MediaProjection
+import android.os.Handler
+import android.os.Looper
 import android.util.DisplayMetrics
 import android.util.Log
 import android.view.WindowManager
-import android.media.Image
 
 object ScreenCaptureHelper {
 
-    private var screenDensity = 1
-    private var screenWidth = 1
-    private var screenHeight = 1
+    private var mediaProjection: MediaProjection? = null
 
-    fun initialize(context: Context) {
-        val metrics = DisplayMetrics()
-        val wm = context.getSystemService(Context.WINDOW_SERVICE) as WindowManager
-        wm.defaultDisplay.getRealMetrics(metrics)
-        screenDensity = metrics.densityDpi
-        screenWidth = metrics.widthPixels
-        screenHeight = metrics.heightPixels
-        Log.d("ScreenCaptureHelper", "📱 초기화 완료: $screenWidth x $screenHeight ($screenDensity dpi)")
+    fun setMediaProjection(projection: MediaProjection) {
+        mediaProjection = projection
     }
 
-    fun captureScreen(context: Context, captureRect: Rect): Bitmap? {
-        val projection = PermissionUtils.getMediaProjection()
+    fun getMediaProjection(): MediaProjection? {
+        return mediaProjection
+    }
+
+    // ✅ 새 구조: MediaProjection을 외부에서 직접 전달
+    fun captureScreen(context: Context, projection: MediaProjection): Bitmap? {
+        return try {
+            capture(context, projection)
+        } catch (e: Exception) {
+            Log.e("ScreenCaptureHelper", "❌ 예외 발생: ${e.message}")
+            null
+        }
+    }
+
+    // ✅ 기존 구조: 내부 static projection 사용
+    fun captureScreen(context: Context): Bitmap? {
+        val projection = mediaProjection
         if (projection == null) {
-            Log.e("ScreenCaptureHelper", "❌ MediaProjection이 null임")
+            Log.e("ScreenCaptureHelper", "❌ MediaProjection is null")
             return null
         }
+        return capture(context, projection)
+    }
 
-        // 캡처 크기 보정
-        val width = captureRect.width().coerceAtLeast(100)
-        val height = captureRect.height().coerceAtLeast(80)
+    // ✅ 공통 캡처 로직
+    private fun capture(context: Context, projection: MediaProjection): Bitmap? {
+        val width: Int
+        val height: Int
+        val density: Int
 
-        val imageReader = ImageReader.newInstance(width, height, PixelFormat.RGBA_8888, 2)
+        val displayMetrics = context.resources.displayMetrics
+        density = displayMetrics.densityDpi
 
-        val virtualDisplay = projection.createVirtualDisplay(
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.R) {
+            val windowMetrics = (context.getSystemService(Context.WINDOW_SERVICE) as WindowManager).currentWindowMetrics
+            val bounds = windowMetrics.bounds
+            width = bounds.width()
+            height = bounds.height()
+        } else {
+            val metrics = DisplayMetrics()
+            @Suppress("DEPRECATION")
+            (context.getSystemService(Context.WINDOW_SERVICE) as WindowManager).defaultDisplay.getRealMetrics(metrics)
+            width = metrics.widthPixels
+            height = metrics.heightPixels
+        }
+
+        val imageReader = ImageReader.newInstance(width, height, 0x1, 2)
+
+        val virtualDisplay: VirtualDisplay = projection.createVirtualDisplay(
             "ScreenCapture",
             width,
             height,
-            context.resources.displayMetrics.densityDpi,
-            DisplayManager.VIRTUAL_DISPLAY_FLAG_OWN_CONTENT_ONLY or DisplayManager.VIRTUAL_DISPLAY_FLAG_PUBLIC,
+            density,
+            DisplayManager.VIRTUAL_DISPLAY_FLAG_AUTO_MIRROR,
             imageReader.surface,
             null,
-            null
+            Handler(Looper.getMainLooper())
         )
 
-        Log.d("ScreenCaptureHelper", "🟡 virtualDisplay 생성 완료: $width x $height")
+        Thread.sleep(300) // 안정성 확보
 
-        // 🎯 안정화 시간 확보
-        Thread.sleep(500)
-
-        var image: Image? = null
-        var attempt = 0
-
-        while (attempt < 6 && image == null) {
-            image = imageReader.acquireLatestImage()
-            if (image == null) {
-                Log.w("ScreenCaptureHelper", "⚠️ 이미지가 null, 재시도 중 ($attempt)")
-                Thread.sleep(300)
-                attempt++
-            }
+        val image = imageReader.acquireLatestImage()
+        if (image == null) {
+            Log.e("ScreenCaptureHelper", "❌ 이미지 획득 실패 (null)")
+            virtualDisplay.release()
+            return null
         }
 
-        if (image != null) {
-            val planes = image.planes
-            if (planes.isNotEmpty()) {
-                val buffer = planes[0].buffer
-                val pixelStride = planes[0].pixelStride
-                val rowStride = planes[0].rowStride
-                val rowPadding = maxOf(0, rowStride - pixelStride * width)
-                val extraWidth = if (pixelStride != 0) rowPadding / pixelStride else 0
+        val planes = image.planes
+        val buffer = planes[0].buffer
+        val pixelStride = planes[0].pixelStride
+        val rowStride = planes[0].rowStride
+        val rowPadding = rowStride - pixelStride * width
 
-                val bitmap = Bitmap.createBitmap(
-                    width + extraWidth,
-                    height,
-                    Bitmap.Config.ARGB_8888
-                )
-                bitmap.copyPixelsFromBuffer(buffer)
-                image.close()
+        val bitmap = Bitmap.createBitmap(
+            width + rowPadding / pixelStride,
+            height,
+            Bitmap.Config.ARGB_8888
+        )
+        bitmap.copyPixelsFromBuffer(buffer)
+        image.close()
+        virtualDisplay.release()
 
-                Log.d("ScreenCaptureHelper", "✅ 이미지 복사 완료: ${bitmap.width}x${bitmap.height}")
-                return bitmap
-            } else {
-                Log.e("ScreenCaptureHelper", "❌ planes 비어있음")
-            }
-            image.close()
-        } else {
-            Log.e("ScreenCaptureHelper", "❌ 이미지 획득 실패: image == null")
-        }
-
-        return null
+        return Bitmap.createBitmap(bitmap, 0, 0, width, height)
     }
 }

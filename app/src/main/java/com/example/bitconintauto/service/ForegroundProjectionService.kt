@@ -40,8 +40,15 @@ class ForegroundProjectionService : Service() {
         if (resultCode == Activity.RESULT_OK && resultData != null) {
             PermissionUtils.setMediaProjectionPermissionResult(resultCode, resultData)
             Log.d("ForegroundService", "✅ MediaProjection 저장 완료")
-        } else {
-            Log.e("ForegroundService", "❌ MediaProjection 초기화 실패: 인텐트 없음")
+
+            // 🔥 OCR 캡처에서도 사용할 수 있도록 projection 전달
+            val projection = PermissionUtils.getMediaProjection()
+            if (projection != null) {
+                com.example.bitconintauto.util.ScreenCaptureHelper.setMediaProjection(projection)
+                Log.d("ForegroundService", "✅ ScreenCaptureHelper에도 projection 전달됨")
+            } else {
+                Log.e("ForegroundService", "❌ PermissionUtils.getMediaProjection() == null")
+            }
         }
 
         return START_NOT_STICKY

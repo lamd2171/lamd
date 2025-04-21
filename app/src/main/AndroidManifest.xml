@@ -17,7 +17,8 @@
         android:label="bitconint auto"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/Theme.BitconintAuto">
+        android:theme="@style/Theme.BitconintAuto"
+        android:requestLegacyExternalStorage="true">  <!-- ✅ 요기 추가 -->
 
         <!-- ✅ MainActivity 등록 -->
         <activity

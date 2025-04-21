@@ -31,9 +31,12 @@
         android:extractNativeLibs="false"
         android:icon="@mipmap/ic_launcher"
         android:label="bitconint auto"
+        android:requestLegacyExternalStorage="true"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/Theme.BitconintAuto" >
+        android:testOnly="true"
+        android:theme="@style/Theme.BitconintAuto" > <!-- ✅ 요기 추가 -->
+
 
         <!-- ✅ MainActivity 등록 -->
         <activity
