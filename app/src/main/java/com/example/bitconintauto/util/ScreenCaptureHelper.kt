@@ -24,24 +24,18 @@ object ScreenCaptureHelper {
         return mediaProjection
     }
 
-    // ✅ 새 구조: MediaProjection을 외부에서 직접 전달
+    // ✅ 캡처 시작 전 MediaProjection 유효성 검사
     fun captureScreen(context: Context, projection: MediaProjection): Bitmap? {
+        if (projection == null) {
+            Log.e("ScreenCaptureHelper", "❌ MediaProjection is null")
+            return null
+        }
         return try {
             capture(context, projection)
         } catch (e: Exception) {
             Log.e("ScreenCaptureHelper", "❌ 예외 발생: ${e.message}")
             null
         }
-    }
-
-    // ✅ 기존 구조: 내부 static projection 사용
-    fun captureScreen(context: Context): Bitmap? {
-        val projection = mediaProjection
-        if (projection == null) {
-            Log.e("ScreenCaptureHelper", "❌ MediaProjection is null")
-            return null
-        }
-        return capture(context, projection)
     }
 
     // ✅ 공통 캡처 로직
@@ -53,6 +47,7 @@ object ScreenCaptureHelper {
         val displayMetrics = context.resources.displayMetrics
         density = displayMetrics.densityDpi
 
+        // 화면 크기 설정
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.R) {
             val windowMetrics = (context.getSystemService(Context.WINDOW_SERVICE) as WindowManager).currentWindowMetrics
             val bounds = windowMetrics.bounds
@@ -66,8 +61,10 @@ object ScreenCaptureHelper {
             height = metrics.heightPixels
         }
 
+        // 이미지 리더 생성
         val imageReader = ImageReader.newInstance(width, height, 0x1, 2)
 
+        // VirtualDisplay 생성
         val virtualDisplay: VirtualDisplay = projection.createVirtualDisplay(
             "ScreenCapture",
             width,
@@ -79,8 +76,9 @@ object ScreenCaptureHelper {
             Handler(Looper.getMainLooper())
         )
 
-        Thread.sleep(300) // 안정성 확보
+        Thread.sleep(1000) // 안정성 확보
 
+        // 이미지를 획득
         val image = imageReader.acquireLatestImage()
         if (image == null) {
             Log.e("ScreenCaptureHelper", "❌ 이미지 획득 실패 (null)")
@@ -94,6 +92,7 @@ object ScreenCaptureHelper {
         val rowStride = planes[0].rowStride
         val rowPadding = rowStride - pixelStride * width
 
+        // Bitmap 생성
         val bitmap = Bitmap.createBitmap(
             width + rowPadding / pixelStride,
             height,

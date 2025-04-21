@@ -3,6 +3,7 @@ package com.example.bitconintauto.service
 import android.accessibilityservice.AccessibilityService
 import android.content.Context
 import android.graphics.Rect
+import android.media.projection.MediaProjection
 import android.util.Log
 import com.example.bitconintauto.model.Coordinate
 import com.example.bitconintauto.model.CoordinateType
@@ -12,15 +13,11 @@ import com.example.bitconintauto.util.OCRCaptureUtils
 import com.example.bitconintauto.util.PreferenceHelper
 import com.example.bitconintauto.util.ScreenCaptureHelper
 import kotlinx.coroutines.*
-import kotlin.coroutines.coroutineContext
 
 class ExecutorManager {
 
     private var job: Job? = null
 
-    /**
-     * MediaProjection이 설정될 때까지 대기 후 OCR 트리거 시작
-     */
     fun captureAndTriggerIfNeeded(context: Context, overlayView: OverlayView, service: AccessibilityService) {
         job = CoroutineScope(Dispatchers.Default).launch {
             delay(1000)
@@ -44,19 +41,22 @@ class ExecutorManager {
         }
     }
 
-    /**
-     * 전체 OCR에서 PICN 왼쪽 숫자 판별 → 조건 만족 시 루틴 시작
-     */
     private suspend fun triggerLoop(
         context: Context,
         overlayView: OverlayView,
         service: AccessibilityService,
-        projection: android.media.projection.MediaProjection
+        projection: MediaProjection
     ) {
-        while (coroutineContext.isActive) {
+        while (job?.isActive == true) {
             Log.d("Trigger", "⚠️ 전체 화면 OCR 캡처 시작")
 
-            val text = OCRCaptureUtils.extractTextFromFullScreen(context, projection)
+            val bitmap = ScreenCaptureHelper.captureScreen(context, projection)
+            if (bitmap == null) {
+                Log.e("OCR", "❌ 전체화면 캡처 실패")
+                return
+            }
+
+            val text = OCRCaptureUtils.extractTextFromBitmap(bitmap)
             Log.d("Trigger", "🧠 OCR 전체 텍스트: $text")
 
             withContext(Dispatchers.Main) {
@@ -66,8 +66,21 @@ class ExecutorManager {
 
             val value = OCRCaptureUtils.extractNumberBeforePicn(text)
             if (value >= 1.0) {
-                Log.d("Trigger", "✅ PICN 왼쪽 숫자 조건 충족 ($value), 루틴 시작")
-                start(context, overlayView, service)
+                Log.d("Trigger", "✅ PICN 왼쪽 숫자 조건 충족 ($value), Send 클릭 진행")
+
+                val sendRect = OCRCaptureUtils.findWordRectFromBitmap(bitmap, "| 8 Send")
+                if (sendRect != null) {
+                    Log.d("Executor", "📍 'Send' 추정 위치 클릭: $sendRect")
+                    withContext(Dispatchers.Main) {
+                        overlayView.drawDebugBox(sendRect)
+                    }
+                    ClickSimulator.click(service, sendRect)
+                    delay(1000)
+                } else {
+                    Log.e("Executor", "❌ 'Send' 단어 좌표 분석 실패")
+                }
+
+                start(context, overlayView, service, projection)
                 break
             } else {
                 Log.d("Trigger", "⛔ PICN 왼쪽 숫자 조건 미충족 ($value)")
@@ -77,7 +90,7 @@ class ExecutorManager {
         }
     }
 
-    fun start(context: Context, overlayView: OverlayView, service: AccessibilityService) {
+    fun start(context: Context, overlayView: OverlayView, service: AccessibilityService, projection: MediaProjection) {
         job = CoroutineScope(Dispatchers.Default).launch {
             Log.d("Executor", "▶▶ 루프 진입 시작됨")
 
@@ -87,12 +100,12 @@ class ExecutorManager {
                 return@launch
             }
 
-            while (isActive) {
+            while (job?.isActive == true) {
                 Log.d("Executor", "🌀 루프 실행 중")
 
                 for ((step, coord) in coordinates.withIndex()) {
                     val rect = coord.toRect() ?: continue
-                    val ocrText = OCRCaptureUtils.extractTextFromRegion(context, rect)
+                    val ocrText = OCRCaptureUtils.extractTextFromRegion(context, rect, projection)
 
                     withContext(Dispatchers.Main) {
                         overlayView.updateDebugText("[$step] OCR: $ocrText")
@@ -105,10 +118,12 @@ class ExecutorManager {
                                 Log.d("Executor", "🖱️ Step $step 클릭 실행")
                                 ClickSimulator.click(service, rect)
                             }
+
                             CoordinateType.SCROLL -> {
                                 Log.d("Executor", "📜 Step $step 스크롤 실행")
                                 ClickSimulator.scroll(service, rect)
                             }
+
                             else -> {
                                 Log.w("Executor", "⚠️ Step $step 알 수 없는 타입")
                             }
