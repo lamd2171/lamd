@@ -82,10 +82,7 @@ class MainActivity : AppCompatActivity() {
         super.onActivityResult(requestCode, resultCode, data)
 
         val mediaProjection = PermissionUtils.getMediaProjection()
-        if (mediaProjection != null) {
-            PermissionUtils.storeMediaProjection(projection)  // 이건 그대로 유지
 
-        }
         if (requestCode == REQUEST_MEDIA_PROJECTION && resultCode == Activity.RESULT_OK && data != null) {
             Log.d("Main", "📸 MediaProjection 권한 획득")
 
@@ -93,23 +90,29 @@ class MainActivity : AppCompatActivity() {
             val serviceIntent = Intent(this, ForegroundProjectionService::class.java).apply {
                 putExtra("code", resultCode)
                 putExtra("data", data)
+                Log.e("main", " ForegroundService 전달완료.")
             }
             ContextCompat.startForegroundService(this, serviceIntent)
 
             // ✅ 0.5초 후 루틴 실행 (서비스가 MediaProjection을 세팅할 시간 확보)
             Handler(mainLooper).postDelayed({
                 if (!overlayView.isAttached) {
+                    Log.e("main", " MediaProjection 세팅시간 확보.")
                     overlayView.show()
                 }
 
                 // 🔽 MediaProjection 준비 여부 선확인
-                if (PermissionUtils.getMediaProjection() == null) {
+                val projection = PermissionUtils.getMediaProjection()
+                if (projection == null) {
                     Log.e("Main", "⛔ MediaProjection 아직 준비 안 됨. 루틴 실행 취소.")
                     Toast.makeText(this, "화면 캡처 권한 초기화 대기 중입니다. 다시 시도해주세요.", Toast.LENGTH_SHORT).show()
                     return@postDelayed
                 }
 
-                if (ScreenCaptureHelper.captureScreen(this, Rect(0, 0, 10, 10)) == null) {
+               // ScreenCaptureHelper.setMediaProjection(projection)
+
+                val testBitmap = ScreenCaptureHelper.captureScreen(this, Rect(0, 0, 540, 900))
+                if (testBitmap == null) {
                     Log.e("Main", "⛔ 캡처 실패: bitmap == null")
                     return@postDelayed
                 }

@@ -22,6 +22,7 @@ object OCRCaptureUtils {
         }
         val bitmap: Bitmap? = captureScreen(context, rect)
 
+
         return if (bitmap != null) {
             val ocrResult = tessManager?.getTextFromBitmap(bitmap)
             Log.d("OCR", "🧠 OCR 추출 결과: $ocrResult")

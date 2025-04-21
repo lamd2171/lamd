@@ -16,8 +16,10 @@ class ExecutorManager {
 
     fun captureAndTriggerIfNeeded(context: Context, overlayView: OverlayView, service: AccessibilityService) {
         CoroutineScope(Dispatchers.Default).launch {
-            // 🔶 트리거 사각형 고정: (x=200, y=300) ~ (x=400, y=350)
-            val triggerRect = Rect(200, 300, 400, 350)
+            // 🔶 트리거 사각형 고정: (x=180, y=280) ~ (x=420, y=380) (기존 유지)
+            val triggerRect = Rect(100, 300, 520, 480)
+
+            delay(300) // 캡처 안정성을 위해 약간 대기 추가
 
             val text = OCRCaptureUtils.extractValue(context, triggerRect)
             Log.d("Trigger", "🎯 OCR 트리거 텍스트: $text")
@@ -27,7 +29,6 @@ class ExecutorManager {
                 overlayView.drawDebugBox(triggerRect)
             }
 
-            // 🔶 조건: 숫자 ≥ 1일 때 자동화 루틴 시작
             val value = text.toDoubleOrNull() ?: 0.0
             if (value >= 1.0) {
                 Log.d("Trigger", "✅ 트리거 감지됨, 루틴 시작")

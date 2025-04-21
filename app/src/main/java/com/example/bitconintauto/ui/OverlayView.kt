@@ -21,8 +21,14 @@ class OverlayView(private val context: Context) {
         strokeWidth = 4f
     }
 
+    private val textPaint = Paint().apply {
+        color = Color.YELLOW
+        textSize = 40f
+    }
+
     private val debugTextView: TextView = overlayView.findViewById(R.id.debug_text_view)
     private var currentRect: Rect? = null
+    private var debugText: String = ""
 
     // 오버레이 추가
     fun show() {
@@ -51,19 +57,21 @@ class OverlayView(private val context: Context) {
             if (overlayView.isAttachedToWindow) {
                 windowManager.removeView(overlayView)
             } else {
-                // 로그로만 경고 남기고 무시
                 android.util.Log.w("OverlayView", "⚠️ View not attached, skip remove()")
             }
         } catch (e: Exception) {
             android.util.Log.e("OverlayView", "❌ removeView 실패: ${e.message}")
         }
     }
+
     val isAttached: Boolean
         get() = overlayView.isAttachedToWindow
 
     // 디버그 텍스트 업데이트
     fun updateDebugText(text: String) {
         debugTextView.text = text
+        debugText = text
+        overlayView.invalidate()
     }
 
     // 디버그 박스 그리기
@@ -72,7 +80,6 @@ class OverlayView(private val context: Context) {
         overlayView.invalidate()
     }
 
-    // 뷰 내에 사각형 박스를 그리기 위한 커스텀 뷰 (선택 사항)
     init {
         overlayView.setWillNotDraw(false)
         overlayView.invalidate()
@@ -89,6 +96,7 @@ class OverlayView(private val context: Context) {
             currentRect?.let { rect ->
                 canvas.drawRect(rect, debugBoxPaint)
             }
+            canvas.drawText(debugText, 50f, 100f, textPaint)
         }
     }
 }
