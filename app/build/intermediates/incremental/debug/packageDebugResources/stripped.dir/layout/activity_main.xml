@@ -10,22 +10,22 @@
     <!-- 자동 실행 시작 버튼 -->
     <Button
         android:id="@+id/btn_start"
-        android:layout_width="200dp"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Start Automation"
         android:textSize="16sp"
-        android:background="#4CAF50"
         android:textColor="#FFFFFF"
-        android:layout_marginBottom="20dp" />
+        android:layout_marginBottom="20dp"
+        android:background="@drawable/btn_style" />  <!-- 스타일 추가 -->
 
-    <!-- 자동 실행 정지 버튼 -->
     <Button
         android:id="@+id/btn_stop"
-        android:layout_width="200dp"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Stop Automation"
         android:textSize="16sp"
-        android:background="#F44336"
-        android:textColor="#FFFFFF" />
+        android:textColor="#FFFFFF"
+        android:background="@drawable/btn_style" />
+
 
 </LinearLayout>

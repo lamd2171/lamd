@@ -14,6 +14,7 @@ dimen padding_medium
 dimen padding_small
 dimen text_size_large
 dimen text_size_normal
+drawable btn_style
 drawable floating_button_background
 drawable ic_launcher_background
 drawable ic_launcher_foreground
@@ -28,8 +29,8 @@ id btn_start
 id btn_stop
 id btn_toggle
 id checkboxDontShowAgain
-id debugTextView
-id debug_text_view
+id debug_box
+id debug_text
 id editValue
 id etExpectedValue
 id etHeight

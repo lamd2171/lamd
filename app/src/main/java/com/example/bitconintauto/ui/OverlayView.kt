@@ -25,11 +25,14 @@ class OverlayView(context: Context) : View(context) {
 
     private val windowManager = context.getSystemService(Context.WINDOW_SERVICE) as WindowManager
 
+    // ✅ TYPE_APPLICATION_OVERLAY + FLAG_NOT_TOUCHABLE + FLAG_LAYOUT_NO_LIMITS + TRANSPARENT
     private val layoutParams = WindowManager.LayoutParams(
         WindowManager.LayoutParams.MATCH_PARENT,
         WindowManager.LayoutParams.MATCH_PARENT,
         WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY,
-        WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE or WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE,
+        WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE or
+                WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE or
+                WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS,
         PixelFormat.TRANSLUCENT
     )
 
@@ -49,19 +52,17 @@ class OverlayView(context: Context) : View(context) {
         }
     }
 
-    fun isAttached(): Boolean {
-        return isAttached
-    }
+    fun isAttached(): Boolean = isAttached
 
     fun updateDebugText(text: String) {
-        if (debugText != text) {  // 상태가 변경된 경우에만 invalidate 호출
+        if (debugText != text) {
             debugText = text
             invalidate()
         }
     }
 
     fun drawDebugBox(rect: Rect) {
-        if (debugBox != rect) {  // 상태가 변경된 경우에만 invalidate 호출
+        if (debugBox != rect) {
             debugBox = rect
             drawFullScreenOverlay = false
             invalidate()
@@ -75,16 +76,11 @@ class OverlayView(context: Context) : View(context) {
 
     override fun onDraw(canvas: Canvas) {
         super.onDraw(canvas)
-
-        canvas.drawText(debugText, 20f, 50f, paintText)
-
-        debugBox?.let { rect ->
-            canvas.drawRect(rect, paintBox)
-        }
-
         if (drawFullScreenOverlay) {
             val fullRect = Rect(0, 0, width, height)
             canvas.drawRect(fullRect, paintBox)
         }
+        debugBox?.let { canvas.drawRect(it, paintBox) }
+        canvas.drawText(debugText, 20f, 50f, paintText)
     }
 }

@@ -2,6 +2,7 @@ package com.example.bitconintauto.service
 
 import android.accessibilityservice.AccessibilityService
 import android.content.Context
+import android.graphics.Bitmap
 import android.graphics.Rect
 import android.media.projection.MediaProjection
 import android.util.Log
@@ -22,41 +23,20 @@ class ExecutorManager {
         job = CoroutineScope(Dispatchers.Default).launch {
             delay(1000)
 
-            var projection = ScreenCaptureHelper.getMediaProjection()
-            var attempt = 0
-
-            while (projection == null && attempt < 10) {
-                Log.w("Trigger", "❗ MediaProjection 아직 null 상태. 대기 중... ($attempt)")
-                delay(500)
-                projection = ScreenCaptureHelper.getMediaProjection()
-                attempt++
-            }
-
+            val projection = ScreenCaptureHelper.getMediaProjection()
             if (projection == null) {
                 Log.e("Trigger", "❌ MediaProjection 설정 실패, OCR 루틴 중단")
                 return@launch
             }
 
-            triggerLoop(context, overlayView, service, projection)
-        }
-    }
-
-    private suspend fun triggerLoop(
-        context: Context,
-        overlayView: OverlayView,
-        service: AccessibilityService,
-        projection: MediaProjection
-    ) {
-        while (job?.isActive == true) {
-            Log.d("Trigger", "⚠️ 전체 화면 OCR 캡처 시작")
-
-            val bitmap = ScreenCaptureHelper.captureScreen(context, projection)
-            if (bitmap == null) {
+            val triggerBitmap = ScreenCaptureHelper.captureScreen(context, projection)
+            if (triggerBitmap == null) {
                 Log.e("OCR", "❌ 전체화면 캡처 실패")
-                return
+                return@launch
             }
 
-            val text = OCRCaptureUtils.extractTextFromBitmap(bitmap)
+            Log.d("Capture", "🖼️ 캡처된 이미지 해상도: ${triggerBitmap.width}x${triggerBitmap.height}")
+            val text = OCRCaptureUtils.extractTextFromBitmap(triggerBitmap)
             Log.d("Trigger", "🧠 OCR 전체 텍스트: $text")
 
             withContext(Dispatchers.Main) {
@@ -68,72 +48,110 @@ class ExecutorManager {
             if (value >= 1.0) {
                 Log.d("Trigger", "✅ PICN 왼쪽 숫자 조건 충족 ($value), Send 클릭 진행")
 
-                val sendRect = OCRCaptureUtils.findWordRectFromBitmap(bitmap, "Send")  // 정확한 텍스트 추출
+                val sendRect = OCRCaptureUtils.findWordRectFromBitmap(triggerBitmap, "Send")
                 if (sendRect != null) {
-                    Log.d("Executor", "📍 'Send' 추정 위치 클릭: $sendRect")
+                    val screenMetrics = context.resources.displayMetrics
+                    val scaledRect = ClickSimulator.scaleRect(
+                        sendRect, triggerBitmap.width, triggerBitmap.height,
+                        screenMetrics.widthPixels, screenMetrics.heightPixels
+                    )
+                    val expandedRect = ClickSimulator.expandRect(scaledRect)
+
+                    Log.d("Executor", "📍 'Send' 추정 위치 클릭: 원본=$sendRect, 스케일=$scaledRect, 확장=$expandedRect")
+                    Log.d("Executor", "📱 디바이스 해상도: ${screenMetrics.widthPixels}x${screenMetrics.heightPixels}")
+
                     withContext(Dispatchers.Main) {
-                        overlayView.drawDebugBox(sendRect)  // 디버그 박스 그리기
+                        overlayView.drawDebugBox(expandedRect)
                     }
-                    ClickSimulator.click(service, sendRect)  // 클릭 수행
+
+                    val sendCoordinate = Coordinate(
+                        step = 0,
+                        x = sendRect.left,
+                        y = sendRect.top,
+                        width = sendRect.width(),
+                        height = sendRect.height(),
+                        expectedValue = "Send",
+                        comparator = "==",
+                        type = CoordinateType.CLICK
+                    )
+                    PreferenceHelper.saveAllCoordinates(listOf(sendCoordinate))
+
+                    ClickSimulator.click(service, expandedRect)
                     delay(1000)
+
+                    // 새 MediaProjection으로 루프용 캡처 재요청
+                    val loopProjection = ScreenCaptureHelper.getMediaProjection()
+                    if (loopProjection == null) {
+                        Log.e("Executor", "❌ 루프용 MediaProjection 획득 실패")
+                        return@launch
+                    }
+
+                    val loopBitmap = ScreenCaptureHelper.captureScreen(context, loopProjection)
+                    if (loopBitmap == null) {
+                        Log.e("Executor", "❌ Step 루프 진입 전 캡처 실패")
+                        return@launch
+                    }
+
+                    startLoopFromBitmap(context, overlayView, service, loopBitmap)
                 } else {
                     Log.e("Executor", "❌ 'Send' 단어 좌표 분석 실패")
                 }
-
-                start(context, overlayView, service, projection)
-                break
             } else {
                 Log.d("Trigger", "⛔ PICN 왼쪽 숫자 조건 미충족 ($value)")
             }
-
-            delay(1000)
         }
     }
 
-    fun start(context: Context, overlayView: OverlayView, service: AccessibilityService, projection: MediaProjection) {
-        job = CoroutineScope(Dispatchers.Default).launch {
+    private suspend fun startLoopFromBitmap(
+        context: Context,
+        overlayView: OverlayView,
+        service: AccessibilityService,
+        baseBitmap: Bitmap
+    ) {
+        val coordinates: List<Coordinate> = PreferenceHelper.getAllCoordinates()
+        Log.d("Executor", "✅ 로드된 Step 좌표 개수: ${coordinates.size}")
+
+        withContext(Dispatchers.Default) {
             Log.d("Executor", "▶▶ 루프 진입 시작됨")
 
-            val coordinates: List<Coordinate> = PreferenceHelper.getAllCoordinates()
-            if (coordinates.isEmpty()) {
-                Log.e("Executor", "❌ 등록된 좌표 없음")
-                return@launch
-            }
+            val screenMetrics = context.resources.displayMetrics
+            val targetW = screenMetrics.widthPixels
+            val targetH = screenMetrics.heightPixels
 
-            while (job?.isActive == true) {
-                Log.d("Executor", "🌀 루프 실행 중")
+            for ((step, coord) in coordinates.withIndex()) {
+                Log.d("Executor", "🔁 Step $step 실행 시작")
+                val rect = coord.toRect() ?: continue
+                val scaledRect = ClickSimulator.scaleRect(rect, 1080, 2400, targetW, targetH)
+                val expandedRect = ClickSimulator.expandRect(scaledRect)
 
-                for ((step, coord) in coordinates.withIndex()) {
-                    val rect = coord.toRect() ?: continue
-                    val ocrText = OCRCaptureUtils.extractTextFromRegion(context, rect, projection)
+                Log.d("Executor", "📐 Step $step OCR 대상: $scaledRect → 확장: $expandedRect")
+                val ocrText = OCRCaptureUtils.extractTextFromBitmapRegion(baseBitmap, scaledRect)
+                Log.d("Executor", "🧠 Step $step OCR 결과: '$ocrText'")
 
-                    withContext(Dispatchers.Main) {
-                        overlayView.updateDebugText("[$step] OCR: $ocrText")
-                        overlayView.drawDebugBox(rect)
-                    }
-
-                    if (OCRCaptureUtils.isValueMatched(ocrText, coord.targetText, coord.compareOperator)) {
-                        when (coord.type) {
-                            CoordinateType.CLICK -> {
-                                Log.d("Executor", "🖱️ Step $step 클릭 실행")
-                                ClickSimulator.click(service, rect)
-                            }
-
-                            CoordinateType.SCROLL -> {
-                                Log.d("Executor", "📜 Step $step 스크롤 실행")
-                                ClickSimulator.scroll(service, rect)
-                            }
-
-                            else -> {
-                                Log.w("Executor", "⚠️ Step $step 알 수 없는 타입")
-                            }
-                        }
-                    }
-
-                    delay(800)
+                withContext(Dispatchers.Main) {
+                    overlayView.updateDebugText("[$step] OCR: $ocrText")
+                    overlayView.drawDebugBox(expandedRect)
                 }
 
-                delay(1000)
+                if (OCRCaptureUtils.isValueMatched(ocrText, coord.expectedValue, coord.comparator)) {
+                    when (coord.type) {
+                        CoordinateType.CLICK -> {
+                            Log.d("Executor", "🖱️ Step $step 클릭 실행 → $expandedRect")
+                            ClickSimulator.click(service, expandedRect)
+                        }
+                        CoordinateType.SCROLL -> {
+                            Log.d("Executor", "📜 Step $step 스크롤 실행 → $expandedRect")
+                            ClickSimulator.scroll(service, expandedRect)
+                        }
+                        else -> {
+                            Log.w("Executor", "⚠️ Step $step 알 수 없는 타입")
+                        }
+                    }
+                } else {
+                    Log.w("Executor", "⛔ Step $step 조건 불일치: OCR='$ocrText', 기대='${coord.expectedValue}', 조건='${coord.comparator}'")
+                }
+
+                delay(800)
             }
         }
     }

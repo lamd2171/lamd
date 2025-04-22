@@ -2736,6 +2736,7 @@ drawable btn_radio_off_mtrl
 drawable btn_radio_off_to_on_mtrl_animation
 drawable btn_radio_on_mtrl
 drawable btn_radio_on_to_off_mtrl_animation
+drawable btn_style
 drawable common_full_open_on_phone
 drawable common_google_signin_btn_icon_dark
 drawable common_google_signin_btn_icon_dark_focused
@@ -3011,8 +3012,8 @@ id cut
 id dark
 id dataBinding
 id date_picker_actions
-id debugTextView
-id debug_text_view
+id debug_box
+id debug_text
 id decelerate
 id decelerateAndComplete
 id decor_content_parent

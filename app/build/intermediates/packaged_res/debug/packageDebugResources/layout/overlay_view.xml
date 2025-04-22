@@ -3,28 +3,29 @@
     android:id="@+id/overlay_container"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#00FFFFFF"
+    android:background="@android:color/transparent"
     android:clickable="false"
-    android:focusable="false">
+    android:focusable="false"
+    android:visibility="visible">
 
-    <!-- 디버그 텍스트 박스 -->
+    <!-- 디버깅 박스용 뷰 -->
+    <View
+        android:id="@+id/debug_box"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_gravity="top|start"
+        android:background="@android:color/holo_red_light"
+        android:visibility="gone" />
+
+    <!-- OCR 텍스트 디버그용 -->
     <TextView
-        android:id="@+id/debugTextView"
+        android:id="@+id/debug_text"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_margin="8dp"
-        android:text="Debug Info"
-        android:textColor="#FF0000"
+        android:layout_gravity="top|start"
+        android:textColor="@android:color/white"
         android:textSize="12sp"
-        android:background="#AAFFFFFF"
-        android:padding="4dp" />
-
-    <TextView
-        android:id="@+id/debug_text_view"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textColor="#FF0000"
-        android:textSize="14sp"
-        android:layout_margin="10dp"/>
-
+        android:padding="4dp"
+        android:background="#66000000"
+        android:visibility="gone" />
 </FrameLayout>

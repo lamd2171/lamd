@@ -39,6 +39,7 @@ object ScreenCaptureHelper {
     }
 
     // ✅ 공통 캡처 로직
+    // MediaProjection을 캡처하기 전에 callback을 등록해야 함
     private fun capture(context: Context, projection: MediaProjection): Bitmap? {
         val width: Int
         val height: Int
@@ -63,6 +64,17 @@ object ScreenCaptureHelper {
 
         // 이미지 리더 생성
         val imageReader = ImageReader.newInstance(width, height, 0x1, 2)
+
+        // MediaProjection 콜백 등록
+        val projectionCallback = object : MediaProjection.Callback() {
+            override fun onStop() {
+                super.onStop()
+                Log.d("ScreenCaptureHelper", "❌ MediaProjection stopped")
+            }
+        }
+
+        // VirtualDisplay 생성 전에 callback을 등록
+        projection.registerCallback(projectionCallback, Handler(Looper.getMainLooper()))
 
         // VirtualDisplay 생성
         val virtualDisplay: VirtualDisplay = projection.createVirtualDisplay(
@@ -101,7 +113,7 @@ object ScreenCaptureHelper {
         bitmap.copyPixelsFromBuffer(buffer)
         image.close()
         virtualDisplay.release()
-
+        Log.d("Capture", "🖼️ 캡처된 이미지 해상도: ${bitmap.width}x${bitmap.height}")
         return Bitmap.createBitmap(bitmap, 0, 0, width, height)
     }
 }

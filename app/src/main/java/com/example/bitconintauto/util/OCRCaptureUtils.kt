@@ -121,13 +121,9 @@ object OCRCaptureUtils {
     fun findWordRectFromBitmap(bitmap: Bitmap, target: String): Rect? {
         return try {
             tessBaseAPI.setImage(bitmap)
-            val iterator = try {
-                tessBaseAPI.resultIterator
-            } catch (e: Exception) {
-                Log.e("OCR", "❌ resultIterator 접근 중 오류: ${e.message}")
-                null
-            }
+            tessBaseAPI.getHOCRText(0) // ✅ 내부 recognize 대체
 
+            val iterator = tessBaseAPI.resultIterator
             val level = TessBaseAPI.PageIteratorLevel.RIL_WORD
 
             if (iterator != null) {
@@ -147,6 +143,17 @@ object OCRCaptureUtils {
             Log.e("OCR", "❌ 단어 좌표 추출 실패: ${e.message}")
             null
         }
+    }
+    // OCRCaptureUtils.kt
+    fun extractTextFromBitmapRegion(bitmap: Bitmap, region: Rect): String {
+        val regionBitmap = Bitmap.createBitmap(
+            bitmap,
+            region.left.coerceAtLeast(0),
+            region.top.coerceAtLeast(0),
+            region.width().coerceAtMost(bitmap.width - region.left),
+            region.height().coerceAtMost(bitmap.height - region.top)
+        )
+        return extractTextFromBitmap(regionBitmap)
     }
 
     // 디버그 이미지 저장
