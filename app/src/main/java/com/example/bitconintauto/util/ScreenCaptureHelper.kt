@@ -9,7 +9,6 @@ import android.media.ImageReader
 import android.media.projection.MediaProjection
 import android.os.Handler
 import android.os.Looper
-import android.util.DisplayMetrics
 import android.util.Log
 import java.nio.ByteBuffer
 import android.graphics.PixelFormat
@@ -24,16 +23,21 @@ object ScreenCaptureHelper {
 
     fun getMediaProjection(): MediaProjection? = mediaProjection
 
-    fun captureScreen(context: Context, projection: MediaProjection): Bitmap? {
+    fun captureScreen(
+        context: Context,
+        projection: MediaProjection,
+        cropRatioTop: Float = 0f,
+        cropRatioBottom: Float = 1f
+    ): Bitmap? {
         return try {
             val metrics = context.resources.displayMetrics
-            val width = 1080
-            val height = 2400
+            val scaleFactor = 2
+            val width = metrics.widthPixels * scaleFactor
+            val height = metrics.heightPixels * scaleFactor
             val dpi = metrics.densityDpi
 
             val imageReader = ImageReader.newInstance(width, height, PixelFormat.RGBA_8888, 2)
 
-            // 💡 Android 12+ 대응: 콜백 등록 필수
             projection.registerCallback(object : MediaProjection.Callback() {
                 override fun onStop() {
                     Log.d("ScreenCaptureHelper", "🛑 MediaProjection 중단됨")
@@ -64,17 +68,20 @@ object ScreenCaptureHelper {
             val rowStride = planes[0].rowStride
             val rowPadding = rowStride - pixelStride * width
 
-            val bitmap = Bitmap.createBitmap(
+            val fullBitmap = Bitmap.createBitmap(
                 width + rowPadding / pixelStride,
                 height,
-                Bitmap.Config.RGB_565
+                Bitmap.Config.ARGB_8888
             )
-            bitmap.copyPixelsFromBuffer(buffer)
+            fullBitmap.copyPixelsFromBuffer(buffer)
 
             image.close()
             virtualDisplay.release()
 
-            bitmap
+            val top = (fullBitmap.height * cropRatioTop).toInt()
+            val bottom = (fullBitmap.height * cropRatioBottom).toInt()
+            Bitmap.createBitmap(fullBitmap, 0, top, fullBitmap.width, bottom - top)
+
         } catch (e: Exception) {
             Log.e("ScreenCaptureHelper", "❌ 예외 발생: ${e.message}")
             null

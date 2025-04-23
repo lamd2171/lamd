@@ -15,21 +15,18 @@ import com.example.bitconintauto.ui.OverlayView
 import com.example.bitconintauto.util.PermissionUtils
 import com.example.bitconintauto.util.PreferenceHelper
 import com.example.bitconintauto.util.ScreenCaptureHelper
+import com.example.bitconintauto.service.ExecutorManager  // 정확히 import 추가
 
 class ForegroundProjectionService : Service() {
 
-    private val executorManager = ExecutorManager()
     private var overlayView: OverlayView? = null
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
-        val resultCode = intent?.getIntExtra("code", -1) ?: return START_NOT_STICKY
+        startForeground(1, createNotification()) // 포그라운드 전환 필수
+        val code = intent?.getIntExtra("code", -1) ?: return START_NOT_STICKY
         val data = intent.getParcelableExtra<Intent>("data") ?: return START_NOT_STICKY
+        PermissionUtils.setMediaProjectionPermissionResult(code, data)
 
-        // 💥 MediaProjection 전에 ForegroundService 시작
-        startForeground(1, createNotification())
-
-        // ✅ MediaProjection 저장
-        PermissionUtils.setMediaProjectionPermissionResult(resultCode, data)
         ScreenCaptureHelper.setMediaProjection(PermissionUtils.getMediaProjection()!!)  // ← 핵심 추가
 
         // ✅ PreferenceHelper 다시 초기화 (ApplicationContext 사용)
@@ -40,7 +37,7 @@ class ForegroundProjectionService : Service() {
         if (accessibilityService != null) {
             // 💡 오버레이 뷰 생성 및 전달
             overlayView = OverlayView(applicationContext)
-            executorManager.start(
+            ExecutorManager.start(
                 context = applicationContext,
                 overlayView = overlayView!!,
                 service = accessibilityService

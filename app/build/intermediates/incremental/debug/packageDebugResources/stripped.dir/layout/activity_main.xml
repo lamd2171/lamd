@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:padding="16dp"
+    android:gravity="center"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#1E1E1E">
+
+    <!-- 자동화 시작 버튼 -->
+    <Button
+        android:id="@+id/btn_start"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Start Automation"
+        android:textSize="16sp"
+        android:textColor="#FFFFFF"
+        android:layout_marginBottom="20dp"
+        android:background="@drawable/btn_style" />
+
+    <!-- 자동화 중지 버튼 -->
+    <Button
+        android:id="@+id/btn_stop"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Stop Automation"
+        android:textSize="16sp"
+        android:textColor="#FFFFFF"
+        android:background="@drawable/btn_style" />
+
+</LinearLayout>
