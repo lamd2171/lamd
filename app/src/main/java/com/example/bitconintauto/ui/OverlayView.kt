@@ -8,7 +8,11 @@ import android.graphics.Rect
 import android.util.AttributeSet
 import android.view.View
 
-class OverlayView(context: Context, attrs: AttributeSet? = null) : View(context, attrs) {
+class OverlayView @JvmOverloads constructor(
+    context: Context,
+    attrs: AttributeSet? = null
+) : View(context, attrs) {
+
     private val paintBox = Paint().apply {
         color = Color.RED
         style = Paint.Style.STROKE

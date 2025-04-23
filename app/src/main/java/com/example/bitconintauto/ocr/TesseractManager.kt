@@ -7,48 +7,62 @@ import com.googlecode.tesseract.android.TessBaseAPI
 import java.io.File
 import java.io.FileOutputStream
 
-class TesseractManager(private val context: Context) {
-    private var tessBaseApi: TessBaseAPI? = null
-    private val lang = "eng" // 언어 설정
+object TesseractManager {
 
-    init {
-        initTesseract()
-    }
+    private var tessBaseAPI: TessBaseAPI? = null
+    private const val TAG = "OCR"
+    private const val LANG = "kor+eng"
 
-    // Tesseract 초기화
-    private fun initTesseract() {
-        val dir = File(context.filesDir, "tesseract/tessdata")
-        if (!dir.exists()) dir.mkdirs()
+    fun init(context: Context) {
+        val tessDir = File(context.filesDir, "tesseract/tessdata")
+        if (!tessDir.exists()) {
+            tessDir.mkdirs()
+        }
 
-        val trainedData = File(dir, "$lang.traineddata")
-        if (!trainedData.exists()) {
-            context.assets.open("tessdata/$lang.traineddata").use { input ->
-                FileOutputStream(trainedData).use { output ->
-                    input.copyTo(output)
+        val languages = listOf("kor", "eng")
+        for (lang in languages) {
+            val trainedDataFile = File(tessDir, "$lang.traineddata")
+            if (!trainedDataFile.exists()) {
+                try {
+                    context.assets.open("tessdata/$lang.traineddata").use { input ->
+                        FileOutputStream(trainedDataFile).use { output ->
+                            input.copyTo(output)
+                        }
+                    }
+                } catch (e: Exception) {
+                    Log.e(TAG, "❌ OCR 학습 파일 복사 실패 ($lang): ${e.message}")
                 }
             }
         }
 
-        tessBaseApi = TessBaseAPI().apply {
-            init(dir.parent, lang)
+        try {
+            val tessPath = File(context.filesDir, "tesseract").absolutePath
+            tessBaseAPI = TessBaseAPI()
+            val success = tessBaseAPI?.init(tessPath, LANG) ?: false
+            if (success) {
+                Log.d(TAG, "✅ Tesseract 초기화 성공")
+            } else {
+                Log.e(TAG, "❌ Tesseract 초기화 실패")
+            }
+        } catch (e: Exception) {
+            Log.e(TAG, "❌ 전체 OCR 실패: ${e.message}")
         }
-
-        Log.d("OCR", "✅ Tesseract 초기화 완료")
     }
 
-    // OCR 실행
-    fun getTextFromBitmap(bitmap: Bitmap): String {
+    fun recognizeText(bitmap: Bitmap): String {
         return try {
-            tessBaseApi?.setImage(bitmap)
-            tessBaseApi?.getUTF8Text() ?: ""
+            tessBaseAPI?.setImage(bitmap)
+            val text = tessBaseAPI?.utF8Text ?: ""
+            Log.d(TAG, "🧠 OCR 결과: $text")
+            text
         } catch (e: Exception) {
-            Log.e("OCR", "❌ OCR 실패: ${e.message}")
+            Log.e(TAG, "❌ OCR 인식 실패: ${e.message}")
             ""
         }
     }
 
-    // 리소스 해제
     fun release() {
-        tessBaseApi?.end()
+        tessBaseAPI?.end()
+        tessBaseAPI = null
     }
 }

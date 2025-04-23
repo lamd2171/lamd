@@ -1,4 +1,6 @@
 <resources>
-<string name="app_name">bitconintauto</string>
-<string name="accessibility_service_description">자동화 실행을 위한 접근성 서비스입니다.</string>
+    <string name="app_name">bitconint auto</string>
+    <string name="accessibility_service_description">이 서비스는 화면의 텍스트를 인식하여 자동으로 클릭/스크롤 등의 작업을 수행합니다.</string>
+    <string name="start_automation">Start Automation</string>
+    <string name="stop_automation">Stop Automation</string>
 </resources>

@@ -4,7 +4,7 @@ plugins {
 }
 
 android {
-    namespace 'com.example.bitconintauto' // ✅ package 대신 이걸로
+    namespace 'com.example.bitconintauto'
     compileSdk 34
 
     defaultConfig {
@@ -27,17 +27,13 @@ android {
         }
     }
 
-    buildFeatures {
-        dataBinding true
-    }
-
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
     }
 
     kotlinOptions {
-        jvmTarget = "1.8" // ✅ 수정: Kotlin도 JVM 1.8로 맞춤
+        jvmTarget = "1.8"
     }
 
     sourceSets {
@@ -45,22 +41,29 @@ android {
             jniLibs.srcDirs = ['libs']
         }
     }
+
+    buildFeatures {
+        dataBinding true
+    }
 }
 
 dependencies {
+    // OCR 엔진
     implementation 'com.rmtheis:tess-two:9.0.0'
 
+    // ML Kit 한국어 OCR
+    implementation 'com.google.mlkit:text-recognition-korean:16.0.0-beta2'
+
+    // Android 기본
     implementation "androidx.core:core-ktx:1.12.0"
     implementation "androidx.appcompat:appcompat:1.6.1"
     implementation "com.google.android.material:material:1.8.0"
     implementation "androidx.constraintlayout:constraintlayout:2.1.4"
     implementation "androidx.lifecycle:lifecycle-runtime-ktx:2.6.1"
     implementation "androidx.activity:activity-ktx:1.7.2"
-    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.3"
     implementation "androidx.annotation:annotation:1.6.0"
     implementation 'com.google.code.gson:gson:2.10.1'
 
-    // ML Kit OCR (한국어 지원 포함)
-    implementation 'com.google.mlkit:text-recognition-korean:16.0.0-beta2'
+    // 코루틴
+    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.3"
 }
-

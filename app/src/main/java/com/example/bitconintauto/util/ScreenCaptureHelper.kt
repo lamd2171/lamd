@@ -7,9 +7,12 @@ import android.hardware.display.DisplayManager
 import android.hardware.display.VirtualDisplay
 import android.media.ImageReader
 import android.media.projection.MediaProjection
+import android.os.Handler
+import android.os.Looper
 import android.util.DisplayMetrics
 import android.util.Log
 import java.nio.ByteBuffer
+import android.graphics.PixelFormat
 
 object ScreenCaptureHelper {
     private var mediaProjection: MediaProjection? = null
@@ -28,7 +31,15 @@ object ScreenCaptureHelper {
             val height = 2400
             val dpi = metrics.densityDpi
 
-            val imageReader = ImageReader.newInstance(width, height, ImageFormat.RGB_565, 2)
+            val imageReader = ImageReader.newInstance(width, height, PixelFormat.RGBA_8888, 2)
+
+            // 💡 Android 12+ 대응: 콜백 등록 필수
+            projection.registerCallback(object : MediaProjection.Callback() {
+                override fun onStop() {
+                    Log.d("ScreenCaptureHelper", "🛑 MediaProjection 중단됨")
+                }
+            }, Handler(Looper.getMainLooper()))
+
             val virtualDisplay: VirtualDisplay = projection.createVirtualDisplay(
                 "ScreenCapture",
                 width,

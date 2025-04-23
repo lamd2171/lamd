@@ -7,7 +7,7 @@
     android:layout_height="match_parent"
     android:background="#1E1E1E">
 
-    <!-- 자동 실행 시작 버튼 -->
+    <!-- 자동화 시작 버튼 -->
     <Button
         android:id="@+id/btn_start"
         android:layout_width="wrap_content"
@@ -16,8 +16,9 @@
         android:textSize="16sp"
         android:textColor="#FFFFFF"
         android:layout_marginBottom="20dp"
-        android:background="@drawable/btn_style" />  <!-- 스타일 추가 -->
+        android:background="@drawable/btn_style" />
 
+    <!-- 자동화 중지 버튼 -->
     <Button
         android:id="@+id/btn_stop"
         android:layout_width="wrap_content"
@@ -26,6 +27,5 @@
         android:textSize="16sp"
         android:textColor="#FFFFFF"
         android:background="@drawable/btn_style" />
-
 
 </LinearLayout>

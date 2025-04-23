@@ -1,7 +1,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.example.bitconintauto">
 
-    <!-- ✅ 권한 선언 -->
+    <!-- 필수 권한 -->
     <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
@@ -11,6 +11,7 @@
     <uses-permission android:name="android.permission.INTERNET"/>
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE_MEDIA_PROJECTION" />
+
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
@@ -18,9 +19,9 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.BitconintAuto"
-        android:requestLegacyExternalStorage="true">  <!-- ✅ 요기 추가 -->
+        android:requestLegacyExternalStorage="true">
 
-        <!-- ✅ MainActivity 등록 -->
+        <!-- 메인 액티비티 -->
         <activity
             android:name=".MainActivity"
             android:exported="true">
@@ -30,8 +31,7 @@
             </intent-filter>
         </activity>
 
-        <!-- ✅ 접근성 서비스 (필요 시 활성화용, 현재는 사용 안함) -->
-
+        <!-- 접근성 서비스 등록 -->
         <service
             android:name=".service.MyAccessibilityService"
             android:permission="android.permission.BIND_ACCESSIBILITY_SERVICE"
@@ -44,10 +44,11 @@
                 android:name="android.accessibilityservice"
                 android:resource="@xml/accessibility_service_config" />
         </service>
+
+        <!-- 미디어 프로젝션용 포그라운드 서비스 -->
         <service
             android:name=".service.ForegroundProjectionService"
             android:foregroundServiceType="mediaProjection"
             android:exported="false" />
-
     </application>
 </manifest>
