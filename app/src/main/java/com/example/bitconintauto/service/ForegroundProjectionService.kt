@@ -1,5 +1,6 @@
 package com.example.bitconintauto.service
 
+import android.app.Activity
 import android.app.Notification
 import android.app.NotificationChannel
 import android.app.NotificationManager
@@ -10,8 +11,10 @@ import android.os.IBinder
 import android.util.Log
 import androidx.core.app.NotificationCompat
 import com.example.bitconintauto.R
-import android.app.Activity
 import com.example.bitconintauto.util.PermissionUtils
+import android.app.ActivityManager
+import android.content.Context
+import com.example.bitconintauto.util.ScreenCaptureHelper
 
 class ForegroundProjectionService : Service() {
 
@@ -19,6 +22,9 @@ class ForegroundProjectionService : Service() {
         const val CHANNEL_ID = "projection_channel"
         const val NOTIFICATION_ID = 1
     }
+
+    private var projectionIntent: Intent? = null
+    private var resultCode: Int = -1
 
     override fun onCreate() {
         super.onCreate()
@@ -33,7 +39,6 @@ class ForegroundProjectionService : Service() {
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
-        // 이 서비스는 단순히 MediaProjection 권한 보장을 위한 용도임
         val resultCode = intent?.getIntExtra("code", -1) ?: -1
         val resultData = intent?.getParcelableExtra<Intent>("data")
 
@@ -44,16 +49,17 @@ class ForegroundProjectionService : Service() {
             // 🔥 OCR 캡처에서도 사용할 수 있도록 projection 전달
             val projection = PermissionUtils.getMediaProjection()
             if (projection != null) {
-                com.example.bitconintauto.util.ScreenCaptureHelper.setMediaProjection(projection)
+                ScreenCaptureHelper.setMediaProjection(projection)
                 Log.d("ForegroundService", "✅ ScreenCaptureHelper에도 projection 전달됨")
             } else {
-                Log.e("ForegroundService", "❌ PermissionUtils.getMediaProjection() == null")
+                Log.e("ForegroundService", "❌ MediaProjection 객체가 null임")
             }
+        } else {
+            Log.e("ForegroundService", "❌ MediaProjection 권한 거부됨")
         }
 
         return START_NOT_STICKY
     }
-
 
     override fun onDestroy() {
         super.onDestroy()
