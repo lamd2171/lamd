@@ -31,7 +31,7 @@ object ScreenCaptureHelper {
     ): Bitmap? {
         return try {
             val metrics = context.resources.displayMetrics
-            val scaleFactor = 2
+            val scaleFactor = 1
             val width = metrics.widthPixels * scaleFactor
             val height = metrics.heightPixels * scaleFactor
             val dpi = metrics.densityDpi
@@ -55,9 +55,9 @@ object ScreenCaptureHelper {
                 null
             )
 
-            Thread.sleep(300)
-            val image = imageReader.acquireLatestImage() ?: run {
-                Log.e("ScreenCaptureHelper", "❌ 이미지 획득 실패")
+            Thread.sleep(1000)
+            val image = imageReader.acquireNextImage() ?: run {
+                Log.e("ScreenCaptureHelper", "❌ 이미지 획득 실패 (acquireNextImage)")
                 virtualDisplay.release()
                 return null
             }

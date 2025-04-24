@@ -7,6 +7,7 @@ import android.graphics.Paint
 import android.graphics.Rect
 import android.util.AttributeSet
 import android.view.View
+import android.util.Log
 
 class OverlayView @JvmOverloads constructor(
     context: Context,
@@ -28,9 +29,16 @@ class OverlayView @JvmOverloads constructor(
     private var debugText: String = ""
 
     fun drawDebugBox(rect: Rect) {
-        debugRect = rect
-        postInvalidate()
+        val vto = viewTreeObserver
+        if (vto.isAlive) {
+            vto.addOnGlobalLayoutListener {
+                debugRect = rect
+                Log.d("DEBUG", "✅ OverlayView 실제 크기: ${width}x${height}")
+                postInvalidate()
+            }
+        }
     }
+
 
     fun updateDebugText(text: String) {
         debugText = text

@@ -17,9 +17,12 @@ object ClickSimulator {
     fun click(service: AccessibilityService, rect: Rect): Boolean {
         val centerX = rect.centerX().toFloat()
         val centerY = rect.centerY().toFloat()
+        val screenW = service.resources.displayMetrics.widthPixels
+        val screenH = service.resources.displayMetrics.heightPixels
 
         Log.d("ClickSimulator", "🧭 [클릭 요청] 중심: ($centerX, $centerY)")
-        Log.d("ClickSimulator", "🔱 [디바이스 해상도] ${service.resources.displayMetrics.widthPixels} x ${service.resources.displayMetrics.heightPixels}")
+        Log.d("ClickSimulator", "🔱 [디바이스 해상도] ${screenW} x ${screenH}")
+        Log.d("ClickSimulator", "🧾 [클릭 영역 정보] 좌표: $rect")
 
         val path = Path().apply { moveTo(centerX, centerY) }
         val gesture = GestureDescription.Builder()
@@ -31,12 +34,12 @@ object ClickSimulator {
             object : AccessibilityService.GestureResultCallback() {
                 override fun onCompleted(gestureDescription: GestureDescription?) {
                     super.onCompleted(gestureDescription)
-                    Log.d("ClickSimulator", "✅ 클릭 제스처 성공: ($centerX, $centerY)")
+                    Log.d("ClickSimulator", "✅ 클릭 제스처 성공: 좌표=($centerX, $centerY), 영역=$rect")
                 }
 
                 override fun onCancelled(gestureDescription: GestureDescription?) {
                     super.onCancelled(gestureDescription)
-                    Log.e("ClickSimulator", "❌ 클릭 제스처 취소됨: ($centerX, $centerY)")
+                    Log.e("ClickSimulator", "❌ 클릭 제스처 실패: 좌표=($centerX, $centerY), 영역=$rect")
                 }
             },
             Handler(Looper.getMainLooper())
@@ -46,9 +49,6 @@ object ClickSimulator {
         return result
     }
 
-    /**
-     * 📜 지정된 Rect를 기준으로 수직 스크롤을 수행한다
-     */
     fun scroll(service: AccessibilityService, rect: Rect, downward: Boolean = true) {
         val startX = rect.centerX().toFloat()
         val distance = 300f
@@ -67,24 +67,18 @@ object ClickSimulator {
         service.dispatchGesture(gesture, null, null)
     }
 
-    /**
-     * 📐 해상도 보정 함수 (OCR 기준 해상도 → 실제 클릭 해상도)
-     */
     fun scaleRect(rect: Rect, srcW: Int, srcH: Int, targetW: Int, targetH: Int): Rect {
         val scaleX = targetW.toFloat() / srcW
         val scaleY = targetH.toFloat() / srcH
 
         return Rect(
             (rect.left * scaleX).toInt(),
-            ((rect.top * scaleY)-20).toInt(),
-            ((rect.right * scaleX)+50).toInt(),
-            ((rect.bottom * scaleY)-20).toInt()
+            ((rect.top * scaleY) - 20).toInt(),
+            ((rect.right * scaleX) + 50).toInt(),
+            ((rect.bottom * scaleY) - 20).toInt()
         )
     }
 
-    /**
-     * 🟥 중심 좌표 기반 Rect를 약간 확대하여 보정 (디버깅용)
-     */
     fun expandRect(rect: Rect, padding: Int = 30): Rect {
         return Rect(
             rect.left - padding,
@@ -94,9 +88,6 @@ object ClickSimulator {
         )
     }
 
-    /**
-     * ✅ 텍스트를 기반으로 노드를 찾아 클릭 (WebView 대응 시도용)
-     */
     fun clickByText(service: AccessibilityService, text: String): Boolean {
         val root = service.rootInActiveWindow ?: return false
         val nodes = root.findAccessibilityNodeInfosByText(text)
